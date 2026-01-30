@@ -68,6 +68,12 @@ pub enum EventType {
     /// Rejection by family members (disownment, estrangement, explicit exclusion)
     ExperienceRejectionFamily,
 
+    /// Active rejection by peers (direct dismissal or refusal by classmates, coworkers, friends)
+    ExperienceRejectionPeer,
+
+    /// Romantic rejection (being rejected by a desired romantic interest)
+    ExperienceRejectionRomantic,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -101,6 +107,8 @@ impl EventType {
             EventType::ExperienceInclusionPeer => types::experience_inclusion_peer::SPEC,
             EventType::ExperienceIsolationChronic => types::experience_isolation_chronic::SPEC,
             EventType::ExperienceRejectionFamily => types::experience_rejection_family::SPEC,
+            EventType::ExperienceRejectionPeer => types::experience_rejection_peer::SPEC,
+            EventType::ExperienceRejectionRomantic => types::experience_rejection_romantic::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -124,13 +132,15 @@ impl EventType {
             EventType::ExperienceInclusionPeer => "Experience Inclusion (Peer)",
             EventType::ExperienceIsolationChronic => "Experience Isolation (Chronic)",
             EventType::ExperienceRejectionFamily => "Experience Rejection (Family)",
+            EventType::ExperienceRejectionPeer => "Experience Rejection (Peer)",
+            EventType::ExperienceRejectionRomantic => "Experience Rejection (Romantic)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 15] {
+    pub const fn all() -> [EventType; 17] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -147,6 +157,8 @@ impl EventType {
             EventType::ExperienceInclusionPeer,
             EventType::ExperienceIsolationChronic,
             EventType::ExperienceRejectionFamily,
+            EventType::ExperienceRejectionPeer,
+            EventType::ExperienceRejectionRomantic,
         ]
     }
 }
@@ -165,7 +177,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 15);
+        assert_eq!(all.len(), 17);
     }
 
     #[test]

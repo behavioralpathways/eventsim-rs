@@ -15,8 +15,8 @@
 [x] experience-pandemic-global
 [x] experience-recession-economic
 [x] experience-rejection-family
-[ ] experience-rejection-peer
-[ ] experience-rejection-romantic
+[x] experience-rejection-peer
+[x] experience-rejection-romantic
 [ ] experience-shaming-public
 [ ] experience-strain-financial
 [ ] experience-war-regional

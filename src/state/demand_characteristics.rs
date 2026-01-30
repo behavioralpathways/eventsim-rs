@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Demand characteristics for observable social signals.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 pub struct DemandCharacteristics {
     /// Gender identity or presentation.
     pub gender: String,
@@ -19,17 +19,6 @@ pub struct DemandCharacteristics {
 
     /// Other observable signals (style, accent, markers).
     pub observable_signals: Vec<String>,
-}
-
-impl Default for DemandCharacteristics {
-    fn default() -> Self {
-        DemandCharacteristics {
-            gender: String::new(),
-            ethnicity: String::new(),
-            appearance: String::new(),
-            observable_signals: Vec::new(),
-        }
-    }
 }
 
 impl DemandCharacteristics {

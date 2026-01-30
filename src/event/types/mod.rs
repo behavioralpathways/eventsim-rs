@@ -20,6 +20,8 @@ pub mod experience_isolation_chronic;
 pub mod experience_pandemic_global;
 pub mod experience_recession_economic;
 pub mod experience_rejection_family;
+pub mod experience_rejection_peer;
+pub mod experience_rejection_romantic;
 // pub mod lose_job_layoff;
 // pub mod lose_job_fired;
 // ... (58 total modules)

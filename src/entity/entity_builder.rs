@@ -32,6 +32,9 @@ pub enum EntityBuildError {
     /// Species is required but was not set.
     MissingSpecies,
 
+    /// Age is required but was not set.
+    MissingAge,
+
     /// The entity ID is invalid (empty string).
     InvalidId(String),
 }
@@ -40,6 +43,7 @@ impl std::fmt::Display for EntityBuildError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             EntityBuildError::MissingSpecies => write!(f, "Species is required but was not set"),
+            EntityBuildError::MissingAge => write!(f, "Age is required but was not set"),
             EntityBuildError::InvalidId(reason) => write!(f, "Invalid entity ID: {}", reason),
         }
     }
@@ -50,16 +54,16 @@ impl std::error::Error for EntityBuildError {}
 /// Builder for constructing Entity instances.
 ///
 /// The builder provides a fluent API for setting entity properties.
-/// Species is required; all other properties have sensible defaults.
+/// Species and age are required; all other properties have sensible defaults.
 ///
 /// # Required Fields
 ///
 /// - `species` - Must be set before calling `build()`
+/// - `age` - Must be set before calling `build()`
 ///
 /// # Optional Fields with Defaults
 ///
 /// - `id` - Auto-generated UUID if not set
-/// - `age` - Zero duration if not set
 /// - `life_stage` - Derived from age and species if not set
 /// - `personality` - Neutral HEXACO (Balanced profile) if not set
 /// - `person_characteristics` - Neutral (0.5, 0.5, 0.5) if not set
@@ -71,9 +75,10 @@ impl std::error::Error for EntityBuildError {}
 /// use eventsim_rs::enums::{Species, LifeStage, PersonalityProfile};
 /// use eventsim_rs::types::Duration;
 ///
-/// // Minimal entity with required species
+/// // Minimal entity with required species and age
 /// let entity = EntityBuilder::new()
 ///     .species(Species::Human)
+///     .age(Duration::years(30))
 ///     .build()
 ///     .unwrap();
 ///
@@ -133,6 +138,7 @@ impl EntityBuilder {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -157,6 +163,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Dog)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -213,6 +220,7 @@ impl EntityBuilder {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .birth_date(Timestamp::from_ymd_hms(1990, 6, 15, 0, 0, 0))
     ///     .build()
     ///     .unwrap();
@@ -237,6 +245,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .life_stage(LifeStage::Adult)
     ///     .build()
     ///     .unwrap();
@@ -262,6 +271,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .personality(PersonalityProfile::Leader)
     ///     .build()
     ///     .unwrap();
@@ -291,6 +301,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .hexaco(hexaco)
     ///     .build()
     ///     .unwrap();
@@ -320,6 +331,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .person_characteristics(pc)
     ///     .build()
     ///     .unwrap();
@@ -347,6 +359,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .mood(mood)
     ///     .build()
     ///     .unwrap();
@@ -374,6 +387,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .needs(needs)
     ///     .build()
     ///     .unwrap();
@@ -402,6 +416,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .mental_health(mh)
     ///     .build()
     ///     .unwrap();
@@ -430,6 +445,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .social_cognition(sc)
     ///     .build()
     ///     .unwrap();
@@ -458,6 +474,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .disposition(disp)
     ///     .build()
     ///     .unwrap();
@@ -487,6 +504,7 @@ impl EntityBuilder {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .with_context(context)
     ///     .build()
     ///     .unwrap();
@@ -504,6 +522,7 @@ impl EntityBuilder {
     /// # Errors
     ///
     /// Returns `EntityBuildError::MissingSpecies` if species was not set.
+    /// Returns `EntityBuildError::MissingAge` if age was not set.
     /// Returns `EntityBuildError::InvalidId` if the ID is empty.
     ///
     /// # Examples
@@ -515,6 +534,7 @@ impl EntityBuilder {
     /// // Success case
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -525,6 +545,7 @@ impl EntityBuilder {
     pub fn build(self) -> Result<Entity, EntityBuildError> {
         // Validate required fields
         let species = self.species.ok_or(EntityBuildError::MissingSpecies)?;
+        let age = self.age.ok_or(EntityBuildError::MissingAge)?;
 
         // Generate or validate ID
         let id_string = self.id.unwrap_or_else(generate_uuid);
@@ -532,9 +553,6 @@ impl EntityBuilder {
             Ok(id) => id,
             Err(err) => return Err(EntityBuildError::InvalidId(err.reason)),
         };
-
-        // Get age, defaulting to zero
-        let age = self.age.unwrap_or(Duration::zero());
 
         // Get birth_date (optional)
         let birth_date = self.birth_date;
@@ -624,6 +642,7 @@ mod tests {
     fn builder_sets_species() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -634,6 +653,7 @@ mod tests {
     fn builder_sets_life_stage() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .life_stage(LifeStage::Adult)
             .build()
             .unwrap();
@@ -645,6 +665,7 @@ mod tests {
     fn builder_sets_personality_profile() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .personality(PersonalityProfile::Leader)
             .build()
             .unwrap();
@@ -659,6 +680,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .person_characteristics(pc)
             .build()
             .unwrap();
@@ -677,7 +699,7 @@ mod tests {
 
     #[test]
     fn builder_produces_entity() {
-        let result = EntityBuilder::new().species(Species::Human).build();
+        let result = EntityBuilder::new().species(Species::Human).age(crate::types::Duration::years(30)).build();
 
         assert!(result.is_ok());
         let entity = result.unwrap();
@@ -726,6 +748,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test_entity")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -736,6 +759,7 @@ mod tests {
     fn builder_generates_id_if_not_set() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -755,13 +779,10 @@ mod tests {
     }
 
     #[test]
-    fn builder_defaults_age_to_zero() {
-        let entity = EntityBuilder::new()
-            .species(Species::Human)
-            .build()
-            .unwrap();
+    fn builder_requires_age() {
+        let result = EntityBuilder::new().species(Species::Human).build();
 
-        assert!(entity.age().is_zero());
+        assert_eq!(result.unwrap_err(), EntityBuildError::MissingAge);
     }
 
     #[test]
@@ -770,6 +791,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .hexaco(hexaco)
             .build()
             .unwrap();
@@ -784,6 +806,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .personality(PersonalityProfile::Leader) // Would set high extraversion
             .hexaco(hexaco) // Overrides to 0.3
             .build()
@@ -798,6 +821,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .hexaco(hexaco)
             .personality(PersonalityProfile::Leader) // Overrides
             .build()
@@ -824,7 +848,7 @@ mod tests {
 
     #[test]
     fn empty_id_returns_error() {
-        let result = EntityBuilder::new().id("").species(Species::Human).build();
+        let result = EntityBuilder::new().id("").species(Species::Human).age(crate::types::Duration::years(30)).build();
 
         assert_eq!(
             result.unwrap_err(),
@@ -845,6 +869,10 @@ mod tests {
         let display = format!("{}", err);
         assert!(display.contains("Species"));
 
+        let err_age = EntityBuildError::MissingAge;
+        let display_age = format!("{}", err_age);
+        assert!(display_age.contains("Age"));
+
         let err2 = EntityBuildError::InvalidId("test reason".to_string());
         let display2 = format!("{}", err2);
         assert!(display2.contains("test reason"));
@@ -855,6 +883,10 @@ mod tests {
         let err = EntityBuildError::MissingSpecies;
         let debug = format!("{:?}", err);
         assert!(debug.contains("MissingSpecies"));
+
+        let err_age = EntityBuildError::MissingAge;
+        let debug_age = format!("{:?}", err_age);
+        assert!(debug_age.contains("MissingAge"));
     }
 
     #[test]
@@ -864,6 +896,9 @@ mod tests {
         let err: &dyn Error = &EntityBuildError::MissingSpecies;
         // Verify it's a valid std::error::Error
         assert!(err.source().is_none());
+
+        let err_age: &dyn Error = &EntityBuildError::MissingAge;
+        assert!(err_age.source().is_none());
 
         let err2: &dyn Error = &EntityBuildError::InvalidId("test".to_string());
         assert!(err2.source().is_none());
@@ -904,6 +939,7 @@ mod tests {
     fn default_personality_is_balanced() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -915,6 +951,7 @@ mod tests {
     fn default_person_characteristics_are_neutral() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -935,6 +972,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .with_context(context)
             .build()
             .unwrap();
@@ -946,6 +984,7 @@ mod tests {
     fn builder_without_context_uses_default() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -959,6 +998,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(birth)
             .build()
             .unwrap();
@@ -970,6 +1010,7 @@ mod tests {
     fn builder_without_birth_date_returns_none() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -999,6 +1040,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .mood(mood.clone())
             .build()
             .unwrap();
@@ -1014,6 +1056,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .needs(needs.clone())
             .build()
             .unwrap();
@@ -1031,6 +1074,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .mental_health(mh.clone())
             .build()
             .unwrap();
@@ -1048,6 +1092,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .social_cognition(sc.clone())
             .build()
             .unwrap();
@@ -1065,6 +1110,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .disposition(disp.clone())
             .build()
             .unwrap();
@@ -1078,6 +1124,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1103,6 +1150,7 @@ mod tests {
         // Extraverted personality should produce positive baseline valence
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .personality(PersonalityProfile::Leader) // Leaders are extraverted
             .build()
             .unwrap();
@@ -1123,6 +1171,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .personality(PersonalityProfile::Leader) // Would derive positive valence
             .mood(explicit_mood.clone()) // Override with explicit negative
             .build()
@@ -1145,6 +1194,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .mood(mood.clone())
             .needs(needs.clone())
             .mental_health(mh.clone())

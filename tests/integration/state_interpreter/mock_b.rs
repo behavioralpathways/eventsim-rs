@@ -12,6 +12,7 @@ fn mock_b_person_in_crisis() {
     let mut entity = EntityBuilder::new()
         .id("mock_b")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

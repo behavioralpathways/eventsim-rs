@@ -102,6 +102,7 @@ use eventsim_rs::enums::Species;
 let person = EntityBuilder::new()
     .id("john")
     .species(Species::Human)
+    .age(Duration::years(30))
     .build()?;
 
 let anchor_time = Timestamp::from_ymd_hms(2020, 1, 1, 0, 0, 0);
@@ -227,6 +228,7 @@ use eventsim_rs::state::{
 let john = EntityBuilder::new()
     .id("john")
     .species(Species::Human)
+    .age(Duration::years(30))
     .mental_health(MentalHealth::new().with_acquired_capability_base(0.8))
     .mood(Mood::new().with_valence_base(-0.2))
     .social_cognition(SocialCognition::new().with_loneliness_base(0.4))

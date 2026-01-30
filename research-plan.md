@@ -18,9 +18,9 @@
 [x] experience-rejection-peer
 [x] experience-rejection-romantic
 [x] experience-shaming-public
-[ ] experience-strain-financial
-[ ] experience-war-regional
-[ ] face-charges-legal
+[x] experience-strain-financial
+[x] experience-war-regional
+[x] face-charges-legal
 [ ] face-eviction-housing
 [ ] fail-goal-major
 [ ] gain-power-personal

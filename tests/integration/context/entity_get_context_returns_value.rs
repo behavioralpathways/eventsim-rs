@@ -23,6 +23,7 @@ fn entity_get_context_returns_value() {
 
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .with_context(context)
         .build()
         .unwrap();
@@ -48,6 +49,7 @@ fn entity_get_context_returns_exosystem_value() {
 
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .with_context(context)
         .build()
         .unwrap();
@@ -76,6 +78,7 @@ fn entity_get_context_returns_microsystem_value() {
 
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .with_context(context)
         .build()
         .unwrap();
@@ -96,6 +99,7 @@ fn entity_get_context_returns_microsystem_value() {
 fn entity_get_context_returns_none_for_nonexistent_microsystem() {
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

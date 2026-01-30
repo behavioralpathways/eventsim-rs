@@ -12,6 +12,7 @@ fn mock_c_neutral_baseline_person() {
     let entity = EntityBuilder::new()
         .id("mock_c")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

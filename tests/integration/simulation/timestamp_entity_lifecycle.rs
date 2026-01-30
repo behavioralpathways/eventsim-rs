@@ -40,6 +40,7 @@ fn entity_birth_date_computes_age_correctly() {
     let entity = EntityBuilder::new()
         .id("person_001")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .birth_date(birth)
         .build()
         .unwrap();
@@ -80,6 +81,7 @@ fn entity_life_stage_computed_from_age() {
     let entity = EntityBuilder::new()
         .id("person_001")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .birth_date(birth)
         .build()
         .unwrap();
@@ -154,6 +156,7 @@ fn entity_count_tracked() {
     let entity = EntityBuilder::new()
         .id("person_001")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

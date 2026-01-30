@@ -38,6 +38,7 @@ use std::collections::HashMap;
 /// let entity = EntityBuilder::new()
 ///     .id("person_001")
 ///     .species(Species::Human)
+///     .age(crate::types::Duration::years(30))
 ///     .build()
 ///     .unwrap();
 ///
@@ -103,6 +104,7 @@ impl<'a> EntityQueryHandle<'a> {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -415,6 +417,7 @@ impl<'a> EntityQueryHandle<'a> {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -493,6 +496,7 @@ fn estimate_relationship_quality(entity: &Entity) -> f64 {
 /// let entity = EntityBuilder::new()
 ///     .id("person_001")
 ///     .species(Species::Human)
+///     .age(crate::types::Duration::years(30))
 ///     .build()
 ///     .unwrap();
 ///
@@ -599,6 +603,7 @@ impl ComputedState {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -910,6 +915,7 @@ mod tests {
         EntityBuilder::new()
             .id(id)
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap()
     }
@@ -1663,6 +1669,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(birth)
             .build()
             .unwrap();
@@ -1697,6 +1704,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(birth)
             .build()
             .unwrap();
@@ -1902,6 +1910,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(birth_date)
             .build()
             .unwrap();
@@ -1942,6 +1951,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(birth_date)
             .build()
             .unwrap();
@@ -1988,6 +1998,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2032,6 +2043,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2077,6 +2089,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2128,6 +2141,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2165,6 +2179,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2198,6 +2213,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2243,6 +2259,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2323,6 +2340,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("person_001")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(reference - Duration::years(25))
             .build()
             .unwrap();
@@ -2362,6 +2380,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(1999, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2437,6 +2456,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(1999, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2465,6 +2485,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(2010, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2521,6 +2542,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(1940, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2551,6 +2573,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(1940, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2580,6 +2603,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(2000, 1, 1, 0, 0, 0))
             .build()
             .unwrap();
@@ -2607,6 +2631,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .birth_date(Timestamp::from_ymd_hms(2000, 1, 1, 0, 0, 0))
             .build()
             .unwrap();

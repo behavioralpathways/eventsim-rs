@@ -42,6 +42,7 @@ fn entity_builder_with_context() {
     // Create entity using with_context
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .with_context(context)
         .build()
         .unwrap();
@@ -92,6 +93,7 @@ fn entity_builder_with_context() {
 fn entity_builder_without_context_gets_default() {
     let entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

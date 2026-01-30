@@ -14,6 +14,8 @@ pub mod experience_conflict_family;
 pub mod experience_conflict_interpersonal;
 pub mod experience_exclusion_group;
 pub mod experience_exclusion_peer;
+pub mod face_charges_legal;
+pub mod face_eviction_housing;
 pub mod experience_humiliation_public;
 pub mod experience_inclusion_peer;
 pub mod experience_isolation_chronic;
@@ -24,6 +26,7 @@ pub mod experience_rejection_peer;
 pub mod experience_rejection_romantic;
 pub mod experience_shaming_public;
 pub mod experience_strain_financial;
+pub mod experience_war_regional;
 // pub mod lose_job_layoff;
 // pub mod lose_job_fired;
 // ... (58 total modules)

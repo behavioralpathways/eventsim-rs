@@ -11,6 +11,7 @@ fn mock_d_computed_state_includes_interpretations() {
     let mut entity = EntityBuilder::new()
         .id("mock_d")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

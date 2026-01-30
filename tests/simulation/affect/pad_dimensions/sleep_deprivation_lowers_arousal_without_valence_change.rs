@@ -23,6 +23,7 @@ fn sleep_deprivation_lowers_arousal_without_valence_change() {
     let entity = EntityBuilder::new()
         .id("sleepy_person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

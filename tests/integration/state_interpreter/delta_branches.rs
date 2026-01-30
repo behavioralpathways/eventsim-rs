@@ -10,6 +10,7 @@ fn create_baseline_entity() -> (Simulation, EntityId, Timestamp) {
     let entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     let entity_id = EntityId::new("test").unwrap();

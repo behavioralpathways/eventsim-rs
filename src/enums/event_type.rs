@@ -56,6 +56,12 @@ pub enum EventType {
     /// Exclusion by peers (social rejection)
     ExperienceExclusionPeer,
 
+    /// Being formally charged with a crime in legal proceedings
+    FaceChargesLegal,
+
+    /// Facing housing eviction (served notice, imminent loss of housing)
+    FaceEvictionHousing,
+
     /// Public humiliation or embarrassment
     ExperienceHumiliationPublic,
 
@@ -79,6 +85,9 @@ pub enum EventType {
 
     /// Financial strain or hardship (ongoing economic stress from insufficient resources)
     ExperienceStrainFinancial,
+
+    /// Regional war exposure (armed conflict affecting a geographic region)
+    ExperienceWarRegional,
 
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
@@ -109,6 +118,8 @@ impl EventType {
             }
             EventType::ExperienceExclusionGroup => types::experience_exclusion_group::SPEC,
             EventType::ExperienceExclusionPeer => types::experience_exclusion_peer::SPEC,
+            EventType::FaceChargesLegal => types::face_charges_legal::SPEC,
+            EventType::FaceEvictionHousing => types::face_eviction_housing::SPEC,
             EventType::ExperienceHumiliationPublic => types::experience_humiliation_public::SPEC,
             EventType::ExperienceInclusionPeer => types::experience_inclusion_peer::SPEC,
             EventType::ExperienceIsolationChronic => types::experience_isolation_chronic::SPEC,
@@ -117,6 +128,7 @@ impl EventType {
             EventType::ExperienceRejectionRomantic => types::experience_rejection_romantic::SPEC,
             EventType::ExperienceShamingPublic => types::experience_shaming_public::SPEC,
             EventType::ExperienceStrainFinancial => types::experience_strain_financial::SPEC,
+            EventType::ExperienceWarRegional => types::experience_war_regional::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -136,6 +148,8 @@ impl EventType {
             EventType::ExperienceConflictInterpersonal => "Experience Conflict (Interpersonal)",
             EventType::ExperienceExclusionGroup => "Experience Exclusion (Group)",
             EventType::ExperienceExclusionPeer => "Experience Exclusion (Peer)",
+            EventType::FaceChargesLegal => "Face Charges (Legal)",
+            EventType::FaceEvictionHousing => "Face Eviction (Housing)",
             EventType::ExperienceHumiliationPublic => "Experience Humiliation (Public)",
             EventType::ExperienceInclusionPeer => "Experience Inclusion (Peer)",
             EventType::ExperienceIsolationChronic => "Experience Isolation (Chronic)",
@@ -144,13 +158,14 @@ impl EventType {
             EventType::ExperienceRejectionRomantic => "Experience Rejection (Romantic)",
             EventType::ExperienceShamingPublic => "Experience Shaming (Public)",
             EventType::ExperienceStrainFinancial => "Experience Strain (Financial)",
+            EventType::ExperienceWarRegional => "Experience War (Regional)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 19] {
+    pub const fn all() -> [EventType; 22] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -163,6 +178,8 @@ impl EventType {
             EventType::ExperienceConflictInterpersonal,
             EventType::ExperienceExclusionGroup,
             EventType::ExperienceExclusionPeer,
+            EventType::FaceChargesLegal,
+            EventType::FaceEvictionHousing,
             EventType::ExperienceHumiliationPublic,
             EventType::ExperienceInclusionPeer,
             EventType::ExperienceIsolationChronic,
@@ -171,6 +188,7 @@ impl EventType {
             EventType::ExperienceRejectionRomantic,
             EventType::ExperienceShamingPublic,
             EventType::ExperienceStrainFinancial,
+            EventType::ExperienceWarRegional,
         ]
     }
 }
@@ -189,7 +207,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 19);
+        assert_eq!(all.len(), 22);
     }
 
     #[test]

@@ -12,6 +12,7 @@ fn mock_a_positive_well_adjusted_person() {
     let mut entity = EntityBuilder::new()
         .id("mock_a")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

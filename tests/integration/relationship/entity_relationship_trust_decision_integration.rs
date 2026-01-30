@@ -24,6 +24,7 @@ fn entity_relationship_trust_decision_integration() {
     let mut alice_entity = EntityBuilder::new()
         .id("alice")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     alice_entity
@@ -36,6 +37,7 @@ fn entity_relationship_trust_decision_integration() {
     let mut bob_entity = EntityBuilder::new()
         .id("bob")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     bob_entity
@@ -110,6 +112,7 @@ fn stakes_level_interacts_with_propensity() {
     let mut entity = EntityBuilder::new()
         .id("person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -158,6 +161,7 @@ fn trust_decision_provides_all_domains() {
     let entity = EntityBuilder::new()
         .id("person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

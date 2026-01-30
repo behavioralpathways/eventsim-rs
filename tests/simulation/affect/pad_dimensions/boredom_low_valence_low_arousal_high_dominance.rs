@@ -23,6 +23,7 @@ fn boredom_low_valence_low_arousal_high_dominance() {
     let entity = EntityBuilder::new()
         .id("bored_person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

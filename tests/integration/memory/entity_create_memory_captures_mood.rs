@@ -13,6 +13,7 @@ use eventsim_rs::types::EntityId;
 fn entity_create_memory_captures_mood() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

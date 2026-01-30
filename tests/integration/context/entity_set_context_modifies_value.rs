@@ -14,6 +14,7 @@ use eventsim_rs::types::MicrosystemId;
 fn entity_set_context_modifies_value() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 
@@ -48,6 +49,7 @@ fn entity_set_context_modifies_value() {
 fn entity_set_context_modifies_exosystem_value() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 
@@ -74,6 +76,7 @@ fn entity_set_context_modifies_microsystem_value() {
 
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .with_context(context)
         .build()
         .unwrap();
@@ -94,6 +97,7 @@ fn entity_set_context_modifies_microsystem_value() {
 fn entity_set_context_returns_false_for_nonexistent_microsystem() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

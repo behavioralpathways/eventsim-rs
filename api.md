@@ -66,7 +66,7 @@ Fluent builder for constructing entities with full state initialization.
 | `EntityBuilder::new()` | Create new builder |
 | `.id(string)` | Set entity ID (auto-generated if omitted) |
 | `.species(Species)` | **Required** - Human, Dog, Cat, etc. |
-| `.age(Duration)` | Set age at anchor time |
+| `.age(Duration)` | **Required** - Set age at anchor time |
 | `.birth_date(Timestamp)` | Set birth date for age computation |
 | `.life_stage(LifeStage)` | Override life stage (derived from age if omitted) |
 | `.personality(PersonalityProfile)` | Set HEXACO via preset profile |

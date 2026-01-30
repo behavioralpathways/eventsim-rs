@@ -108,6 +108,7 @@ fn generate_pending_relationship_id() -> RelationshipId {
 /// let entity = EntityBuilder::new()
 ///     .id("person_001")
 ///     .species(Species::Human)
+///     .age(crate::types::Duration::years(30))
 ///     .build()
 ///     .unwrap();
 ///
@@ -285,6 +286,7 @@ mod tests {
         EntityBuilder::new()
             .id(id)
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap()
     }

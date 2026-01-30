@@ -20,6 +20,7 @@
 //! let entity = EntityBuilder::new()
 //!     .id("person_001")
 //!     .species(Species::Human)
+//!     .age(crate::types::Duration::years(30))
 //!     .birth_date(Timestamp::from_ymd_hms(1990, 6, 15, 0, 0, 0))
 //!     .build()
 //!     .unwrap();

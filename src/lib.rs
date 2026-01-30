@@ -30,6 +30,7 @@
 //! // Create an entity with the builder
 //! let entity = EntityBuilder::new()
 //!     .species(Species::Human)
+//!     .age(crate::types::Duration::years(30))
 //!     .build()
 //!     .unwrap();
 //!

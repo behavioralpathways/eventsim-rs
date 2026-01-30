@@ -15,6 +15,7 @@ use eventsim_rs::types::Duration;
 fn memory_layers_respect_capacity() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 
@@ -61,6 +62,7 @@ fn memory_layers_respect_capacity() {
 fn short_term_layer_respects_capacity() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 
@@ -96,6 +98,7 @@ fn short_term_layer_respects_capacity() {
 fn legacy_layer_has_no_capacity_limit() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

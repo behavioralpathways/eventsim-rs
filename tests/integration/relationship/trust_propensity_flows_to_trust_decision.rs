@@ -22,6 +22,7 @@ fn trust_propensity_flows_to_trust_decision() {
     let high_trust_entity = EntityBuilder::new()
         .id("high_trust_person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 
@@ -37,6 +38,7 @@ fn trust_propensity_flows_to_trust_decision() {
     let low_trust_entity = EntityBuilder::new()
         .id("low_trust_person")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

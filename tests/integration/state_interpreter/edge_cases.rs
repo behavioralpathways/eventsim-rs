@@ -12,6 +12,7 @@ fn valence_exact_thresholds() {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -37,6 +38,7 @@ fn valence_just_below_threshold() {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -62,6 +64,7 @@ fn delta_with_small_change_reports_magnitude() {
     let entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     let entity_id = EntityId::new("test").unwrap();
@@ -90,6 +93,7 @@ fn delta_arousal_equal_comparison() {
     let entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     let entity_id = EntityId::new("test").unwrap();
@@ -109,6 +113,7 @@ fn delta_dominance_equal_comparison() {
     let entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     let entity_id = EntityId::new("test").unwrap();
@@ -128,6 +133,7 @@ fn delta_stress_equal_comparison() {
     let entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     let entity_id = EntityId::new("test").unwrap();

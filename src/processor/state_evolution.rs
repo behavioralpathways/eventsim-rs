@@ -616,6 +616,7 @@ mod tests {
     fn apply_interpreted_event_to_state_breakup() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         let event = EventBuilder::new(EventType::EndRelationshipRomantic)
@@ -637,6 +638,7 @@ mod tests {
     fn apply_interpreted_event_to_state_combat_increases_ac_base() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
@@ -656,6 +658,7 @@ mod tests {
     fn apply_interpreted_event_to_state_achievement_positive() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         let event = EventBuilder::new(EventType::AchieveGoalMajor)
@@ -677,6 +680,7 @@ mod tests {
     fn reverse_interpreted_event_reverses_acute_deltas() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         let event = EventBuilder::new(EventType::EndRelationshipRomantic)
@@ -702,6 +706,7 @@ mod tests {
     fn reverse_interpreted_event_does_not_reverse_ac() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
@@ -750,6 +755,7 @@ mod tests {
     fn apply_chronic_deltas_routes_to_chronic_bucket() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
         // Chronic illness should have chronic flags set

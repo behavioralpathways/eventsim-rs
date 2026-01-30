@@ -39,6 +39,7 @@ pub const MAX_RELATIONSHIP_SLOTS: usize = 8;
 ///
 /// let entity = EntityBuilder::new()
 ///     .species(Species::Human)
+///     .age(crate::types::Duration::years(30))
 ///     .build()
 ///     .unwrap();
 /// ```
@@ -53,6 +54,7 @@ pub const MAX_RELATIONSHIP_SLOTS: usize = 8;
 ///
 /// let entity = EntityBuilder::new()
 ///     .species(Species::Human)
+///     .age(crate::types::Duration::years(30))
 ///     .build()
 ///     .unwrap();
 ///
@@ -183,6 +185,7 @@ impl Entity {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -220,6 +223,7 @@ impl Entity {
     /// let entity = EntityBuilder::new()
     ///     .id("person_001")
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .birth_date(Timestamp::from_ymd_hms(1990, 6, 15, 0, 0, 0))
     ///     .build()
     ///     .unwrap();
@@ -271,6 +275,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -307,6 +312,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -350,6 +356,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -626,6 +633,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -652,6 +660,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -679,6 +688,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -702,6 +712,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -734,6 +745,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -768,6 +780,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -799,6 +812,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -831,6 +845,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -878,6 +893,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -941,6 +957,7 @@ impl Entity {
     ///
     /// let mut entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -1023,6 +1040,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -1052,6 +1070,7 @@ impl Entity {
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
+    ///     .age(crate::types::Duration::years(30))
     ///     .build()
     ///     .unwrap();
     ///
@@ -1371,6 +1390,7 @@ mod tests {
     fn human_entity_creation() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1381,6 +1401,7 @@ mod tests {
     fn entity_has_individual_state() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1393,7 +1414,7 @@ mod tests {
 
     #[test]
     fn entity_has_species() {
-        let entity = EntityBuilder::new().species(Species::Dog).build().unwrap();
+        let entity = EntityBuilder::new().species(Species::Dog).age(crate::types::Duration::years(30)).build().unwrap();
 
         assert_eq!(entity.species(), &Species::Dog);
     }
@@ -1402,6 +1423,7 @@ mod tests {
     fn entity_has_life_stage() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .life_stage(LifeStage::Adult)
             .build()
             .unwrap();
@@ -1413,6 +1435,7 @@ mod tests {
     fn entity_has_person_characteristics() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1439,6 +1462,7 @@ mod tests {
     fn entity_get_effective_mood_valence() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1452,6 +1476,7 @@ mod tests {
     fn entity_get_effective_mood_arousal() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1465,6 +1490,7 @@ mod tests {
     fn entity_get_effective_mood_dominance() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1478,6 +1504,7 @@ mod tests {
     fn entity_get_effective_needs_stress() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1491,6 +1518,7 @@ mod tests {
     fn entity_get_effective_needs_fatigue() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1504,6 +1532,7 @@ mod tests {
     fn entity_get_effective_mental_health_path() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1517,6 +1546,7 @@ mod tests {
     fn entity_get_effective_hexaco_path() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1530,6 +1560,7 @@ mod tests {
     fn entity_get_effective_disposition_path() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1543,6 +1574,7 @@ mod tests {
     fn entity_get_effective_person_characteristics_path() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1558,6 +1590,7 @@ mod tests {
     fn entity_get_base_returns_base_only() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1581,6 +1614,7 @@ mod tests {
     fn entity_get_delta_returns_delta_only() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1600,6 +1634,7 @@ mod tests {
     fn entity_get_computed_path_calls_compute() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1616,6 +1651,7 @@ mod tests {
     fn entity_get_base_on_computed_returns_none() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1631,6 +1667,7 @@ mod tests {
     fn entity_has_relationship_slots() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1642,6 +1679,7 @@ mod tests {
     fn entity_relationship_slot_empty_initially() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1654,6 +1692,7 @@ mod tests {
     fn entity_relationship_slot_get_attached_none() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1668,6 +1707,7 @@ mod tests {
     fn entity_advance_calls_processor() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1684,6 +1724,7 @@ mod tests {
     fn entity_advance_with_stub_returns_unchanged() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1729,6 +1770,7 @@ mod tests {
     fn entity_debug() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1741,6 +1783,7 @@ mod tests {
         let entity = EntityBuilder::new()
             .id("test_id")
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1751,6 +1794,7 @@ mod tests {
     fn entity_individual_state_mutable() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1766,6 +1810,7 @@ mod tests {
     fn hexaco_has_no_delta() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1777,6 +1822,7 @@ mod tests {
     fn all_needs_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1796,6 +1842,7 @@ mod tests {
     fn all_disposition_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1815,6 +1862,7 @@ mod tests {
     fn all_mental_health_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1836,6 +1884,7 @@ mod tests {
     fn all_person_characteristics_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1865,14 +1914,14 @@ mod tests {
 
     #[test]
     fn dog_entity_creation() {
-        let entity = EntityBuilder::new().species(Species::Dog).build().unwrap();
+        let entity = EntityBuilder::new().species(Species::Dog).age(crate::types::Duration::years(30)).build().unwrap();
 
         assert_eq!(entity.species(), &Species::Dog);
     }
 
     #[test]
     fn cat_entity_creation() {
-        let entity = EntityBuilder::new().species(Species::Cat).build().unwrap();
+        let entity = EntityBuilder::new().species(Species::Cat).age(crate::types::Duration::years(30)).build().unwrap();
 
         assert_eq!(entity.species(), &Species::Cat);
     }
@@ -1881,6 +1930,7 @@ mod tests {
     fn all_hexaco_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1901,6 +1951,7 @@ mod tests {
     fn all_mood_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1920,6 +1971,7 @@ mod tests {
     fn hexaco_paths_base_and_effective() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -1968,6 +2020,7 @@ mod tests {
     fn mood_paths_base_delta_effective() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2020,6 +2073,7 @@ mod tests {
     fn needs_paths_base_delta_effective() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2043,6 +2097,7 @@ mod tests {
     fn social_cognition_paths_base_delta_effective() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2072,6 +2127,7 @@ mod tests {
     fn query_affective_state_returns_pure_pad_dimensions() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2087,6 +2143,7 @@ mod tests {
     fn query_physiological_state_returns_fatigue_and_stress() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2101,6 +2158,7 @@ mod tests {
     fn get_baseline_affect_returns_base_values_only() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2125,6 +2183,7 @@ mod tests {
     fn get_baseline_physiological_returns_base_values_only() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2147,6 +2206,7 @@ mod tests {
     fn baseline_vs_effective_differ_when_deltas_present() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2175,6 +2235,7 @@ mod tests {
     fn affective_state_is_pure_pad() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2199,6 +2260,7 @@ mod tests {
     fn physiological_state_separate_from_pad() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2221,6 +2283,7 @@ mod tests {
     fn mental_health_all_stored_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2249,6 +2312,7 @@ mod tests {
     fn mental_health_all_computed_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2276,6 +2340,7 @@ mod tests {
     fn disposition_paths_base_delta_effective() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2306,6 +2371,7 @@ mod tests {
     fn person_characteristics_all_stored_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2339,6 +2405,7 @@ mod tests {
     fn person_characteristics_all_composite_paths() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2366,6 +2433,7 @@ mod tests {
     fn relationship_slots_mut_internal() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2383,6 +2451,7 @@ mod tests {
     fn entity_memories_empty_initially() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2396,6 +2465,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2412,6 +2482,7 @@ mod tests {
     fn entity_mood_snapshot_captures_current_mood() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2442,6 +2513,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2465,6 +2537,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2489,6 +2562,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2522,6 +2596,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2589,6 +2664,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2623,6 +2699,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2657,6 +2734,7 @@ mod tests {
     fn entity_starts_with_no_alerts() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2669,6 +2747,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2699,6 +2778,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2720,6 +2800,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2741,6 +2822,7 @@ mod tests {
     fn entity_context_accessor() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2755,6 +2837,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2772,6 +2855,7 @@ mod tests {
 
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2786,6 +2870,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2810,6 +2895,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2842,6 +2928,7 @@ mod tests {
         let hexaco = Hexaco::new().with_extraversion(0.8);
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .hexaco(hexaco)
             .build()
             .unwrap();
@@ -2887,6 +2974,7 @@ mod tests {
         let hexaco = Hexaco::new().with_extraversion(0.8);
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .hexaco(hexaco)
             .build()
             .unwrap();
@@ -2928,6 +3016,7 @@ mod tests {
     fn advance_invalidates_mesosystem_cache() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2944,6 +3033,7 @@ mod tests {
     fn entity_has_config() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2955,10 +3045,11 @@ mod tests {
     fn entity_config_derived_from_species() {
         let human = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
-        let dog = EntityBuilder::new().species(Species::Dog).build().unwrap();
+        let dog = EntityBuilder::new().species(Species::Dog).age(crate::types::Duration::years(30)).build().unwrap();
 
         // Human has mental health tracking
         assert!(human.config().mental_health_enabled());
@@ -2971,6 +3062,7 @@ mod tests {
     fn entity_config_mut_modifies_config() {
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -2991,6 +3083,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3027,6 +3120,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3059,6 +3153,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3109,11 +3204,13 @@ mod tests {
         // Create two entities with different institutional support levels
         let mut entity_low_support = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
         let mut entity_high_support = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3169,11 +3266,13 @@ mod tests {
         // Create two entities with different cultural orientations
         let mut entity_individualist = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
         let mut entity_collectivist = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3227,11 +3326,13 @@ mod tests {
 
         let mut entity_low_stress = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
         let mut entity_high_stress = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3282,11 +3383,13 @@ mod tests {
 
         let mut entity_ontime = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
         let mut entity_offtime = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3336,11 +3439,13 @@ mod tests {
 
         let mut entity_stable = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
         let mut entity_unstable = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3385,6 +3490,7 @@ mod tests {
     fn compute_aggregate_metrics_empty_context() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3400,6 +3506,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 
@@ -3423,6 +3530,7 @@ mod tests {
 
         let mut entity = EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap();
 

@@ -23,6 +23,7 @@ fn state_at_childhood_regresses_from_adult() {
     let entity = EntityBuilder::new()
         .id("person_001")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .birth_date(birth)
         .build()
         .unwrap();

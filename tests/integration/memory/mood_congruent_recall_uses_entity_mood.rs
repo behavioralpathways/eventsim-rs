@@ -13,6 +13,7 @@ use eventsim_rs::types::Duration;
 fn mood_congruent_recall_uses_entity_mood() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

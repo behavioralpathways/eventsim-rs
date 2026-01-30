@@ -12,6 +12,7 @@ use eventsim_rs::enums::Species;
 fn entity_mood_snapshot_freezes_current_state() {
     let mut entity = EntityBuilder::new()
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
 

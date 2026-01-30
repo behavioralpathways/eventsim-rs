@@ -595,6 +595,7 @@ mod tests {
     fn create_human() -> Entity {
         EntityBuilder::new()
             .species(Species::Human)
+            .age(crate::types::Duration::years(30))
             .build()
             .unwrap()
     }

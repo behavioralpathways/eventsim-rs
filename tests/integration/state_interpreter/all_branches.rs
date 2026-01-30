@@ -10,6 +10,7 @@ fn create_entity_with_valence(valence_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -28,6 +29,7 @@ fn create_entity_with_arousal(arousal_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -46,6 +48,7 @@ fn create_entity_with_dominance(dominance_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -64,6 +67,7 @@ fn create_entity_with_stress(stress_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -82,6 +86,7 @@ fn create_entity_with_fatigue(fatigue_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -100,6 +105,7 @@ fn create_entity_with_purpose(purpose_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -118,6 +124,7 @@ fn create_entity_with_loneliness(loneliness_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -136,6 +143,7 @@ fn create_entity_with_prc(prc_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity
@@ -154,6 +162,7 @@ fn create_entity_with_depression(depression_delta: f32) -> StateInterpreter {
     let mut entity = EntityBuilder::new()
         .id("test")
         .species(Species::Human)
+        .age(eventsim_rs::types::Duration::years(30))
         .build()
         .unwrap();
     entity

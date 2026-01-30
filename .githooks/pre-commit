@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-commit hook: format Rust code before commit
+
+# Run cargo fmt and check if there are changes
+cargo fmt -- --check
+if [ $? -ne 0 ]; then
+    echo "Running cargo fmt..."
+    cargo fmt
+    echo ""
+    echo "Code was reformatted. Please review and re-stage the changes."
+    exit 1
+fi

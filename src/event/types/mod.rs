@@ -22,6 +22,8 @@ pub mod experience_recession_economic;
 pub mod experience_rejection_family;
 pub mod experience_rejection_peer;
 pub mod experience_rejection_romantic;
+pub mod experience_shaming_public;
+pub mod experience_strain_financial;
 // pub mod lose_job_layoff;
 // pub mod lose_job_fired;
 // ... (58 total modules)

@@ -67,15 +67,15 @@ pub use entity::{AffectiveState, Entity, EntityBuildError, EntityBuilder, Physio
 
 // Re-export commonly used enums at crate root
 pub use enums::{
-    AlertSeverity, AlertTrigger, Attribution, AttributionStability, BirthEra, BondType,
-    ChronosystemPath, ContextPath, Direction, DirectionalPath, DispositionPath, EducationPath,
-    Emotion, EventPayload, EventScope, EventType, ExosystemPath, FamilyPath, HealthcarePath,
-    HexacoPath, HistoricalEventType, HistoricalScope, InteractionTopic, LifeDomain, LifeStage,
-    LossType, MacrosystemPath, MentalHealthPath, MicrosystemPath, MoodPath, NeedsPath,
-    NeighborhoodPath, PersonCharacteristicsPath, PersonalityProfile, PolicyArea, RealizationType,
-    RelPath, RelationshipSchema, ReligiousPath, ReversibilityError, ReversibilityResult,
-    SharedPath, SocialCognitionPath, SocialPath, Species, SpiralType, StatePath, SubsystemId,
-    SupportType, TraumaType, TrustPath, WeaponType, WorkPath,
+    AlertSeverity, AlertTrigger, Attribution, AttributionStability, BirthEra, ChronosystemPath,
+    ContextPath, Direction, DirectionalPath, DispositionPath, EducationPath, Emotion, EventPayload,
+    EventScope, EventType, ExosystemPath, FamilyPath, HealthcarePath, HexacoPath,
+    HistoricalEventType, HistoricalScope, InteractionTopic, LifeDomain, LifeStage, LossType,
+    MacrosystemPath, MentalHealthPath, MicrosystemPath, MoodPath, NeedsPath, NeighborhoodPath,
+    PersonCharacteristicsPath, PersonalityProfile, PolicyArea, RealizationType, RelPath,
+    RelationshipSchema, ReligiousPath, ReversibilityError, ReversibilityResult, SharedPath,
+    SocialCognitionPath, SocialPath, Species, SpiralType, StatePath, SupportType, TraumaType,
+    TrustPath, WeaponType, WorkPath,
 };
 
 // Re-export context types at crate root
@@ -104,11 +104,11 @@ pub use simulation::{
 pub use state::{
     age_plasticity, apply_formative_modifiers, combined_plasticity, cumulative_in_direction,
     effective_base_at, saturation_factor, sensitive_period_modifier, species_plasticity_modifier,
-    stability_coefficient, trait_modifier, BaseShiftRecord, DemandCharacteristics, Demographical,
-    Disposition, EntityModelConfig, Hexaco, IndividualState, MentalHealth, Mood, Needs,
-    PersonCharacteristics, SocialCognition, StateValue, CUMULATIVE_CAP, HOPELESSNESS_THRESHOLD,
-    MAX_SINGLE_EVENT_SHIFT, PB_PRESENT_THRESHOLD, SATURATION_CONSTANT, SETTLING_DAYS,
-    SEVERE_SHIFT_RETENTION, SEVERE_SHIFT_THRESHOLD, TB_PRESENT_THRESHOLD,
+    stability_coefficient, trait_modifier, BaseShiftRecord, Disposition, EntityModelConfig, Hexaco,
+    IndividualState, MentalHealth, Mood, Needs, PersonCharacteristics, SocialCognition, StateValue,
+    CUMULATIVE_CAP, HOPELESSNESS_THRESHOLD, MAX_SINGLE_EVENT_SHIFT, PB_PRESENT_THRESHOLD,
+    SATURATION_CONSTANT, SETTLING_DAYS, SEVERE_SHIFT_RETENTION, SEVERE_SHIFT_THRESHOLD,
+    TB_PRESENT_THRESHOLD,
 };
 
 // Re-export relationship types at crate root

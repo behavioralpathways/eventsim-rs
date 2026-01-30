@@ -74,6 +74,12 @@ pub enum EventType {
     /// Romantic rejection (being rejected by a desired romantic interest)
     ExperienceRejectionRomantic,
 
+    /// Public shaming (being publicly called out, criticized, or shamed)
+    ExperienceShamingPublic,
+
+    /// Financial strain or hardship (ongoing economic stress from insufficient resources)
+    ExperienceStrainFinancial,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -109,6 +115,8 @@ impl EventType {
             EventType::ExperienceRejectionFamily => types::experience_rejection_family::SPEC,
             EventType::ExperienceRejectionPeer => types::experience_rejection_peer::SPEC,
             EventType::ExperienceRejectionRomantic => types::experience_rejection_romantic::SPEC,
+            EventType::ExperienceShamingPublic => types::experience_shaming_public::SPEC,
+            EventType::ExperienceStrainFinancial => types::experience_strain_financial::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -134,13 +142,15 @@ impl EventType {
             EventType::ExperienceRejectionFamily => "Experience Rejection (Family)",
             EventType::ExperienceRejectionPeer => "Experience Rejection (Peer)",
             EventType::ExperienceRejectionRomantic => "Experience Rejection (Romantic)",
+            EventType::ExperienceShamingPublic => "Experience Shaming (Public)",
+            EventType::ExperienceStrainFinancial => "Experience Strain (Financial)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 17] {
+    pub const fn all() -> [EventType; 19] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -159,6 +169,8 @@ impl EventType {
             EventType::ExperienceRejectionFamily,
             EventType::ExperienceRejectionPeer,
             EventType::ExperienceRejectionRomantic,
+            EventType::ExperienceShamingPublic,
+            EventType::ExperienceStrainFinancial,
         ]
     }
 }
@@ -177,7 +189,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 17);
+        assert_eq!(all.len(), 19);
     }
 
     #[test]

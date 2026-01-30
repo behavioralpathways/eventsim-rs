@@ -8,7 +8,6 @@ mod alert_severity;
 mod alert_trigger;
 mod attribution;
 mod birth_era;
-mod bond_type;
 mod context_path;
 mod developmental_category;
 mod emotion;
@@ -22,14 +21,12 @@ mod relationship_schema;
 mod reversibility;
 mod species;
 mod state_path;
-mod subsystem_id;
 mod trust_domain;
 
 pub use alert_severity::AlertSeverity;
 pub use alert_trigger::{AlertTrigger, ItsAlert, SpiralType};
 pub use attribution::{Attribution, AttributionStability};
 pub use birth_era::BirthEra;
-pub use bond_type::BondType;
 pub use context_path::{
     ChronosystemPath, ContextPath, EducationPath, ExosystemPath, FamilyPath, HealthcarePath,
     MacrosystemPath, MicrosystemPath, NeighborhoodPath, ReligiousPath, SocialPath, WorkPath,
@@ -52,5 +49,4 @@ pub use state_path::{
     DispositionPath, HexacoPath, MentalHealthPath, MoodPath, NeedsPath, PersonCharacteristicsPath,
     SocialCognitionPath, StatePath,
 };
-pub use subsystem_id::SubsystemId;
 pub use trust_domain::TrustDomain;

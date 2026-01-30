@@ -123,11 +123,17 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::ExperienceInclusionPeer => DevelopmentalCategory::Attachment,
             EventType::ExperienceIsolationChronic => DevelopmentalCategory::Attachment,
             EventType::ExperienceRejectionFamily => DevelopmentalCategory::Attachment,
+            EventType::ExperienceRejectionPeer => DevelopmentalCategory::Attachment,
+
+            // Intimacy category - romantic relationships
+            EventType::ExperienceRejectionRomantic => DevelopmentalCategory::Intimacy,
 
             // Neutral category - cross-stage events (trauma/violence)
             EventType::EngageSelfharmNonsuicidal => DevelopmentalCategory::Neutral,
             EventType::ExperienceCombatMilitary => DevelopmentalCategory::Neutral,
             EventType::ExperienceHumiliationPublic => DevelopmentalCategory::Neutral,
+            EventType::ExperienceShamingPublic => DevelopmentalCategory::Neutral,
+            EventType::ExperienceStrainFinancial => DevelopmentalCategory::Neutral,
 
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,

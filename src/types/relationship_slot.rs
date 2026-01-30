@@ -1,26 +1,20 @@
 //! Relationship slot for entity relationship hooks.
 //!
 //! This type represents a slot where a relationship can be attached
-//! to an entity. Phase 3 provides the basic slot API, and Phase 5
-//! expands with full relationship functionality.
+//! to an entity.
 
 use crate::types::RelationshipId;
 
 /// Slot for attaching relationships to an entity.
 ///
 /// Each slot can hold a reference to a single relationship. Slots are
-/// initially unattached and can be attached to a relationship ID.
+/// initially unattached.
 ///
-/// # Phase 3 API
+/// # API
 ///
 /// - `is_empty()` - Returns true if no relationship attached
 /// - `is_attached()` - Returns true if a relationship is attached
 /// - `get_attached()` - Returns the attached relationship ID, if any
-///
-/// # Phase 5 Extensions
-///
-/// Phase 5 adds internal mutation methods (`attach`, `detach`) for
-/// relationship management.
 ///
 /// # Examples
 ///
@@ -106,27 +100,6 @@ impl RelationshipSlot {
         self.attached.clone()
     }
 
-    /// Attaches a relationship to this slot.
-    ///
-    /// This is a crate-internal method used by the relationship system
-    /// in Phase 5. External code should not call this directly.
-    ///
-    /// If a relationship is already attached, it is replaced.
-    #[allow(dead_code)]
-    pub(crate) fn attach(&mut self, id: RelationshipId) {
-        self.attached = Some(id);
-    }
-
-    /// Detaches the relationship from this slot.
-    ///
-    /// This is a crate-internal method used by the relationship system
-    /// in Phase 5. External code should not call this directly.
-    ///
-    /// Returns the previously attached ID, if any.
-    #[allow(dead_code)]
-    pub(crate) fn detach(&mut self) -> Option<RelationshipId> {
-        self.attached.take()
-    }
 }
 
 #[cfg(test)]
@@ -152,71 +125,15 @@ mod tests {
     }
 
     #[test]
-    fn attach_makes_slot_attached() {
-        let mut slot = RelationshipSlot::new();
-        let id = RelationshipId::new("rel_001").unwrap();
-
-        slot.attach(id.clone());
-
-        assert!(slot.is_attached());
-        assert!(!slot.is_empty());
-        assert_eq!(slot.get_attached(), Some(id));
-    }
-
-    #[test]
-    fn detach_makes_slot_empty() {
-        let mut slot = RelationshipSlot::new();
-        let id = RelationshipId::new("rel_002").unwrap();
-
-        slot.attach(id.clone());
-        assert!(slot.is_attached());
-
-        let detached = slot.detach();
-
-        assert!(slot.is_empty());
-        assert!(!slot.is_attached());
-        assert!(slot.get_attached().is_none());
-        assert_eq!(detached, Some(id));
-    }
-
-    #[test]
-    fn detach_empty_slot_returns_none() {
-        let mut slot = RelationshipSlot::new();
-        let detached = slot.detach();
-
-        assert!(detached.is_none());
-        assert!(slot.is_empty());
-    }
-
-    #[test]
-    fn attach_replaces_existing() {
-        let mut slot = RelationshipSlot::new();
-        let id1 = RelationshipId::new("rel_001").unwrap();
-        let id2 = RelationshipId::new("rel_002").unwrap();
-
-        slot.attach(id1);
-        slot.attach(id2.clone());
-
-        assert_eq!(slot.get_attached(), Some(id2));
-    }
-
-    #[test]
     fn relationship_slot_equality() {
         let slot1 = RelationshipSlot::new();
         let slot2 = RelationshipSlot::new();
         assert_eq!(slot1, slot2);
-
-        let mut slot3 = RelationshipSlot::new();
-        slot3.attach(RelationshipId::new("rel_001").unwrap());
-
-        assert_ne!(slot1, slot3);
     }
 
     #[test]
     fn relationship_slot_clone() {
-        let mut original = RelationshipSlot::new();
-        original.attach(RelationshipId::new("rel_abc").unwrap());
-
+        let original = RelationshipSlot::new();
         let cloned = original.clone();
 
         assert_eq!(original, cloned);
@@ -234,9 +151,5 @@ mod tests {
     fn is_attached_and_is_empty_are_inverses() {
         let slot = RelationshipSlot::new();
         assert_eq!(slot.is_attached(), !slot.is_empty());
-
-        let mut attached_slot = RelationshipSlot::new();
-        attached_slot.attach(RelationshipId::new("rel_xyz").unwrap());
-        assert_eq!(attached_slot.is_attached(), !attached_slot.is_empty());
     }
 }

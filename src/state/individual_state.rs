@@ -9,14 +9,12 @@
 //! - MentalHealth (ITS factors)
 //! - Disposition (behavioral tendencies)
 //! - PersonCharacteristics (PPCT factors)
-//! - Demographical (name, DOB, age, gender, ethnicity)
-//! - DemandCharacteristics (observable social signals)
 //!
 //! This is the primary container for an entity's internal state.
 
 use crate::state::{
-    DemandCharacteristics, Demographical, Disposition, EntityModelConfig, Hexaco, MentalHealth,
-    Mood, Needs, PersonCharacteristics, SocialCognition, StateValue,
+    Disposition, EntityModelConfig, Hexaco, MentalHealth, Mood, Needs, PersonCharacteristics,
+    SocialCognition, StateValue,
 };
 use crate::types::Duration;
 use serde::{Deserialize, Serialize};
@@ -68,12 +66,6 @@ pub struct IndividualState {
     /// PPCT person characteristics.
     person_characteristics: PersonCharacteristics,
 
-    /// Demographical metadata.
-    demographical: Demographical,
-
-    /// Demand characteristics (observable signals).
-    demand_characteristics: DemandCharacteristics,
-
     /// Entity model configuration.
     config: EntityModelConfig,
 }
@@ -101,8 +93,6 @@ impl IndividualState {
             mental_health: MentalHealth::default(),
             disposition: Disposition::default(),
             person_characteristics: PersonCharacteristics::default(),
-            demographical: Demographical::default(),
-            demand_characteristics: DemandCharacteristics::default(),
             config: EntityModelConfig::default(),
         }
     }
@@ -155,23 +145,6 @@ impl IndividualState {
     #[must_use]
     pub fn with_person_characteristics(mut self, pc: PersonCharacteristics) -> Self {
         self.person_characteristics = pc;
-        self
-    }
-
-    /// Sets the Demographical component.
-    #[must_use]
-    pub fn with_demographical(mut self, demographical: Demographical) -> Self {
-        self.demographical = demographical;
-        self
-    }
-
-    /// Sets the DemandCharacteristics component.
-    #[must_use]
-    pub fn with_demand_characteristics(
-        mut self,
-        demand_characteristics: DemandCharacteristics,
-    ) -> Self {
-        self.demand_characteristics = demand_characteristics;
         self
     }
 
@@ -232,18 +205,6 @@ impl IndividualState {
         &self.person_characteristics
     }
 
-    /// Returns a reference to the Demographical component.
-    #[must_use]
-    pub fn demographical(&self) -> &Demographical {
-        &self.demographical
-    }
-
-    /// Returns a reference to the DemandCharacteristics component.
-    #[must_use]
-    pub fn demand_characteristics(&self) -> &DemandCharacteristics {
-        &self.demand_characteristics
-    }
-
     /// Returns a reference to the EntityModelConfig.
     #[must_use]
     pub fn config(&self) -> &EntityModelConfig {
@@ -291,16 +252,6 @@ impl IndividualState {
     /// Returns a mutable reference to the PersonCharacteristics.
     pub fn person_characteristics_mut(&mut self) -> &mut PersonCharacteristics {
         &mut self.person_characteristics
-    }
-
-    /// Returns a mutable reference to the Demographical component.
-    pub fn demographical_mut(&mut self) -> &mut Demographical {
-        &mut self.demographical
-    }
-
-    /// Returns a mutable reference to the DemandCharacteristics component.
-    pub fn demand_characteristics_mut(&mut self) -> &mut DemandCharacteristics {
-        &mut self.demand_characteristics
     }
 
     /// Returns a mutable reference to the EntityModelConfig.
@@ -392,8 +343,6 @@ mod tests {
         let _ = state.mental_health();
         let _ = state.disposition();
         let _ = state.person_characteristics();
-        let _ = state.demographical();
-        let _ = state.demand_characteristics();
         let _ = state.config();
     }
 
@@ -428,19 +377,6 @@ mod tests {
 
         assert_eq!(state.hexaco(), &hexaco);
         assert_eq!(state.mood(), &mood);
-    }
-
-    #[test]
-    fn builder_sets_demographical_and_demand_characteristics() {
-        let demographical = Demographical::new().with_name("Alyx");
-        let demand = DemandCharacteristics::new().with_appearance("casual");
-
-        let state = IndividualState::new()
-            .with_demographical(demographical.clone())
-            .with_demand_characteristics(demand.clone());
-
-        assert_eq!(state.demographical(), &demographical);
-        assert_eq!(state.demand_characteristics(), &demand);
     }
 
     #[test]
@@ -633,8 +569,6 @@ mod tests {
             .person_characteristics_mut()
             .social_capital_mut()
             .add_delta(0.2);
-        state.demographical_mut();
-        state.demand_characteristics_mut();
 
         assert!((state.hexaco().openness() - 0.5).abs() < f32::EPSILON);
         assert!((state.disposition().empathy().delta() - 0.1).abs() < f32::EPSILON);

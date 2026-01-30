@@ -4,7 +4,7 @@
 //! shared dimensions, directional feelings, trustworthiness perceptions,
 //! and perceived risk.
 
-use crate::enums::{BondType, Direction, DirectionalPath, RelPath, RelationshipSchema};
+use crate::enums::{Direction, DirectionalPath, RelPath, RelationshipSchema};
 use crate::relationship::{
     AntecedentDirection, DirectionalDimensions, InteractionPattern, PerceivedRisk,
     RelationshipStage, SharedDimensions, StakesLevel, TrustAntecedent, TrustDecision,
@@ -83,7 +83,7 @@ const MAX_ANTECEDENT_HISTORY: usize = 100;
 ///
 /// Relationships contain:
 /// - Identification (pair of entities, relationship ID)
-/// - Bond types (Friend, Colleague, Family, etc.)
+/// - Relationship schema (structural type)
 /// - Relationship stage (Stranger -> Acquaintance -> Established -> Intimate)
 /// - Shared dimensions (symmetric - same from both perspectives)
 /// - Directional data (asymmetric - A's view of B may differ from B's view of A)
@@ -101,15 +101,12 @@ const MAX_ANTECEDENT_HISTORY: usize = 100;
 /// ```
 /// use eventsim_rs::relationship::Relationship;
 /// use eventsim_rs::types::EntityId;
-/// use eventsim_rs::enums::{BondType, RelPath, SharedPath, Direction, DirectionalPath, TrustPath};
+/// use eventsim_rs::enums::{RelPath, SharedPath, Direction, DirectionalPath, TrustPath};
 ///
 /// let alice = EntityId::new("alice").unwrap();
 /// let bob = EntityId::new("bob").unwrap();
 ///
-/// let mut rel = Relationship::try_between(alice.clone(), bob.clone()).unwrap();
-///
-/// // Add bond type
-/// rel.add_bond(BondType::Colleague);
+/// let rel = Relationship::try_between(alice.clone(), bob.clone()).unwrap();
 ///
 /// // Access shared dimensions
 /// let affinity = rel.get(RelPath::Shared(SharedPath::Affinity));
@@ -130,9 +127,6 @@ pub struct Relationship {
 
     /// The second entity (defines "B" in AToB).
     entity_b: EntityId,
-
-    /// Bond types (can have multiple).
-    bonds: Vec<BondType>,
 
     /// Relationship schema (structural type).
     schema: RelationshipSchema,
@@ -217,7 +211,6 @@ impl Relationship {
             id,
             entity_a,
             entity_b,
-            bonds: Vec::new(),
             schema: RelationshipSchema::default(),
             stage: RelationshipStage::default(),
             shared: SharedDimensions::new(),
@@ -233,22 +226,6 @@ impl Relationship {
             last_negative_antecedent_a_to_b: None,
             last_negative_antecedent_b_to_a: None,
         })
-    }
-
-    /// Sets the bond type, replacing any existing bonds.
-    ///
-    /// Use `add_bond` to add multiple bond types.
-    #[must_use]
-    pub fn with_bond(mut self, bond: BondType) -> Self {
-        self.bonds = vec![bond];
-        self
-    }
-
-    /// Sets multiple bond types.
-    #[must_use]
-    pub fn with_bonds(mut self, bonds: Vec<BondType>) -> Self {
-        self.bonds = bonds;
-        self
     }
 
     /// Sets the relationship schema.
@@ -291,12 +268,6 @@ impl Relationship {
         (&self.entity_a, &self.entity_b)
     }
 
-    /// Returns the bond types.
-    #[must_use]
-    pub fn bonds(&self) -> &[BondType] {
-        &self.bonds
-    }
-
     /// Returns the relationship schema.
     #[must_use]
     pub fn schema(&self) -> RelationshipSchema {
@@ -329,36 +300,6 @@ impl Relationship {
     /// Returns a mutable reference to the interaction pattern.
     pub fn pattern_mut(&mut self) -> &mut InteractionPattern {
         &mut self.pattern
-    }
-
-    // Bond management
-
-    /// Adds a bond type to this relationship.
-    pub fn add_bond(&mut self, bond: BondType) {
-        if self.bonds.contains(&bond) {
-            return;
-        }
-        self.bonds.push(bond);
-    }
-
-    /// Removes a bond type from this relationship.
-    pub fn remove_bond(&mut self, bond: BondType) {
-        // Remove all instances by iterating backwards
-        let mut index = self.bonds.len();
-        while index > 0 {
-            index -= 1;
-            // Skip if not matching
-            if self.bonds[index] != bond {
-                continue;
-            }
-            self.bonds.swap_remove(index);
-        }
-    }
-
-    /// Returns true if this relationship has the specified bond.
-    #[must_use]
-    pub fn has_bond(&self, bond: BondType) -> bool {
-        self.bonds.contains(&bond)
     }
 
     /// Sets the relationship schema.
@@ -734,7 +675,6 @@ impl PartialEq for Relationship {
         // the id is derived from them (format!("rel_{}_{}", entity_a, entity_b)).
         // If id matches, entity_a and entity_b are guaranteed to match.
         self.id == other.id
-            && self.bonds == other.bonds
             && self.schema == other.schema
             && self.stage == other.stage
             && self.shared == other.shared
@@ -871,23 +811,6 @@ mod tests {
     }
 
     #[test]
-    fn relationship_with_bond_type() {
-        let rel = Relationship::try_between(alice(), bob())
-            .unwrap()
-            .with_bond(BondType::Friend);
-        assert!(rel.has_bond(BondType::Friend));
-    }
-
-    #[test]
-    fn with_bonds() {
-        let rel = Relationship::try_between(alice(), bob())
-            .unwrap()
-            .with_bonds(vec![BondType::Friend, BondType::Colleague]);
-        assert!(rel.has_bond(BondType::Friend));
-        assert!(rel.has_bond(BondType::Colleague));
-    }
-
-    #[test]
     fn with_schema() {
         let rel = Relationship::try_between(alice(), bob())
             .unwrap()
@@ -909,31 +832,6 @@ mod tests {
         let (a, b) = rel.entities();
         assert_eq!(a, &alice());
         assert_eq!(b, &bob());
-    }
-
-    #[test]
-    fn add_and_remove_bond() {
-        let mut rel = Relationship::try_between(alice(), bob()).unwrap();
-        rel.add_bond(BondType::Friend);
-        assert!(rel.has_bond(BondType::Friend));
-
-        rel.add_bond(BondType::Friend); // Duplicate
-        assert_eq!(rel.bonds().len(), 1);
-
-        rel.remove_bond(BondType::Friend);
-        assert!(!rel.has_bond(BondType::Friend));
-    }
-
-    #[test]
-    fn remove_bond_skips_non_matching_entries() {
-        let mut rel = Relationship::try_between(alice(), bob()).unwrap();
-        rel.add_bond(BondType::Friend);
-        rel.add_bond(BondType::Colleague);
-
-        rel.remove_bond(BondType::Family);
-
-        assert!(rel.has_bond(BondType::Friend));
-        assert!(rel.has_bond(BondType::Colleague));
     }
 
     #[test]
@@ -1307,14 +1205,6 @@ mod tests {
         let rel1 = Relationship::try_between(alice(), bob()).unwrap();
         let mut rel2 = rel1.clone();
         rel2.shared_mut().add_affinity_delta(0.5);
-        assert_ne!(rel1, rel2);
-    }
-
-    #[test]
-    fn inequality_different_bonds() {
-        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
-        let mut rel2 = rel1.clone();
-        rel2.add_bond(BondType::Friend);
         assert_ne!(rel1, rel2);
     }
 

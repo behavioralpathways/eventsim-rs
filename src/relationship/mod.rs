@@ -7,7 +7,6 @@
 //! - Perceived risk assessment
 //! - Relationship stages (Stranger -> Intimate)
 //! - Shared and directional dimensions
-//! - Behavioral predictions (would confide, would help)
 //!
 //! # Trust Model
 //!
@@ -32,14 +31,13 @@
 //! ```
 //! use eventsim_rs::relationship::{Relationship, RelationshipStage, StakesLevel};
 //! use eventsim_rs::types::EntityId;
-//! use eventsim_rs::enums::{BondType, Direction};
+//! use eventsim_rs::enums::Direction;
 //!
 //! // Create a relationship
 //! let alice = EntityId::new("alice").unwrap();
 //! let bob = EntityId::new("bob").unwrap();
 //!
 //! let mut rel = Relationship::try_between(alice, bob).unwrap()
-//!     .with_bond(BondType::Colleague)
 //!     .with_stage(RelationshipStage::Acquaintance);
 //!
 //! // Compute trust decision
@@ -61,7 +59,6 @@ mod antecedent_mapping;
 mod directional_dimensions;
 mod interaction_pattern;
 mod perceived_risk;
-mod predictions;
 #[allow(clippy::module_inception)]
 mod relationship;
 mod shared_dimensions;
@@ -76,7 +73,6 @@ pub use antecedent_mapping::{get_antecedent_for_event, AntecedentMapping, TRUST_
 pub use directional_dimensions::DirectionalDimensions;
 pub use interaction_pattern::InteractionPattern;
 pub use perceived_risk::{PerceivedRisk, StakesLevel, Vulnerability, VulnerabilityType};
-pub use predictions::{would_confide, would_help};
 pub use relationship::{Relationship, RelationshipError, StageTransitionError};
 pub use shared_dimensions::SharedDimensions;
 pub use stage::RelationshipStage;

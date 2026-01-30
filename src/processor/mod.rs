@@ -3,7 +3,6 @@
 //! This module contains processors that operate on entity state, including:
 //! - Decay processing for state values
 //! - ITS (Interpersonal Theory of Suicide) computation
-//! - Alert generation for threshold crossings (internal)
 //! - State evolution (internal: advance/regress/apply/reverse)
 //! - Event processing (internal: interpret/apply/process)
 //! - Developmental processing (internal: plasticity, sensitive periods, turning points)
@@ -24,11 +23,9 @@
 //! - Developmental: `apply_developmental_effects`
 //!
 //! The following functions are internal to their modules and used only in tests:
-//! - Alerts: `check_its_thresholds`, `check_spiral_alerts`
 //! - Event: `apply_interpreted_event`, `process_event`
 //! - State evolution: `apply_event_to_state`
 
-mod alerts;
 mod decay;
 mod developmental;
 mod emotions;
@@ -39,7 +36,6 @@ mod its_contributors;
 mod reversibility;
 mod state_evolution;
 
-// Alert functions are internal to the alerts module and its tests
 pub use decay::DecayProcessor;
 #[allow(unused_imports)]
 pub use decay::{NoOpDecayProcessor, StateDecayProcessor};

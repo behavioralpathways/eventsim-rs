@@ -17,7 +17,7 @@
 [x] experience-rejection-family
 [x] experience-rejection-peer
 [x] experience-rejection-romantic
-[ ] experience-shaming-public
+[x] experience-shaming-public
 [ ] experience-strain-financial
 [ ] experience-war-regional
 [ ] face-charges-legal

@@ -13,13 +13,9 @@
 //! - [`MentalHealth`] - ITS (Interpersonal Theory of Suicide) factors
 //! - [`Disposition`] - Behavioral tendencies
 //! - [`PersonCharacteristics`] - PPCT person characteristics
-//! - [`Demographical`] - Demographical metadata
-//! - [`DemandCharacteristics`] - Observable social signals
 //! - [`EntityModelConfig`] - Subsystem activation flags
 //! - [`IndividualState`] - Aggregate container for all state
 
-mod demand_characteristics;
-mod demographical;
 mod disposition;
 mod entity_model_config;
 mod formative;
@@ -33,8 +29,6 @@ mod social_cognition;
 mod state_interpreter;
 mod state_value;
 
-pub use demand_characteristics::DemandCharacteristics;
-pub use demographical::Demographical;
 pub use disposition::Disposition;
 pub use entity_model_config::EntityModelConfig;
 pub use formative::{

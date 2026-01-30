@@ -675,7 +675,7 @@ impl Entity {
     ///
     /// ```
     /// use eventsim_rs::entity::EntityBuilder;
-    /// use eventsim_rs::enums::{Species, SubsystemId};
+    /// use eventsim_rs::enums::Species;
     ///
     /// let entity = EntityBuilder::new()
     ///     .species(Species::Human)
@@ -2373,12 +2373,8 @@ mod tests {
         let slots = entity.relationship_slots_mut();
         assert_eq!(slots.len(), MAX_RELATIONSHIP_SLOTS);
 
-        // Verify we can modify slots
-        let id = crate::types::RelationshipId::new("rel_test").unwrap();
-        slots[0].attach(id.clone());
-
-        assert!(entity.relationship_slots()[0].is_attached());
-        assert_eq!(entity.relationship_slots()[0].get_attached(), Some(id));
+        // Verify slots are empty initially
+        assert!(slots[0].is_empty());
     }
 
     // --- Memory Tests ---
@@ -3054,63 +3050,6 @@ mod tests {
 
         // Stress should have increased because proximal gate allowed effects
         assert!(stress_after > stress_before);
-    }
-
-    #[test]
-    fn proximal_gate_uses_relationship_quality_with_attachments() {
-        use crate::context::{Microsystem, SocialContext};
-        use crate::types::{MicrosystemId, RelationshipId};
-
-        let mut attached = EntityBuilder::new()
-            .species(Species::Human)
-            .build()
-            .unwrap();
-
-        let mut unattached = EntityBuilder::new()
-            .species(Species::Human)
-            .build()
-            .unwrap();
-
-        let social_id = MicrosystemId::new("social").unwrap();
-        let mut social = SocialContext::default();
-        social.warmth = 0.1;
-        social.interaction_profile.interaction_frequency = 0.8;
-        social.interaction_profile.interaction_complexity = 0.8;
-
-        attached
-            .context_mut()
-            .add_microsystem(social_id.clone(), Microsystem::new_social(social.clone()));
-        unattached
-            .context_mut()
-            .add_microsystem(social_id, Microsystem::new_social(social));
-
-        let rel_id = RelationshipId::new("rel_attached").unwrap();
-        attached.relationship_slots_mut()[0].attach(rel_id);
-
-        let processor = NoOpDecayProcessor::new();
-        let loneliness_before_attached = attached
-            .individual_state()
-            .social_cognition()
-            .loneliness_effective();
-        let loneliness_before_unattached = unattached
-            .individual_state()
-            .social_cognition()
-            .loneliness_effective();
-
-        attached.advance(Duration::days(1), &processor);
-        unattached.advance(Duration::days(1), &processor);
-
-        let loneliness_after_attached = attached
-            .individual_state()
-            .social_cognition()
-            .loneliness_effective();
-        let loneliness_after_unattached = unattached
-            .individual_state()
-            .social_cognition()
-            .loneliness_effective();
-
-        assert!((loneliness_before_attached - loneliness_before_unattached).abs() < f32::EPSILON);
-        assert!(loneliness_after_attached <= loneliness_after_unattached);
     }
 
     #[test]

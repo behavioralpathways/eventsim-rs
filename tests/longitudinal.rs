@@ -6,5 +6,29 @@
 //! All tests are marked #[ignore] - run explicitly with:
 //! `cargo test --test longitudinal -- --ignored --nocapture`
 
-// Tests temporarily removed during EventType refactoring (Phase 3)
-// TODO: Rewrite tests using new EventType variants after processor is updated
+#[path = "longitudinal/adverse_childhood.rs"]
+mod adverse_childhood;
+#[path = "longitudinal/adolescent_exclusion_shaming.rs"]
+mod adolescent_exclusion_shaming;
+#[path = "longitudinal/chronic_illness.rs"]
+mod chronic_illness;
+#[path = "longitudinal/chronic_vs_intermittent_isolation.rs"]
+mod chronic_vs_intermittent_isolation;
+#[path = "longitudinal/great_depression_cohort.rs"]
+mod great_depression_cohort;
+#[path = "longitudinal/immigrant_relocation.rs"]
+mod immigrant_relocation;
+#[path = "longitudinal/legal_charges.rs"]
+mod legal_charges;
+#[path = "longitudinal/long_term_incarceration.rs"]
+mod long_term_incarceration;
+#[path = "longitudinal/mentorship_achievement.rs"]
+mod mentorship_achievement;
+#[path = "longitudinal/post_war_prosperity.rs"]
+mod post_war_prosperity;
+#[path = "longitudinal/repeated_financial_strain.rs"]
+mod repeated_financial_strain;
+#[path = "longitudinal/secure_childhood_buffer.rs"]
+mod secure_childhood_buffer;
+#[path = "longitudinal/ww2_combat_exposure.rs"]
+mod ww2_combat_exposure;

@@ -11,6 +11,7 @@ use eventsim_rs::simulation::Simulation;
 use eventsim_rs::types::{Duration, EntityId, Timestamp};
 
 #[test]
+#[ignore]
 fn lifespan_trajectory_with_many_events_looks_plausible() {
     let birth_date = Timestamp::from_ymd_hms(1960, 1, 1, 0, 0, 0);
     let reference = Timestamp::from_ymd_hms(1990, 1, 1, 0, 0, 0); // age 30 anchor

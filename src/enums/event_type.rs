@@ -62,6 +62,12 @@ pub enum EventType {
     /// Facing housing eviction (served notice, imminent loss of housing)
     FaceEvictionHousing,
 
+    /// Failure to achieve a major life goal (failing exam, missing promotion, etc.)
+    FailGoalMajor,
+
+    /// Gaining personal power (promotion, authority, wealth, influence, leadership)
+    GainPowerPersonal,
+
     /// Public humiliation or embarrassment
     ExperienceHumiliationPublic,
 
@@ -70,6 +76,24 @@ pub enum EventType {
 
     /// Chronic social isolation over extended period
     ExperienceIsolationChronic,
+
+    /// Loss of access to healthcare services (insurance loss, provider departure, facility closure, affordability barrier)
+    LoseAccessHealthcare,
+
+    /// Loss of government benefits (unemployment, disability, social security, welfare, food assistance, housing vouchers)
+    LoseBenefitsGovernment,
+
+    /// Involuntary job termination for cause (being fired)
+    LoseJobFired,
+
+    /// Involuntary job loss due to organizational downsizing, restructuring, or economic conditions
+    LoseJobLayoff,
+
+    /// Voluntary resignation from employment
+    LoseJobResigned,
+
+    /// Death of a loved one (spouse, child, parent, or close friend)
+    LosePersonDeath,
 
     /// Rejection by family members (disownment, estrangement, explicit exclusion)
     ExperienceRejectionFamily,
@@ -120,9 +144,17 @@ impl EventType {
             EventType::ExperienceExclusionPeer => types::experience_exclusion_peer::SPEC,
             EventType::FaceChargesLegal => types::face_charges_legal::SPEC,
             EventType::FaceEvictionHousing => types::face_eviction_housing::SPEC,
+            EventType::FailGoalMajor => types::fail_goal_major::SPEC,
+            EventType::GainPowerPersonal => types::gain_power_personal::SPEC,
             EventType::ExperienceHumiliationPublic => types::experience_humiliation_public::SPEC,
             EventType::ExperienceInclusionPeer => types::experience_inclusion_peer::SPEC,
             EventType::ExperienceIsolationChronic => types::experience_isolation_chronic::SPEC,
+            EventType::LoseAccessHealthcare => types::lose_access_healthcare::SPEC,
+            EventType::LoseBenefitsGovernment => types::lose_benefits_government::SPEC,
+            EventType::LoseJobFired => types::lose_job_fired::SPEC,
+            EventType::LoseJobLayoff => types::lose_job_layoff::SPEC,
+            EventType::LoseJobResigned => types::lose_job_resigned::SPEC,
+            EventType::LosePersonDeath => types::lose_person_death::SPEC,
             EventType::ExperienceRejectionFamily => types::experience_rejection_family::SPEC,
             EventType::ExperienceRejectionPeer => types::experience_rejection_peer::SPEC,
             EventType::ExperienceRejectionRomantic => types::experience_rejection_romantic::SPEC,
@@ -150,9 +182,17 @@ impl EventType {
             EventType::ExperienceExclusionPeer => "Experience Exclusion (Peer)",
             EventType::FaceChargesLegal => "Face Charges (Legal)",
             EventType::FaceEvictionHousing => "Face Eviction (Housing)",
+            EventType::FailGoalMajor => "Fail Goal (Major)",
+            EventType::GainPowerPersonal => "Gain Power (Personal)",
             EventType::ExperienceHumiliationPublic => "Experience Humiliation (Public)",
             EventType::ExperienceInclusionPeer => "Experience Inclusion (Peer)",
             EventType::ExperienceIsolationChronic => "Experience Isolation (Chronic)",
+            EventType::LoseAccessHealthcare => "Lose Access (Healthcare)",
+            EventType::LoseBenefitsGovernment => "Lose Benefits (Government)",
+            EventType::LoseJobFired => "Lose Job (Fired)",
+            EventType::LoseJobLayoff => "Lose Job (Layoff)",
+            EventType::LoseJobResigned => "Lose Job (Resigned)",
+            EventType::LosePersonDeath => "Lose Person (Death)",
             EventType::ExperienceRejectionFamily => "Experience Rejection (Family)",
             EventType::ExperienceRejectionPeer => "Experience Rejection (Peer)",
             EventType::ExperienceRejectionRomantic => "Experience Rejection (Romantic)",
@@ -165,7 +205,7 @@ impl EventType {
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 22] {
+    pub const fn all() -> [EventType; 30] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -180,9 +220,17 @@ impl EventType {
             EventType::ExperienceExclusionPeer,
             EventType::FaceChargesLegal,
             EventType::FaceEvictionHousing,
+            EventType::FailGoalMajor,
+            EventType::GainPowerPersonal,
             EventType::ExperienceHumiliationPublic,
             EventType::ExperienceInclusionPeer,
             EventType::ExperienceIsolationChronic,
+            EventType::LoseAccessHealthcare,
+            EventType::LoseBenefitsGovernment,
+            EventType::LoseJobFired,
+            EventType::LoseJobLayoff,
+            EventType::LoseJobResigned,
+            EventType::LosePersonDeath,
             EventType::ExperienceRejectionFamily,
             EventType::ExperienceRejectionPeer,
             EventType::ExperienceRejectionRomantic,
@@ -207,7 +255,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 22);
+        assert_eq!(all.len(), 30);
     }
 
     #[test]

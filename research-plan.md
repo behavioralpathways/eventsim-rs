@@ -21,15 +21,15 @@
 [x] experience-strain-financial
 [x] experience-war-regional
 [x] face-charges-legal
-[ ] face-eviction-housing
-[ ] fail-goal-major
-[ ] gain-power-personal
-[ ] lose-access-healthcare
-[ ] lose-benefits-government
-[ ] lose-job-fired
-[ ] lose-job-layoff
-[ ] lose-job-resigned
-[ ] lose-person-death
+[x] face-eviction-housing
+[x] fail-goal-major
+[x] gain-power-personal
+[x] lose-access-healthcare
+[x] lose-benefits-government
+[x] lose-job-fired
+[x] lose-job-layoff
+[x] lose-job-resigned
+[x] lose-person-death
 [ ] lose-person-suicide
 [ ] lose-resource-significant
 [ ] receive-diagnosis-terminal

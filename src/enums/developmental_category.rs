@@ -105,6 +105,11 @@ impl From<&EventType> for DevelopmentalCategory {
 
             // Industry category - competence
             EventType::AchieveGoalMajor => DevelopmentalCategory::Industry,
+            EventType::FailGoalMajor => DevelopmentalCategory::Industry,
+            EventType::GainPowerPersonal => DevelopmentalCategory::Industry,
+            EventType::LoseJobFired => DevelopmentalCategory::Industry,
+            EventType::LoseJobLayoff => DevelopmentalCategory::Industry,
+            EventType::LoseJobResigned => DevelopmentalCategory::Industry,
 
             // Identity category - identity transformation
             EventType::DevelopIllnessChronic => DevelopmentalCategory::Identity,
@@ -124,6 +129,7 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::ExperienceIsolationChronic => DevelopmentalCategory::Attachment,
             EventType::ExperienceRejectionFamily => DevelopmentalCategory::Attachment,
             EventType::ExperienceRejectionPeer => DevelopmentalCategory::Attachment,
+            EventType::LosePersonDeath => DevelopmentalCategory::Attachment,
 
             // Intimacy category - romantic relationships
             EventType::ExperienceRejectionRomantic => DevelopmentalCategory::Intimacy,
@@ -134,6 +140,11 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::ExperienceHumiliationPublic => DevelopmentalCategory::Neutral,
             EventType::ExperienceShamingPublic => DevelopmentalCategory::Neutral,
             EventType::ExperienceStrainFinancial => DevelopmentalCategory::Neutral,
+            EventType::ExperienceWarRegional => DevelopmentalCategory::Neutral,
+            EventType::FaceChargesLegal => DevelopmentalCategory::Neutral,
+            EventType::FaceEvictionHousing => DevelopmentalCategory::Neutral,
+            EventType::LoseAccessHealthcare => DevelopmentalCategory::Neutral,
+            EventType::LoseBenefitsGovernment => DevelopmentalCategory::Neutral,
 
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,

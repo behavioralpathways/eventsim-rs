@@ -1,7 +1,7 @@
 //! Birth era categories for cohort effects.
 
 /// Era when an entity was born.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum BirthEra {
     /// Born during a crisis period.
     Crisis,
@@ -12,6 +12,7 @@ pub enum BirthEra {
     /// Born during a growth/expansion period.
     Expansion,
     /// Unknown or unspecified birth era.
+    #[default]
     Unknown,
 }
 
@@ -26,11 +27,5 @@ impl BirthEra {
             "expansion" => Some(BirthEra::Expansion),
             _ => None,
         }
-    }
-}
-
-impl Default for BirthEra {
-    fn default() -> Self {
-        BirthEra::Unknown
     }
 }

@@ -1607,4 +1607,78 @@ mod tests {
         assert!(decision.task_willingness() >= 0.0);
         assert!(decision.task_willingness() <= 1.0);
     }
+
+    #[test]
+    fn inequality_different_antecedent_history() {
+        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
+        let mut rel2 = rel1.clone();
+        let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
+        let antecedent = TrustAntecedent::new(
+            ts,
+            AntecedentType::Ability,
+            AntecedentDirection::Positive,
+            0.5,
+            "test",
+        );
+        rel2.append_antecedent(Direction::AToB, antecedent);
+        assert_ne!(rel1, rel2);
+    }
+
+    #[test]
+    fn inequality_different_antecedent_history_b_to_a() {
+        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
+        let mut rel2 = rel1.clone();
+        let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
+        let antecedent = TrustAntecedent::new(
+            ts,
+            AntecedentType::Ability,
+            AntecedentDirection::Positive,
+            0.5,
+            "test",
+        );
+        rel2.append_antecedent(Direction::BToA, antecedent);
+        assert_ne!(rel1, rel2);
+    }
+
+    #[test]
+    fn inequality_different_last_negative_antecedent() {
+        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
+        let mut rel2 = rel1.clone();
+        let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
+        let antecedent = TrustAntecedent::new(
+            ts,
+            AntecedentType::Integrity,
+            AntecedentDirection::Negative,
+            0.5,
+            "breach",
+        );
+        rel2.append_antecedent(Direction::AToB, antecedent);
+        // This should set last_negative_antecedent_a_to_b
+        assert_ne!(rel1, rel2);
+    }
+
+    #[test]
+    fn inequality_different_last_negative_antecedent_b_to_a() {
+        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
+        let mut rel2 = rel1.clone();
+        let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
+        let antecedent = TrustAntecedent::new(
+            ts,
+            AntecedentType::Integrity,
+            AntecedentDirection::Negative,
+            0.5,
+            "breach",
+        );
+        rel2.append_antecedent(Direction::BToA, antecedent);
+        // This should set last_negative_antecedent_b_to_a
+        assert_ne!(rel1, rel2);
+    }
+
+    #[test]
+    fn inequality_different_pattern() {
+        let rel1 = Relationship::try_between(alice(), bob()).unwrap();
+        let mut rel2 = rel1.clone();
+        rel2.pattern_mut().consistency = 0.9;
+        assert_ne!(rel1, rel2);
+    }
 }

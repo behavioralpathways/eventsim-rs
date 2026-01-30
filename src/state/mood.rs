@@ -266,6 +266,29 @@ impl Mood {
         &mut self.dominance
     }
 
+    // Base shifters (for permanent changes)
+
+    /// Shifts the base valence by adding an amount.
+    ///
+    /// This is used for permanent changes from events.
+    pub fn shift_valence_base(&mut self, amount: f32) {
+        self.valence.shift_base(amount);
+    }
+
+    /// Shifts the base arousal by adding an amount.
+    ///
+    /// This is used for permanent changes from events.
+    pub fn shift_arousal_base(&mut self, amount: f32) {
+        self.arousal.shift_base(amount);
+    }
+
+    /// Shifts the base dominance by adding an amount.
+    ///
+    /// This is used for permanent changes from events.
+    pub fn shift_dominance_base(&mut self, amount: f32) {
+        self.dominance.shift_base(amount);
+    }
+
     // Delta modifiers
 
     /// Adds to the valence delta.
@@ -281,6 +304,23 @@ impl Mood {
     /// Adds to the dominance delta.
     pub fn add_dominance_delta(&mut self, amount: f32) {
         self.dominance.add_delta(amount);
+    }
+
+    // Chronic delta modifiers
+
+    /// Adds to the valence chronic delta.
+    pub fn add_valence_chronic_delta(&mut self, amount: f32) {
+        self.valence.add_chronic_delta(amount);
+    }
+
+    /// Adds to the arousal chronic delta.
+    pub fn add_arousal_chronic_delta(&mut self, amount: f32) {
+        self.arousal.add_chronic_delta(amount);
+    }
+
+    /// Adds to the dominance chronic delta.
+    pub fn add_dominance_chronic_delta(&mut self, amount: f32) {
+        self.dominance.add_chronic_delta(amount);
     }
 
     // Decay

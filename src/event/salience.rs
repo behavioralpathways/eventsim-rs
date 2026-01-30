@@ -4,7 +4,7 @@
 //! by the entity's arousal level at encoding time. This follows research
 //! on emotional memory enhancement (McGaugh, Cahill, Kensinger).
 
-use crate::enums::{EventCategory, Species};
+use crate::enums::Species;
 
 /// Arousal weight for humans (moderate enhancement).
 pub const AROUSAL_WEIGHT_HUMAN: f32 = 0.3;
@@ -71,7 +71,7 @@ pub fn arousal_weight_for_species(species: &Species) -> f32 {
 /// * `base_salience` - The initial salience before modulation
 /// * `arousal` - The entity's arousal at encoding (-1.0 to 1.0)
 /// * `valence` - The event's valence (-1.0 to 1.0)
-/// * `event_category` - The event's category for trauma check
+/// * `is_trauma` - Whether the event builds acquired capability (AC > 0)
 /// * `species` - The entity's species for weight lookup
 ///
 /// # Returns
@@ -82,17 +82,17 @@ pub fn arousal_weight_for_species(species: &Species) -> f32 {
 ///
 /// ```
 /// use eventsim_rs::event::compute_arousal_modulated_salience;
-/// use eventsim_rs::enums::{EventCategory, Species};
+/// use eventsim_rs::enums::Species;
 ///
-/// // High arousal enhances memory
+/// // High arousal enhances memory (non-trauma event)
 /// let salience = compute_arousal_modulated_salience(
-///     0.5, 0.7, 0.0, EventCategory::Social, &Species::Human
+///     0.5, 0.7, 0.0, false, &Species::Human
 /// );
 /// assert!(salience > 0.5);
 ///
 /// // Low arousal has no effect
 /// let low_arousal = compute_arousal_modulated_salience(
-///     0.5, 0.1, 0.0, EventCategory::Social, &Species::Human
+///     0.5, 0.1, 0.0, false, &Species::Human
 /// );
 /// assert!((low_arousal - 0.5).abs() < 0.01);
 /// ```
@@ -101,7 +101,7 @@ pub fn compute_arousal_modulated_salience(
     base_salience: f32,
     arousal: f32,
     valence: f32,
-    event_category: EventCategory,
+    is_trauma: bool,
     species: &Species,
 ) -> f32 {
     let arousal_weight = arousal_weight_for_species(species);
@@ -115,8 +115,6 @@ pub fn compute_arousal_modulated_salience(
     }
 
     // Check for Yerkes-Dodson impairment
-    let is_trauma = event_category == EventCategory::Trauma;
-
     if effective_arousal > AROUSAL_CEILING && !is_trauma {
         // Extreme arousal impairs encoding (except for trauma)
         let impaired = base_salience * (1.0 - EXTREME_AROUSAL_IMPAIRMENT);
@@ -179,13 +177,7 @@ mod tests {
 
     #[test]
     fn arousal_boosts_salience() {
-        let salience = compute_arousal_modulated_salience(
-            0.5,
-            0.7,
-            0.0,
-            EventCategory::Social,
-            &Species::Human,
-        );
+        let salience = compute_arousal_modulated_salience(0.5, 0.7, 0.0, false, &Species::Human);
         // Should be boosted above base
         assert!(salience > 0.5);
     }
@@ -196,7 +188,7 @@ mod tests {
             0.5,
             0.1, // Below threshold
             0.0,
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
         // Should be unchanged
@@ -205,19 +197,14 @@ mod tests {
 
     #[test]
     fn arousal_ceiling_impairs_encoding() {
-        let normal = compute_arousal_modulated_salience(
-            0.5,
-            0.7,
-            0.0,
-            EventCategory::Social,
-            &Species::Human,
-        );
+        let normal =
+            compute_arousal_modulated_salience(0.5, 0.7, 0.0, false, &Species::Human);
 
         let extreme = compute_arousal_modulated_salience(
             0.5,
             0.95, // Above ceiling
             0.0,
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
 
@@ -227,21 +214,10 @@ mod tests {
 
     #[test]
     fn trauma_events_bypass_yerkes_dodson() {
-        let non_trauma = compute_arousal_modulated_salience(
-            0.5,
-            0.95,
-            0.0,
-            EventCategory::Social,
-            &Species::Human,
-        );
+        let non_trauma =
+            compute_arousal_modulated_salience(0.5, 0.95, 0.0, false, &Species::Human);
 
-        let trauma = compute_arousal_modulated_salience(
-            0.5,
-            0.95,
-            0.0,
-            EventCategory::Trauma,
-            &Species::Human,
-        );
+        let trauma = compute_arousal_modulated_salience(0.5, 0.95, 0.0, true, &Species::Human);
 
         // Trauma should not be impaired - should be higher than non-trauma
         assert!(trauma > non_trauma);
@@ -253,7 +229,7 @@ mod tests {
             0.5,
             0.5,
             0.0, // Neutral valence
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
 
@@ -261,7 +237,7 @@ mod tests {
             0.5,
             0.5,
             -0.5, // Negative valence
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
 
@@ -272,17 +248,12 @@ mod tests {
     #[test]
     fn entity_model_arousal_weight() {
         // Human
-        let human_salience = compute_arousal_modulated_salience(
-            0.5,
-            0.6,
-            0.0,
-            EventCategory::Social,
-            &Species::Human,
-        );
+        let human_salience =
+            compute_arousal_modulated_salience(0.5, 0.6, 0.0, false, &Species::Human);
 
         // Dog (higher weight)
         let dog_salience =
-            compute_arousal_modulated_salience(0.5, 0.6, 0.0, EventCategory::Social, &Species::Dog);
+            compute_arousal_modulated_salience(0.5, 0.6, 0.0, false, &Species::Dog);
 
         // Dog should have higher enhancement due to higher weight
         assert!(dog_salience > human_salience);
@@ -295,7 +266,7 @@ mod tests {
             0.9,
             0.8,
             -0.5, // Add negativity bias too
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
 
@@ -305,13 +276,8 @@ mod tests {
     #[test]
     fn salience_clamped_to_zero() {
         // Extreme impairment should not go negative
-        let salience = compute_arousal_modulated_salience(
-            0.1,
-            0.95,
-            0.0,
-            EventCategory::Social,
-            &Species::Human,
-        );
+        let salience =
+            compute_arousal_modulated_salience(0.1, 0.95, 0.0, false, &Species::Human);
 
         assert!(salience >= 0.0);
     }
@@ -323,7 +289,7 @@ mod tests {
             0.5,
             -0.7, // Negative arousal
             0.0,
-            EventCategory::Social,
+            false,
             &Species::Human,
         );
 

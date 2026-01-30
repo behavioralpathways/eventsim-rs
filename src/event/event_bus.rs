@@ -4,7 +4,7 @@
 //! and subscribers poll for matching events. This avoids callback
 //! complexity and allows controlled event processing.
 
-use crate::enums::{EventCategory, EventScope, EventTag, EventType};
+use crate::enums::{EventScope, EventType};
 use crate::event::Event;
 use crate::types::{EntityId, EventId, MicrosystemId, SubscriptionId};
 use std::collections::{HashMap, VecDeque};
@@ -36,10 +36,6 @@ impl std::error::Error for EventBusError {}
 pub struct EventFilter {
     /// Match events of specific types.
     pub event_types: Option<Vec<EventType>>,
-    /// Match events of specific categories.
-    pub categories: Option<Vec<EventCategory>>,
-    /// Match events with specific tags.
-    pub tags: Option<Vec<EventTag>>,
     /// Match events from a specific source.
     pub source: Option<EntityId>,
     /// Match events targeting a specific entity.
@@ -66,34 +62,6 @@ impl EventFilter {
     #[must_use]
     pub fn with_event_type(mut self, event_type: EventType) -> Self {
         self.event_types = Some(vec![event_type]);
-        self
-    }
-
-    /// Filters by categories.
-    #[must_use]
-    pub fn with_categories(mut self, categories: Vec<EventCategory>) -> Self {
-        self.categories = Some(categories);
-        self
-    }
-
-    /// Filters by a single category.
-    #[must_use]
-    pub fn with_category(mut self, category: EventCategory) -> Self {
-        self.categories = Some(vec![category]);
-        self
-    }
-
-    /// Filters by tags.
-    #[must_use]
-    pub fn with_tags(mut self, tags: Vec<EventTag>) -> Self {
-        self.tags = Some(tags);
-        self
-    }
-
-    /// Filters by a single tag.
-    #[must_use]
-    pub fn with_tag(mut self, tag: EventTag) -> Self {
-        self.tags = Some(vec![tag]);
         self
     }
 
@@ -124,21 +92,6 @@ impl EventFilter {
         // Check event types
         if let Some(ref types) = self.event_types {
             if !types.contains(&event.event_type()) {
-                return false;
-            }
-        }
-
-        // Check categories
-        if let Some(ref categories) = self.categories {
-            if !categories.contains(&event.category()) {
-                return false;
-            }
-        }
-
-        // Check tags (event must have at least one matching tag)
-        if let Some(ref filter_tags) = self.tags {
-            let has_matching_tag = filter_tags.iter().any(|tag| event.has_tag(*tag));
-            if !has_matching_tag {
                 return false;
             }
         }
@@ -209,7 +162,7 @@ pub struct ProcessedEvent {
 /// let mut bus = EventBus::new();
 ///
 /// // Dispatch an event with explicit scope
-/// let event = EventBuilder::new(EventType::Violence).build().unwrap();
+/// let event = EventBuilder::new(EventType::ExperienceCombatMilitary).build().unwrap();
 /// bus.dispatch(event, EventScope::Global);
 /// ```
 #[derive(Debug)]
@@ -293,7 +246,7 @@ impl EventBus {
     /// let mut bus = EventBus::new();
     ///
     /// // Broadcast to all subscribers
-    /// let event = EventBuilder::new(EventType::Violence).build().unwrap();
+    /// let event = EventBuilder::new(EventType::ExperienceCombatMilitary).build().unwrap();
     /// bus.dispatch(event, EventScope::Global);
     /// ```
     pub fn dispatch(&mut self, mut event: Event, scope: EventScope) {
@@ -538,12 +491,16 @@ mod tests {
     use crate::event::EventBuilder;
     use crate::types::GroupId;
 
-    fn create_violence_event() -> Event {
-        EventBuilder::new(EventType::Violence).build().unwrap()
+    fn create_combat_event() -> Event {
+        EventBuilder::new(EventType::ExperienceCombatMilitary)
+            .build()
+            .unwrap()
     }
 
-    fn create_support_event() -> Event {
-        EventBuilder::new(EventType::Support).build().unwrap()
+    fn create_achievement_event() -> Event {
+        EventBuilder::new(EventType::AchieveGoalMajor)
+            .build()
+            .unwrap()
     }
 
     #[test]
@@ -552,7 +509,7 @@ mod tests {
 
         let sub_id = bus.subscribe(EventFilter::new());
 
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.dispatch(event, EventScope::Global);
 
         let events = bus.poll(&sub_id);
@@ -563,62 +520,15 @@ mod tests {
     fn event_bus_filter_by_type() {
         let mut bus = EventBus::new();
 
-        let violence_sub = bus.subscribe(EventFilter::new().with_event_type(EventType::Violence));
-        let support_sub = bus.subscribe(EventFilter::new().with_event_type(EventType::Support));
+        let combat_sub =
+            bus.subscribe(EventFilter::new().with_event_type(EventType::ExperienceCombatMilitary));
+        let achievement_sub =
+            bus.subscribe(EventFilter::new().with_event_type(EventType::AchieveGoalMajor));
 
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
 
-        assert_eq!(bus.poll(&violence_sub).len(), 1);
-        assert_eq!(bus.poll(&support_sub).len(), 0);
-    }
-
-    #[test]
-    fn event_bus_filter_by_category() {
-        let mut bus = EventBus::new();
-
-        let trauma_sub = bus.subscribe(EventFilter::new().with_category(EventCategory::Trauma));
-
-        bus.dispatch(create_violence_event(), EventScope::Global); // Trauma
-        bus.dispatch(create_support_event(), EventScope::Global); // Not trauma
-
-        assert_eq!(bus.poll(&trauma_sub).len(), 1);
-    }
-
-    #[test]
-    fn event_bus_filter_by_tag() {
-        let mut bus = EventBus::new();
-
-        let negative_sub = bus.subscribe(EventFilter::new().with_tag(EventTag::Negative));
-
-        let negative_event = EventBuilder::new(EventType::Violence)
-            .tag(EventTag::Negative)
-            .build()
-            .unwrap();
-        let neutral_event = EventBuilder::new(EventType::Interaction).build().unwrap();
-
-        bus.dispatch(negative_event, EventScope::Global);
-        bus.dispatch(neutral_event, EventScope::Global);
-
-        assert_eq!(bus.poll(&negative_sub).len(), 1);
-    }
-
-    #[test]
-    fn event_bus_filter_by_tags_vector() {
-        let mut bus = EventBus::new();
-
-        let tagged_sub =
-            bus.subscribe(EventFilter::new().with_tags(vec![EventTag::Positive, EventTag::Social]));
-
-        let positive_event = EventBuilder::new(EventType::Support)
-            .tag(EventTag::Positive)
-            .build()
-            .unwrap();
-        let untagged_event = EventBuilder::new(EventType::Support).build().unwrap();
-
-        bus.dispatch(positive_event, EventScope::Global);
-        bus.dispatch(untagged_event, EventScope::Global);
-
-        assert_eq!(bus.poll(&tagged_sub).len(), 1);
+        assert_eq!(bus.poll(&combat_sub).len(), 1);
+        assert_eq!(bus.poll(&achievement_sub).len(), 0);
     }
 
     #[test]
@@ -628,11 +538,13 @@ mod tests {
         let source = EntityId::new("attacker").unwrap();
         let source_sub = bus.subscribe(EventFilter::new().with_source(source.clone()));
 
-        let with_source = EventBuilder::new(EventType::Violence)
+        let with_source = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .source(source)
             .build()
             .unwrap();
-        let without_source = EventBuilder::new(EventType::Violence).build().unwrap();
+        let without_source = EventBuilder::new(EventType::ExperienceCombatMilitary)
+            .build()
+            .unwrap();
 
         bus.dispatch(with_source, EventScope::Global);
         bus.dispatch(without_source, EventScope::Global);
@@ -647,11 +559,13 @@ mod tests {
         let target = EntityId::new("victim").unwrap();
         let target_sub = bus.subscribe(EventFilter::new().with_target(target.clone()));
 
-        let with_target = EventBuilder::new(EventType::Violence)
+        let with_target = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(target)
             .build()
             .unwrap();
-        let without_target = EventBuilder::new(EventType::Violence).build().unwrap();
+        let without_target = EventBuilder::new(EventType::ExperienceCombatMilitary)
+            .build()
+            .unwrap();
 
         bus.dispatch(with_target, EventScope::Global);
         bus.dispatch(without_target, EventScope::Global);
@@ -677,7 +591,7 @@ mod tests {
         let sub_id = bus.subscribe(EventFilter::new());
 
         bus.mailboxes.remove(&sub_id);
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
 
         assert_eq!(bus.pending_count(&sub_id), 0);
     }
@@ -687,7 +601,7 @@ mod tests {
         let mut bus = EventBus::new();
 
         let sub_id = bus.subscribe(EventFilter::new());
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
 
         // Peek
         let peeked = bus.peek(&sub_id);
@@ -708,10 +622,10 @@ mod tests {
         let sub_id = bus.subscribe(EventFilter::new());
         assert_eq!(bus.pending_count(&sub_id), 0);
 
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
         assert_eq!(bus.pending_count(&sub_id), 1);
 
-        bus.dispatch(create_support_event(), EventScope::Global);
+        bus.dispatch(create_achievement_event(), EventScope::Global);
         assert_eq!(bus.pending_count(&sub_id), 2);
     }
 
@@ -759,8 +673,8 @@ mod tests {
         let mut bus = EventBus::new();
 
         let sub_id = bus.subscribe(EventFilter::new());
-        bus.dispatch(create_violence_event(), EventScope::Global);
-        bus.dispatch(create_support_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
+        bus.dispatch(create_achievement_event(), EventScope::Global);
 
         assert_eq!(bus.pending_count(&sub_id), 2);
 
@@ -791,7 +705,7 @@ mod tests {
         let entity = EntityId::new("person_001").unwrap();
         let sub_id = bus.subscribe(EventFilter::new().with_target(entity.clone()));
 
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.dispatch(event, EventScope::Individual(entity));
 
         let events = bus.poll(&sub_id);
@@ -804,7 +718,7 @@ mod tests {
 
         let sub_id = bus.subscribe(EventFilter::new());
 
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.dispatch(event, EventScope::Global);
 
         let events = bus.poll(&sub_id);
@@ -814,7 +728,7 @@ mod tests {
     #[test]
     fn event_filter_default_matches_all() {
         let filter = EventFilter::new();
-        let event = create_violence_event();
+        let event = create_combat_event();
         assert!(filter.matches(&event));
     }
 
@@ -824,17 +738,19 @@ mod tests {
         let target = EntityId::new("target").unwrap();
 
         let filter = EventFilter::new()
-            .with_event_type(EventType::Violence)
+            .with_event_type(EventType::ExperienceCombatMilitary)
             .with_source(source.clone())
             .with_target(target.clone());
 
-        let matching = EventBuilder::new(EventType::Violence)
+        let matching = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .source(source)
             .target(target)
             .build()
             .unwrap();
 
-        let wrong_type = EventBuilder::new(EventType::Support).build().unwrap();
+        let wrong_type = EventBuilder::new(EventType::AchieveGoalMajor)
+            .build()
+            .unwrap();
 
         assert!(filter.matches(&matching));
         assert!(!filter.matches(&wrong_type));
@@ -842,32 +758,20 @@ mod tests {
 
     #[test]
     fn event_filter_multiple_types() {
-        let filter =
-            EventFilter::new().with_event_types(vec![EventType::Violence, EventType::Conflict]);
+        let filter = EventFilter::new().with_event_types(vec![
+            EventType::ExperienceCombatMilitary,
+            EventType::ExperienceBetrayalTrust,
+        ]);
 
-        let violence = create_violence_event();
-        let conflict = EventBuilder::new(EventType::Conflict).build().unwrap();
-        let support = create_support_event();
-
-        assert!(filter.matches(&violence));
-        assert!(filter.matches(&conflict));
-        assert!(!filter.matches(&support));
-    }
-
-    #[test]
-    fn event_filter_multiple_categories() {
-        let filter =
-            EventFilter::new().with_categories(vec![EventCategory::Trauma, EventCategory::Social]);
-
-        let violence = create_violence_event(); // Trauma
-        let support = create_support_event(); // Social
-        let exclusion = EventBuilder::new(EventType::SocialExclusion)
+        let combat = create_combat_event();
+        let betrayal = EventBuilder::new(EventType::ExperienceBetrayalTrust)
             .build()
-            .unwrap(); // SocialBelonging
+            .unwrap();
+        let achievement = create_achievement_event();
 
-        assert!(filter.matches(&violence));
-        assert!(filter.matches(&support));
-        assert!(!filter.matches(&exclusion));
+        assert!(filter.matches(&combat));
+        assert!(filter.matches(&betrayal));
+        assert!(!filter.matches(&achievement));
     }
 
     #[test]
@@ -875,7 +779,7 @@ mod tests {
         let mut bus = EventBus::new();
         let _sub_id = bus.subscribe(EventFilter::new());
 
-        let event = create_violence_event();
+        let event = create_combat_event();
         let event_id = event.id().clone();
 
         bus.dispatch(event, EventScope::Global);
@@ -910,11 +814,11 @@ mod tests {
         let work = MicrosystemId::new("work").unwrap();
         let work_sub = bus.subscribe(EventFilter::new().with_microsystem(work.clone()));
 
-        let work_event = EventBuilder::new(EventType::Interaction)
+        let work_event = EventBuilder::new(EventType::AchieveGoalMajor)
             .context(work)
             .build()
             .unwrap();
-        let home_event = EventBuilder::new(EventType::Interaction)
+        let home_event = EventBuilder::new(EventType::AchieveGoalMajor)
             .context(MicrosystemId::new("home").unwrap())
             .build()
             .unwrap();
@@ -927,7 +831,7 @@ mod tests {
 
     #[test]
     fn event_filter_clone() {
-        let filter = EventFilter::new().with_event_type(EventType::Violence);
+        let filter = EventFilter::new().with_event_type(EventType::ExperienceCombatMilitary);
         let cloned = filter.clone();
         assert_eq!(filter, cloned);
     }
@@ -972,7 +876,7 @@ mod tests {
         let sub_id = bus.subscribe(EventFilter::new());
 
         let group = GroupId::new("team").unwrap();
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.dispatch(event, EventScope::Group(group));
 
         // Should still receive the event (broadcast)
@@ -985,7 +889,7 @@ mod tests {
         let sub_id = bus.subscribe(EventFilter::new());
 
         let micro = MicrosystemId::new("work").unwrap();
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.dispatch(event, EventScope::Microsystem(micro));
 
         // Should still receive the event (broadcast)
@@ -1002,7 +906,7 @@ mod tests {
         let mut bus = EventBus::new();
         let sub_id = bus.subscribe(EventFilter::new());
 
-        let event = create_violence_event();
+        let event = create_combat_event();
         bus.queue(event);
 
         // Event should not be in mailbox yet
@@ -1022,9 +926,10 @@ mod tests {
     fn process_pending_matches_multiple_subscriptions() {
         let mut bus = EventBus::new();
         let sub1 = bus.subscribe(EventFilter::new());
-        let sub2 = bus.subscribe(EventFilter::new().with_event_type(EventType::Violence));
+        let sub2 =
+            bus.subscribe(EventFilter::new().with_event_type(EventType::ExperienceCombatMilitary));
 
-        bus.queue(create_violence_event());
+        bus.queue(create_combat_event());
         let processed = bus.process_pending().unwrap();
 
         assert_eq!(processed.len(), 1);
@@ -1036,17 +941,19 @@ mod tests {
     #[test]
     fn process_pending_skips_non_matching_subscriptions() {
         let mut bus = EventBus::new();
-        let violence_sub = bus.subscribe(EventFilter::new().with_event_type(EventType::Violence));
-        let support_sub = bus.subscribe(EventFilter::new().with_event_type(EventType::Support));
+        let combat_sub =
+            bus.subscribe(EventFilter::new().with_event_type(EventType::ExperienceCombatMilitary));
+        let achievement_sub =
+            bus.subscribe(EventFilter::new().with_event_type(EventType::AchieveGoalMajor));
 
-        bus.queue(create_violence_event());
+        bus.queue(create_combat_event());
         let processed = bus.process_pending().unwrap();
 
         assert_eq!(processed.len(), 1);
-        assert!(processed[0].matched_subscriptions.contains(&violence_sub));
-        assert!(!processed[0].matched_subscriptions.contains(&support_sub));
-        assert_eq!(bus.pending_count(&violence_sub), 1);
-        assert_eq!(bus.pending_count(&support_sub), 0);
+        assert!(processed[0].matched_subscriptions.contains(&combat_sub));
+        assert!(!processed[0].matched_subscriptions.contains(&achievement_sub));
+        assert_eq!(bus.pending_count(&combat_sub), 1);
+        assert_eq!(bus.pending_count(&achievement_sub), 0);
     }
 
     #[test]
@@ -1055,7 +962,7 @@ mod tests {
         let sub_id = bus.subscribe(EventFilter::new());
 
         bus.mailboxes.remove(&sub_id);
-        bus.queue(create_violence_event());
+        bus.queue(create_combat_event());
 
         let processed = bus.process_pending().unwrap();
         assert_eq!(processed.len(), 1);
@@ -1072,7 +979,7 @@ mod tests {
             bus.begin_cascade().unwrap();
         }
 
-        bus.queue(create_violence_event());
+        bus.queue(create_combat_event());
         let result = bus.process_pending();
         assert!(result.is_err());
     }
@@ -1082,8 +989,8 @@ mod tests {
         let mut bus = EventBus::new();
         let sub_id = bus.subscribe(EventFilter::new());
 
-        bus.dispatch(create_violence_event(), EventScope::Global);
-        bus.dispatch(create_support_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
+        bus.dispatch(create_achievement_event(), EventScope::Global);
 
         let events = bus.get_events_for(&sub_id);
         assert_eq!(events.len(), 2);
@@ -1094,7 +1001,7 @@ mod tests {
         let mut bus = EventBus::new();
         let sub_id = bus.subscribe(EventFilter::new());
 
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
 
         // Get events twice - should return same results
         let events1 = bus.get_events_for(&sub_id);
@@ -1117,7 +1024,7 @@ mod tests {
         let mut bus = EventBus::new();
         let sub_id = bus.subscribe(EventFilter::new());
 
-        bus.dispatch(create_violence_event(), EventScope::Global);
+        bus.dispatch(create_combat_event(), EventScope::Global);
         assert_eq!(bus.pending_count(&sub_id), 1);
 
         bus.clear_processed();
@@ -1126,7 +1033,7 @@ mod tests {
 
     #[test]
     fn processed_event_debug_and_clone() {
-        let event = create_violence_event();
+        let event = create_combat_event();
         let processed = ProcessedEvent {
             event,
             matched_subscriptions: vec![SubscriptionId::new("sub_1").unwrap()],

@@ -1,9 +1,10 @@
 //! Fluent builder for event construction.
 //!
 //! The builder pattern allows clean construction of events with many
-//! optional fields. Category is auto-derived from EventType.
+//! optional fields.
 
-use crate::enums::{EventPayload, EventTag, EventType, HexacoPath};
+use crate::enums::{EventPayload, EventType, HexacoPath};
+use crate::event::event_spec::EventSpec;
 use crate::event::Event;
 use crate::types::{Duration, EntityId, EventId, MicrosystemId};
 use std::fmt;
@@ -25,34 +26,27 @@ impl std::error::Error for EventBuildError {}
 
 /// Fluent builder for constructing events.
 ///
-/// Use this to create events with clean, readable syntax. The category
-/// is automatically derived from the event type and cannot be set
-/// independently to prevent mismatches.
+/// Use this to create events with clean, readable syntax.
 ///
 /// # Examples
 ///
 /// ```
 /// use eventsim_rs::event::EventBuilder;
-/// use eventsim_rs::enums::{EventType, EventTag, EventPayload, SupportType};
+/// use eventsim_rs::enums::{EventType, EventPayload, SupportType};
 /// use eventsim_rs::types::{EntityId, Duration};
 ///
 /// let helper = EntityId::new("helper_001").unwrap();
 /// let recipient = EntityId::new("recipient_001").unwrap();
 ///
-/// let event = EventBuilder::new(EventType::Support)
+/// let event = EventBuilder::new(EventType::AchieveGoalMajor)
 ///     .source(helper)
 ///     .target(recipient)
 ///     .severity(0.8)
-///     .tag(EventTag::Positive)
 ///     .timestamp(Duration::days(100))
-///     .payload(EventPayload::Support {
-///         support_type: SupportType::Emotional,
-///         effectiveness: 0.9,
-///     })
 ///     .build()
 ///     .unwrap();
 ///
-/// assert_eq!(event.event_type(), EventType::Support);
+/// assert_eq!(event.event_type(), EventType::AchieveGoalMajor);
 /// assert!((event.severity() - 0.8).abs() < f64::EPSILON);
 /// ```
 #[derive(Debug, Clone)]
@@ -62,17 +56,15 @@ pub struct EventBuilder {
     source: Option<EntityId>,
     target: Option<EntityId>,
     severity: f64,
-    tags: Vec<EventTag>,
     payload: Option<EventPayload>,
     timestamp: Duration,
     microsystem_context: Option<MicrosystemId>,
     base_shifts: Vec<(HexacoPath, f32)>,
+    custom_spec: Option<EventSpec>,
 }
 
 impl EventBuilder {
     /// Creates a new builder for the given event type.
-    ///
-    /// The category is automatically derived from the event type.
     ///
     /// # Arguments
     ///
@@ -85,11 +77,28 @@ impl EventBuilder {
             source: None,
             target: None,
             severity: 0.5,
-            tags: Vec::new(),
             payload: None,
             timestamp: Duration::zero(),
             microsystem_context: None,
             base_shifts: Vec::new(),
+            custom_spec: None,
+        }
+    }
+
+    /// Creates a builder for a custom event with explicit EventSpec.
+    #[must_use]
+    pub fn custom(spec: EventSpec) -> Self {
+        EventBuilder {
+            event_type: EventType::Custom,
+            id: None,
+            source: None,
+            target: None,
+            severity: 1.0,
+            payload: None,
+            timestamp: Duration::zero(),
+            microsystem_context: None,
+            base_shifts: Vec::new(),
+            custom_spec: Some(spec),
         }
     }
 
@@ -122,22 +131,6 @@ impl EventBuilder {
     #[must_use]
     pub fn severity(mut self, severity: f64) -> Self {
         self.severity = severity.clamp(0.0, 1.0);
-        self
-    }
-
-    /// Adds a single tag.
-    #[must_use]
-    pub fn tag(mut self, tag: EventTag) -> Self {
-        if !self.tags.contains(&tag) {
-            self.tags.push(tag);
-        }
-        self
-    }
-
-    /// Sets multiple tags at once.
-    #[must_use]
-    pub fn tags(mut self, tags: Vec<EventTag>) -> Self {
-        self.tags = tags;
         self
     }
 
@@ -178,7 +171,7 @@ impl EventBuilder {
     /// use eventsim_rs::event::EventBuilder;
     /// use eventsim_rs::enums::{EventType, HexacoPath};
     ///
-    /// let event = EventBuilder::new(EventType::Violence)
+    /// let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
     ///     .severity(0.9)
     ///     .with_base_shift(HexacoPath::Neuroticism, 0.25)
     ///     .with_base_shift(HexacoPath::Agreeableness, -0.15)
@@ -214,12 +207,15 @@ impl EventBuilder {
         event.set_source(self.source);
         event.set_target(self.target);
         event.set_severity(self.severity);
-        event.set_tags(self.tags);
         // Use provided payload or default to Empty
         event.set_payload(self.payload.unwrap_or(EventPayload::Empty));
         event.set_timestamp(self.timestamp);
         event.set_microsystem_context(self.microsystem_context);
         event.set_base_shifts(self.base_shifts);
+
+        if let Some(spec) = self.custom_spec {
+            event.set_custom_spec(spec);
+        }
 
         Ok(event)
     }
@@ -228,18 +224,18 @@ impl EventBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::enums::{EventCategory, SupportType};
+    use crate::event::event_spec::{ChronicFlags, EventImpact, PermanenceValues};
 
     #[test]
     fn event_builder_minimal() {
-        let event = EventBuilder::new(EventType::Violence).build().unwrap();
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
+            .build()
+            .unwrap();
 
-        assert_eq!(event.event_type(), EventType::Violence);
-        assert_eq!(event.category(), EventCategory::Trauma);
+        assert_eq!(event.event_type(), EventType::ExperienceCombatMilitary);
         assert!(event.source().is_none());
         assert!(event.target().is_none());
         assert!((event.severity() - 0.5).abs() < f64::EPSILON);
-        assert!(event.tags().is_empty());
         // Empty payload is the default
         assert_eq!(event.payload(), &EventPayload::Empty);
         assert!(!event.has_payload_data());
@@ -252,59 +248,46 @@ mod tests {
         let context = MicrosystemId::new("work_001").unwrap();
         let custom_id = EventId::new("custom_evt").unwrap();
 
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .id(custom_id.clone())
             .source(source.clone())
             .target(target.clone())
             .severity(0.9)
-            .tag(EventTag::Positive)
-            .tag(EventTag::Personal)
             .timestamp(Duration::days(50))
             .context(context.clone())
-            .payload(EventPayload::Support {
-                support_type: SupportType::Emotional,
-                effectiveness: 0.85,
-            })
             .build()
             .unwrap();
 
         assert_eq!(event.id(), &custom_id);
-        assert_eq!(event.event_type(), EventType::Support);
-        assert_eq!(event.category(), EventCategory::Social);
+        assert_eq!(event.event_type(), EventType::AchieveGoalMajor);
         assert_eq!(event.source(), Some(&source));
         assert_eq!(event.target(), Some(&target));
         assert!((event.severity() - 0.9).abs() < f64::EPSILON);
-        assert!(event.has_tag(EventTag::Positive));
-        assert!(event.has_tag(EventTag::Personal));
         assert_eq!(event.timestamp().as_days(), 50);
         assert_eq!(event.microsystem_context(), Some(&context));
-        assert!(event.has_payload_data());
     }
 
     #[test]
     fn event_builder_fluent_chain() {
-        let event = EventBuilder::new(EventType::Conflict)
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
             .severity(0.7)
-            .tag(EventTag::Negative)
-            .tag(EventTag::Work)
             .timestamp(Duration::hours(24))
             .build()
             .unwrap();
 
-        assert_eq!(event.event_type(), EventType::Conflict);
+        assert_eq!(event.event_type(), EventType::ExperienceBetrayalTrust);
         assert!((event.severity() - 0.7).abs() < f64::EPSILON);
-        assert_eq!(event.tags().len(), 2);
     }
 
     #[test]
     fn event_builder_severity_clamped() {
-        let event_high = EventBuilder::new(EventType::Violence)
+        let event_high = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .severity(1.5)
             .build()
             .unwrap();
         assert!((event_high.severity() - 1.0).abs() < f64::EPSILON);
 
-        let event_low = EventBuilder::new(EventType::Violence)
+        let event_low = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .severity(-0.5)
             .build()
             .unwrap();
@@ -312,49 +295,15 @@ mod tests {
     }
 
     #[test]
-    fn event_builder_tag_no_duplicates() {
-        let event = EventBuilder::new(EventType::Conflict)
-            .tag(EventTag::Negative)
-            .tag(EventTag::Negative)
-            .build()
-            .unwrap();
-
-        assert_eq!(event.tags().len(), 1);
-    }
-
-    #[test]
-    fn event_builder_tags_replaces_all() {
-        let event = EventBuilder::new(EventType::Conflict)
-            .tag(EventTag::Personal)
-            .tags(vec![EventTag::Work, EventTag::HighStakes])
-            .build()
-            .unwrap();
-
-        assert!(!event.has_tag(EventTag::Personal));
-        assert!(event.has_tag(EventTag::Work));
-        assert!(event.has_tag(EventTag::HighStakes));
-    }
-
-    #[test]
     fn event_builder_auto_generates_id() {
-        let event1 = EventBuilder::new(EventType::Interaction).build().unwrap();
-        let event2 = EventBuilder::new(EventType::Interaction).build().unwrap();
+        let event1 = EventBuilder::new(EventType::AchieveGoalMajor)
+            .build()
+            .unwrap();
+        let event2 = EventBuilder::new(EventType::AchieveGoalMajor)
+            .build()
+            .unwrap();
 
         assert_ne!(event1.id(), event2.id());
-    }
-
-    #[test]
-    fn event_builder_category_auto_derived() {
-        // Category should be derived from event_type, not settable
-        let event = EventBuilder::new(EventType::SocialExclusion)
-            .build()
-            .unwrap();
-        assert_eq!(event.category(), EventCategory::SocialBelonging);
-
-        let event2 = EventBuilder::new(EventType::TraumaticExposure)
-            .build()
-            .unwrap();
-        assert_eq!(event2.category(), EventCategory::Trauma);
     }
 
     #[test]
@@ -368,9 +317,7 @@ mod tests {
 
     #[test]
     fn event_builder_clone() {
-        let builder = EventBuilder::new(EventType::Violence)
-            .severity(0.8)
-            .tag(EventTag::Negative);
+        let builder = EventBuilder::new(EventType::ExperienceCombatMilitary).severity(0.8);
 
         let cloned = builder.clone();
 
@@ -383,15 +330,15 @@ mod tests {
 
     #[test]
     fn event_builder_debug_format() {
-        let builder = EventBuilder::new(EventType::Violence);
+        let builder = EventBuilder::new(EventType::ExperienceCombatMilitary);
         let debug = format!("{:?}", builder);
         assert!(debug.contains("EventBuilder"));
-        assert!(debug.contains("Violence"));
+        assert!(debug.contains("ExperienceCombatMilitary"));
     }
 
     #[test]
     fn event_builder_with_base_shift() {
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .severity(0.9)
             .with_base_shift(HexacoPath::Neuroticism, 0.25)
             .with_base_shift(HexacoPath::Agreeableness, -0.15)
@@ -406,13 +353,15 @@ mod tests {
 
     #[test]
     fn event_builder_no_base_shifts_by_default() {
-        let event = EventBuilder::new(EventType::Violence).build().unwrap();
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
+            .build()
+            .unwrap();
         assert!(!event.has_base_shifts());
     }
 
     #[test]
     fn event_builder_base_shift_clamps_values() {
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Openness, 2.0)
             .with_base_shift(HexacoPath::Extraversion, -2.0)
             .build()
@@ -420,5 +369,35 @@ mod tests {
 
         assert!((event.base_shifts()[0].1 - 1.0).abs() < f32::EPSILON);
         assert!((event.base_shifts()[1].1 - (-1.0)).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_builder_custom_with_spec() {
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                valence: 0.88,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec).severity(0.7).build().unwrap();
+
+        assert_eq!(event.event_type(), EventType::Custom);
+        let spec = event.spec();
+        assert!((spec.impact.valence - 0.88).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_build_error_implements_error_trait() {
+        let error = EventBuildError {
+            reason: "test error".to_string(),
+        };
+        let error_ref: &dyn std::error::Error = &error;
+        // Verify the error trait is implemented
+        assert!(error_ref.to_string().contains("test error"));
+        // source() returns None for this error type
+        assert!(error_ref.source().is_none());
     }
 }

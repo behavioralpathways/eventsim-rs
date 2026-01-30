@@ -343,14 +343,12 @@ impl<'a> EntityQueryHandle<'a> {
     /// - Trauma events are present (AC increases are not reversible)
     /// - Events triggered feedback loops (spirals) - Phase 10+
     fn determine_regression_quality(&self, events: &[&TimestampedEvent]) -> RegressionQuality {
-        use crate::enums::EventCategory;
-
         for te in events {
             let event = te.event();
-            let category = event.category();
+            let spec = event.spec();
 
-            // Trauma events have non-reversible Acquired Capability increases
-            if matches!(category, EventCategory::Trauma) {
+            // Trauma events (AC > 0) have non-reversible Acquired Capability increases
+            if spec.impact.acquired_capability > 0.0 {
                 return RegressionQuality::Approximate;
             }
 
@@ -1222,7 +1220,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add an event 1 day after anchor
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(entity_id.clone())
             .severity(0.7)
             .build()
@@ -1447,7 +1445,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add an event before the anchor (in the past relative to anchor)
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(entity_id.clone())
             .severity(0.7)
             .build()
@@ -1728,7 +1726,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add a trauma event (Violence) before the anchor
-        let trauma_event = EventBuilder::new(EventType::Violence)
+        let trauma_event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.8)
             .build()
@@ -1756,7 +1754,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add a social exclusion event (not trauma) before the anchor
-        let social_event = EventBuilder::new(EventType::SocialExclusion)
+        let social_event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(entity_id.clone())
             .severity(0.5)
             .build()
@@ -1887,7 +1885,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add an event
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.5)
             .build()
@@ -1921,7 +1919,7 @@ mod tests {
         let mut sim = Simulation::new(anchor);
         sim.add_entity(entity, anchor);
 
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(entity_id.clone())
             .severity(0.5)
             .build()
@@ -1963,7 +1961,7 @@ mod tests {
 
         // Add an event at a timestamp BEFORE birth_date
         // This is conceptually invalid but tests the edge case handling
-        let event = EventBuilder::new(EventType::Achievement)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(entity_id.clone())
             .severity(0.5)
             .build()
@@ -2013,7 +2011,7 @@ mod tests {
             baseline_state.get_effective(StatePath::Hexaco(HexacoPath::Agreeableness));
 
         // Add a formative event with a base shift
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.9)
             .with_base_shift(HexacoPath::Agreeableness, -0.15)
@@ -2051,7 +2049,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add a formative event BEFORE the anchor
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.9)
             .with_base_shift(HexacoPath::Agreeableness, -0.15)
@@ -2102,7 +2100,7 @@ mod tests {
             baseline_state.get_effective(StatePath::Hexaco(HexacoPath::Agreeableness));
 
         // Add first formative event
-        let event1 = EventBuilder::new(EventType::Violence)
+        let event1 = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.8)
             .with_base_shift(HexacoPath::Agreeableness, -0.10)
@@ -2111,7 +2109,7 @@ mod tests {
         sim.add_event(event1, anchor + Duration::days(1));
 
         // Add second formative event
-        let event2 = EventBuilder::new(EventType::Violence)
+        let event2 = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.7)
             .with_base_shift(HexacoPath::Agreeableness, -0.08)
@@ -2153,7 +2151,7 @@ mod tests {
             baseline_state.get_effective(StatePath::Hexaco(HexacoPath::Openness));
 
         // Add event WITHOUT base shift
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.8)
             .build()
@@ -2217,7 +2215,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add event with all 6 traits
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.9)
             .with_base_shift(HexacoPath::Openness, 0.10)
@@ -2268,7 +2266,7 @@ mod tests {
             baseline_state.get_effective(StatePath::Hexaco(HexacoPath::Extraversion));
 
         // Add event with positive shift
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(entity_id.clone())
             .severity(0.7)
             .with_base_shift(HexacoPath::Extraversion, 0.15)
@@ -2306,7 +2304,7 @@ mod tests {
         sim.add_entity(entity, anchor);
 
         // Add formative event
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.8)
             .with_base_shift(HexacoPath::Openness, -0.10)
@@ -2348,7 +2346,7 @@ mod tests {
             baseline_state.get_effective(StatePath::Hexaco(HexacoPath::Agreeableness));
 
         // Add formative event in the future
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .target(entity_id.clone())
             .severity(0.9)
             .with_base_shift(HexacoPath::Agreeableness, -0.30)
@@ -2452,7 +2450,7 @@ mod tests {
             .unwrap();
 
         // Create event with base shift at day 100
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Agreeableness, -0.20)
             .build()
             .unwrap();
@@ -2480,7 +2478,7 @@ mod tests {
             .unwrap();
 
         // Event in 2005 - BEFORE entity was born
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Neuroticism, 0.25)
             .build()
             .unwrap();
@@ -2508,7 +2506,7 @@ mod tests {
             .unwrap();
 
         // Event with base shift
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Conscientiousness, -0.15)
             .build()
             .unwrap();
@@ -2536,7 +2534,7 @@ mod tests {
             .unwrap();
 
         // Event in 1960 - before 1970 reference timestamp
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Extraversion, -0.20)
             .build()
             .unwrap();
@@ -2567,7 +2565,7 @@ mod tests {
 
         // Tiny shift: 1e-8 * 0.6 (age plasticity) * 0.15 (trait modifier) = ~9e-10
         // f32::EPSILON is ~1.19e-7, so result should be well below that
-        let event = EventBuilder::new(EventType::Violence)
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary)
             .with_base_shift(HexacoPath::Extraversion, 1e-8)
             .build()
             .unwrap();
@@ -2595,7 +2593,7 @@ mod tests {
             .unwrap();
 
         // POSITIVE shift (not negative) to hit line 877
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .with_base_shift(HexacoPath::Agreeableness, 0.25)
             .build()
             .unwrap();
@@ -2622,14 +2620,14 @@ mod tests {
             .unwrap();
 
         // First positive shift
-        let event1 = EventBuilder::new(EventType::Support)
+        let event1 = EventBuilder::new(EventType::AchieveGoalMajor)
             .with_base_shift(HexacoPath::Agreeableness, 0.30)
             .build()
             .unwrap();
         let te1 = TimestampedEvent::new(event1, Timestamp::from_ymd_hms(2024, 1, 15, 0, 0, 0));
 
         // Second positive shift - should have diminishing returns
-        let event2 = EventBuilder::new(EventType::Support)
+        let event2 = EventBuilder::new(EventType::AchieveGoalMajor)
             .with_base_shift(HexacoPath::Agreeableness, 0.30)
             .build()
             .unwrap();

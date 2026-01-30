@@ -498,7 +498,8 @@ mod tests {
 
         assert_eq!(entity.life_stage(), LifeStage::YoungAdult);
 
-        let event = EventBuilder::new(EventType::Betrayal).build().unwrap();
+        // Use EndRelationshipRomantic which maps to Intimacy category
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic).build().unwrap();
         let modified =
             apply_developmental_effects(&entity, &event, 1.0, 730, timestamp_for_days(730));
 
@@ -516,7 +517,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Violence).build().unwrap();
+        let event = EventBuilder::new(EventType::ExperienceCombatMilitary).build().unwrap();
         let modified = apply_developmental_effects(
             &entity,
             &event,
@@ -541,7 +542,8 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Support).build().unwrap();
+        // Use ExperienceBetrayalTrust which maps to Attachment category
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust).build().unwrap();
         let base_impact = 0.5;
         let modified = apply_developmental_effects(
             &entity,
@@ -565,7 +567,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Achievement).build().unwrap();
+        let event = EventBuilder::new(EventType::AchieveGoalMajor).build().unwrap();
         let original_age = entity.age();
 
         let result1 = apply_developmental_effects(
@@ -595,7 +597,8 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Empowerment).build().unwrap();
+        // Use DevelopIllnessChronic which maps to Identity category
+        let event = EventBuilder::new(EventType::DevelopIllnessChronic).build().unwrap();
         let modified = apply_developmental_effects(
             &entity,
             &event,
@@ -617,7 +620,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Realization).build().unwrap();
+        let event = EventBuilder::new(EventType::ExperienceAwarenessMortality).build().unwrap();
         let modified = apply_developmental_effects(
             &entity,
             &event,
@@ -639,7 +642,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Support).build().unwrap();
+        let event = EventBuilder::new(EventType::AchieveGoalMajor).build().unwrap();
         let modified = apply_developmental_effects(
             &entity,
             &event,
@@ -658,7 +661,8 @@ mod tests {
             .build()
             .unwrap();
 
-        let event = EventBuilder::new(EventType::Conflict).build().unwrap();
+        // Use ExperienceBetrayalTrust which maps to Attachment category
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust).build().unwrap();
         let modified = apply_developmental_effects(
             &entity,
             &event,

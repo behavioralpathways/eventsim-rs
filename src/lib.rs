@@ -69,13 +69,13 @@ pub use entity::{AffectiveState, Entity, EntityBuildError, EntityBuilder, Physio
 pub use enums::{
     AlertSeverity, AlertTrigger, Attribution, AttributionStability, BirthEra, BondType,
     ChronosystemPath, ContextPath, Direction, DirectionalPath, DispositionPath, EducationPath,
-    Emotion, EventCategory, EventPayload, EventScope, EventTag, EventType, ExosystemPath,
-    FamilyPath, HealthcarePath, HexacoPath, HistoricalEventType, HistoricalScope, InteractionTopic,
-    LifeDomain, LifeStage, LossType, MacrosystemPath, MentalHealthPath, MicrosystemPath, MoodPath,
-    NeedsPath, NeighborhoodPath, PersonCharacteristicsPath, PersonalityProfile, PolicyArea,
-    RealizationType, RelPath, RelationshipSchema, ReligiousPath, ReversibilityError,
-    ReversibilityResult, SharedPath, SocialCognitionPath, SocialPath, Species, SpiralType,
-    StatePath, SubsystemId, SupportType, TraumaType, TrustPath, WeaponType, WorkPath,
+    Emotion, EventPayload, EventScope, EventType, ExosystemPath, FamilyPath, HealthcarePath,
+    HexacoPath, HistoricalEventType, HistoricalScope, InteractionTopic, LifeDomain, LifeStage,
+    LossType, MacrosystemPath, MentalHealthPath, MicrosystemPath, MoodPath, NeedsPath,
+    NeighborhoodPath, PersonCharacteristicsPath, PersonalityProfile, PolicyArea, RealizationType,
+    RelPath, RelationshipSchema, ReligiousPath, ReversibilityError, ReversibilityResult,
+    SharedPath, SocialCognitionPath, SocialPath, Species, SpiralType, StatePath, SubsystemId,
+    SupportType, TraumaType, TrustPath, WeaponType, WorkPath,
 };
 
 // Re-export context types at crate root

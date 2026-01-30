@@ -19,7 +19,7 @@
 //! use eventsim_rs::enums::{EventType, EventScope};
 //!
 //! // Build an event
-//! let event = EventBuilder::new(EventType::Violence)
+//! let event = EventBuilder::new(EventType::EndRelationshipRomantic)
 //!     .severity(0.8)
 //!     .build()
 //!     .unwrap();

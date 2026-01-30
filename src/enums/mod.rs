@@ -41,7 +41,7 @@ pub use event_payload::{
     PolicyArea, RealizationType, SupportType, TraumaType, WeaponType,
 };
 pub use event_scope::EventScope;
-pub use event_type::{EventCategory, EventTag, EventType};
+pub use event_type::EventType;
 pub use life_stage::LifeStage;
 pub use personality_profile::PersonalityProfile;
 pub use rel_path::{Direction, DirectionalPath, RelPath, SharedPath, TrustPath};

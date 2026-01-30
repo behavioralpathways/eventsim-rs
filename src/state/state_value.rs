@@ -314,6 +314,24 @@ impl StateValue {
         self.base = base;
     }
 
+    /// Shifts the base value by adding an amount.
+    ///
+    /// This is used for permanent changes from events (e.g., trauma
+    /// permanently shifting baseline affect).
+    ///
+    /// # Arguments
+    ///
+    /// * `amount` - The amount to add to the base (can be negative)
+    pub fn shift_base(&mut self, amount: f32) {
+        self.base += amount;
+    }
+
+    /// Returns the chronic delta value.
+    #[must_use]
+    pub fn chronic_delta(&self) -> f32 {
+        self.chronic_delta
+    }
+
     /// Adds to the delta value.
     ///
     /// Delta accumulates from acute events.

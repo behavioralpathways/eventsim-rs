@@ -342,7 +342,7 @@ mod tests {
     #[test]
     fn builder_add_event() {
         let target = EntityId::new("person_001").unwrap();
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(target.clone())
             .severity(0.7)
             .build()
@@ -362,7 +362,7 @@ mod tests {
     fn builder_event_with_valid_source_succeeds() {
         let source = EntityId::new("person_001").unwrap();
         let target = EntityId::new("person_002").unwrap();
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .source(source.clone())
             .target(target.clone())
             .severity(0.7)
@@ -384,7 +384,7 @@ mod tests {
     #[test]
     fn builder_event_unknown_target_fails() {
         let target = EntityId::new("unknown").unwrap();
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(target.clone())
             .severity(0.7)
             .build()
@@ -407,7 +407,7 @@ mod tests {
     fn builder_event_unknown_source_fails() {
         let source = EntityId::new("unknown_source").unwrap();
         let target = EntityId::new("person_001").unwrap();
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .source(source.clone())
             .target(target.clone())
             .severity(0.7)
@@ -527,7 +527,7 @@ mod tests {
         let alice_id = EntityId::new("alice").unwrap();
         let bob_id = EntityId::new("bob").unwrap();
 
-        let event = EventBuilder::new(EventType::Interaction)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(alice_id.clone())
             .build()
             .unwrap();
@@ -596,7 +596,7 @@ mod tests {
     #[test]
     fn event_without_target_allowed() {
         // Events without targets (broadcast events) are allowed
-        let event = EventBuilder::new(EventType::PolicyChange)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .severity(0.5)
             .build()
             .unwrap();

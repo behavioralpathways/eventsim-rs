@@ -168,7 +168,7 @@ impl std::fmt::Display for StakesLevel {
 /// assert_eq!(vuln.vulnerability_type(), VulnerabilityType::Resources);
 /// assert_eq!(vuln.stakes(), StakesLevel::High);
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Vulnerability {
     /// What type of thing is at risk.
     vulnerability_type: VulnerabilityType,
@@ -220,14 +220,6 @@ impl Vulnerability {
     }
 }
 
-impl Default for Vulnerability {
-    fn default() -> Self {
-        Vulnerability {
-            vulnerability_type: VulnerabilityType::default(),
-            stakes: StakesLevel::default(),
-        }
-    }
-}
 
 impl std::fmt::Display for Vulnerability {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

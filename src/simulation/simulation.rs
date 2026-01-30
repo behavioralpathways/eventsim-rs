@@ -349,7 +349,7 @@ impl Simulation {
     /// let mut sim = Simulation::new(reference);
     ///
     /// let target = EntityId::new("person_001").unwrap();
-    /// let event = EventBuilder::new(EventType::SocialExclusion)
+    /// let event = EventBuilder::new(EventType::EndRelationshipRomantic)
     ///     .target(target.clone())
     ///     .severity(0.7)
     ///     .build()
@@ -576,7 +576,7 @@ mod tests {
         let mut sim = create_simulation();
         let target = EntityId::new("person_001").unwrap();
 
-        let event = EventBuilder::new(EventType::SocialExclusion)
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(target.clone())
             .severity(0.7)
             .build()
@@ -600,7 +600,7 @@ mod tests {
         let rel_id =
             sim.add_relationship(alice.clone(), bob.clone(), RelationshipSchema::Peer, formed);
 
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .source(alice)
             .target(bob.clone())
             .severity(1.0)
@@ -627,7 +627,7 @@ mod tests {
         let rel_id =
             sim.add_relationship(alice.clone(), bob.clone(), RelationshipSchema::Peer, formed);
 
-        let event = EventBuilder::new(EventType::Support)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .source(alice)
             .target(bob.clone())
             .severity(1.0)
@@ -701,21 +701,21 @@ mod tests {
         let person2 = EntityId::new("person_002").unwrap();
 
         // Event for person1
-        let event1 = EventBuilder::new(EventType::SocialExclusion)
+        let event1 = EventBuilder::new(EventType::EndRelationshipRomantic)
             .target(person1.clone())
             .build()
             .unwrap();
         sim.add_event(event1, Timestamp::from_ymd_hms(2024, 1, 10, 0, 0, 0));
 
         // Event for person2
-        let event2 = EventBuilder::new(EventType::SocialInclusion)
+        let event2 = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(person2.clone())
             .build()
             .unwrap();
         sim.add_event(event2, Timestamp::from_ymd_hms(2024, 1, 11, 0, 0, 0));
 
         // Event for person1
-        let event3 = EventBuilder::new(EventType::Achievement)
+        let event3 = EventBuilder::new(EventType::AchieveGoalMajor)
             .target(person1.clone())
             .build()
             .unwrap();
@@ -735,7 +735,7 @@ mod tests {
 
         // Add events at different times
         for day in [5, 10, 15, 20, 25] {
-            let event = EventBuilder::new(EventType::Interaction)
+            let event = EventBuilder::new(EventType::AchieveGoalMajor)
                 .target(target.clone())
                 .build()
                 .unwrap();
@@ -805,7 +805,7 @@ mod tests {
 
     #[test]
     fn timestamped_event_accessors() {
-        let event = EventBuilder::new(EventType::Interaction)
+        let event = EventBuilder::new(EventType::AchieveGoalMajor)
             .severity(0.5)
             .build()
             .unwrap();
@@ -923,7 +923,7 @@ mod tests {
         let target = EntityId::new("person").unwrap();
 
         for _ in 0..5 {
-            let event = EventBuilder::new(EventType::Interaction)
+            let event = EventBuilder::new(EventType::AchieveGoalMajor)
                 .target(target.clone())
                 .build()
                 .unwrap();
@@ -988,7 +988,7 @@ mod tests {
 
     #[test]
     fn timestamped_event_debug() {
-        let event = EventBuilder::new(EventType::Interaction).build().unwrap();
+        let event = EventBuilder::new(EventType::AchieveGoalMajor).build().unwrap();
         let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
         let te = TimestampedEvent::new(event, ts);
 
@@ -998,7 +998,7 @@ mod tests {
 
     #[test]
     fn timestamped_event_clone() {
-        let event = EventBuilder::new(EventType::Interaction).build().unwrap();
+        let event = EventBuilder::new(EventType::AchieveGoalMajor).build().unwrap();
         let ts = Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0);
         let te = TimestampedEvent::new(event, ts);
         let cloned = te.clone();

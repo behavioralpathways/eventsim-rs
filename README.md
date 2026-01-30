@@ -15,6 +15,7 @@ A Rust crate that simulates how entities think, feel, relate, and change over ti
 
 - [Introduction](introduction.md) - Core concepts and theoretical foundations
 - [Getting Started](getting-started.md) - Setup and basic usage
+- [Event System](getting-started.md#event-system) - Using and creating events
 - [Longitudinal Tests](tests/longitudinal/) - Complex multi-year simulation examples
 - [API Reference](api.md) - Complete API documentation
 

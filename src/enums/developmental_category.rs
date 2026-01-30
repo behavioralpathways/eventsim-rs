@@ -41,6 +41,7 @@ pub enum DevelopmentalCategory {
     Intimacy,
 
     /// Generativity vs Stagnation (middle adult) - nurturing and mentoring events.
+    #[allow(dead_code)]
     Generativity,
 
     /// Integrity vs Despair (late adult) - meaning-making and life review events.
@@ -91,67 +92,45 @@ impl From<&EventType> for DevelopmentalCategory {
     ///
     /// # Mapping Rationale
     ///
-    /// - **Attachment**: Social support/conflict/rejection - trust building/breaking
-    /// - **Industry**: Achievement/failure - competence development
-    /// - **Identity**: Status change, role transition, identity crisis - role definition
-    /// - **Intimacy**: Close relationship events - connection and betrayal
-    /// - **Generativity**: Caregiving and mentoring - guiding next generation
-    /// - **Integrity**: Life review and legacy - meaning-making
-    /// - **Neutral**: Cross-stage events (violence, trauma, loss, routine)
+    /// - **Attachment**: Betrayal affects trust building/breaking
+    /// - **Industry**: Achievement - competence development
+    /// - **Identity**: Chronic illness - identity transformation
+    /// - **Intimacy**: Relationship end - close relationship events
+    /// - **Integrity**: Mortality awareness - meaning-making
+    /// - **Neutral**: Combat, self-harm - cross-stage events (trauma/violence)
     fn from(event_type: &EventType) -> Self {
         match event_type {
             // Attachment category - trust building/breaking
-            EventType::Support => DevelopmentalCategory::Attachment,
-            EventType::Conflict => DevelopmentalCategory::Attachment,
-            EventType::SocialExclusion => DevelopmentalCategory::Attachment,
-            EventType::SocialInclusion => DevelopmentalCategory::Attachment,
-            // TB pathway events are attachment-related
-            EventType::Rejection => DevelopmentalCategory::Attachment,
-            EventType::SocialIsolation => DevelopmentalCategory::Attachment,
-            EventType::GroupExclusion => DevelopmentalCategory::Attachment,
+            EventType::ExperienceBetrayalTrust => DevelopmentalCategory::Attachment,
 
             // Industry category - competence
-            EventType::Achievement => DevelopmentalCategory::Industry,
-            EventType::Failure => DevelopmentalCategory::Industry,
-            // Financial burden affects competence perception
-            EventType::FinancialBurden => DevelopmentalCategory::Industry,
-            EventType::JobLoss => DevelopmentalCategory::Industry,
+            EventType::AchieveGoalMajor => DevelopmentalCategory::Industry,
 
-            // Identity category - role definition
-            EventType::Humiliation => DevelopmentalCategory::Identity,
-            EventType::Empowerment => DevelopmentalCategory::Identity,
-            EventType::ContextTransition => DevelopmentalCategory::Identity,
-            // Shaming affects identity
-            EventType::ShamingEvent => DevelopmentalCategory::Identity,
-            EventType::ChronicIllnessOnset => DevelopmentalCategory::Identity,
+            // Identity category - identity transformation
+            EventType::DevelopIllnessChronic => DevelopmentalCategory::Identity,
 
             // Intimacy category - close relationships
-            EventType::Betrayal => DevelopmentalCategory::Intimacy,
-            EventType::RelationshipEnd => DevelopmentalCategory::Intimacy,
-            EventType::Bereavement => DevelopmentalCategory::Intimacy,
-
-            // Generativity category - guiding others
-            EventType::BurdenFeedback => DevelopmentalCategory::Generativity,
-            EventType::FamilyDiscord => DevelopmentalCategory::Generativity,
+            EventType::EndRelationshipRomantic => DevelopmentalCategory::Intimacy,
+            EventType::ExperienceConflictFamily => DevelopmentalCategory::Intimacy,
+            EventType::ExperienceConflictInterpersonal => DevelopmentalCategory::Intimacy,
 
             // Integrity category - meaning-making
-            EventType::Realization => DevelopmentalCategory::Integrity,
-            EventType::HistoricalEvent => DevelopmentalCategory::Integrity,
-            EventType::SuicidalLoss => DevelopmentalCategory::Integrity,
+            EventType::ExperienceAwarenessMortality => DevelopmentalCategory::Integrity,
+
+            // Attachment category - trust building/breaking (additional)
+            EventType::ExperienceExclusionGroup => DevelopmentalCategory::Attachment,
+            EventType::ExperienceExclusionPeer => DevelopmentalCategory::Attachment,
+            EventType::ExperienceInclusionPeer => DevelopmentalCategory::Attachment,
+            EventType::ExperienceIsolationChronic => DevelopmentalCategory::Attachment,
+            EventType::ExperienceRejectionFamily => DevelopmentalCategory::Attachment,
 
             // Neutral category - cross-stage events (trauma/violence)
-            EventType::Violence => DevelopmentalCategory::Neutral,
-            EventType::TraumaticExposure => DevelopmentalCategory::Neutral,
-            EventType::Loss => DevelopmentalCategory::Neutral,
-            EventType::Interaction => DevelopmentalCategory::Neutral,
-            EventType::PolicyChange => DevelopmentalCategory::Neutral,
-            // AC pathway events are generally cross-stage (trauma/violence)
-            EventType::NonSuicidalSelfInjury => DevelopmentalCategory::Neutral,
-            EventType::ChildhoodAbuse => DevelopmentalCategory::Neutral,
-            EventType::CombatExposure => DevelopmentalCategory::Neutral,
-            EventType::PhysicalInjury => DevelopmentalCategory::Neutral,
-            EventType::ViolenceExposure => DevelopmentalCategory::Neutral,
-            EventType::PriorSuicideAttempt => DevelopmentalCategory::Neutral,
+            EventType::EngageSelfharmNonsuicidal => DevelopmentalCategory::Neutral,
+            EventType::ExperienceCombatMilitary => DevelopmentalCategory::Neutral,
+            EventType::ExperienceHumiliationPublic => DevelopmentalCategory::Neutral,
+
+            // Custom events are neutral by default
+            EventType::Custom => DevelopmentalCategory::Neutral,
         }
     }
 }
@@ -215,68 +194,41 @@ mod tests {
     // --- EventType to DevelopmentalCategory mapping tests ---
 
     #[test]
-    fn event_type_maps_to_category() {
-        // Attachment events
+    fn betrayal_maps_to_attachment() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Support),
+            DevelopmentalCategory::from(&EventType::ExperienceBetrayalTrust),
             DevelopmentalCategory::Attachment
         );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::Conflict),
-            DevelopmentalCategory::Attachment
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::SocialExclusion),
-            DevelopmentalCategory::Attachment
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::SocialInclusion),
-            DevelopmentalCategory::Attachment
-        );
+    }
 
-        // Industry events
+    #[test]
+    fn achievement_maps_to_industry() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Achievement),
+            DevelopmentalCategory::from(&EventType::AchieveGoalMajor),
             DevelopmentalCategory::Industry
         );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::Failure),
-            DevelopmentalCategory::Industry
-        );
+    }
 
-        // Identity events
+    #[test]
+    fn chronic_illness_maps_to_identity() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Humiliation),
+            DevelopmentalCategory::from(&EventType::DevelopIllnessChronic),
             DevelopmentalCategory::Identity
         );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::Empowerment),
-            DevelopmentalCategory::Identity
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::ContextTransition),
-            DevelopmentalCategory::Identity
-        );
+    }
 
-        // Intimacy events
+    #[test]
+    fn relationship_end_maps_to_intimacy() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Betrayal),
+            DevelopmentalCategory::from(&EventType::EndRelationshipRomantic),
             DevelopmentalCategory::Intimacy
         );
+    }
 
-        // Generativity events
+    #[test]
+    fn mortality_awareness_maps_to_integrity() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::BurdenFeedback),
-            DevelopmentalCategory::Generativity
-        );
-
-        // Integrity events
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::Realization),
-            DevelopmentalCategory::Integrity
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::HistoricalEvent),
+            DevelopmentalCategory::from(&EventType::ExperienceAwarenessMortality),
             DevelopmentalCategory::Integrity
         );
     }
@@ -284,23 +236,15 @@ mod tests {
     #[test]
     fn neutral_events_map_to_neutral() {
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Violence),
+            DevelopmentalCategory::from(&EventType::EngageSelfharmNonsuicidal),
             DevelopmentalCategory::Neutral
         );
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::TraumaticExposure),
+            DevelopmentalCategory::from(&EventType::ExperienceCombatMilitary),
             DevelopmentalCategory::Neutral
         );
         assert_eq!(
-            DevelopmentalCategory::from(&EventType::Loss),
-            DevelopmentalCategory::Neutral
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::Interaction),
-            DevelopmentalCategory::Neutral
-        );
-        assert_eq!(
-            DevelopmentalCategory::from(&EventType::PolicyChange),
+            DevelopmentalCategory::from(&EventType::Custom),
             DevelopmentalCategory::Neutral
         );
     }

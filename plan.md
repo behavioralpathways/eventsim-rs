@@ -41,6 +41,67 @@ The boolean flags `(affects_tb, affects_pb, affects_ac)` are essentially dead co
 
 ---
 
+## Part 1.5: What Gets Removed
+
+**This is a complete replacement, not an addition.**
+
+### Removed: Old EventType Variants
+
+The following EventType variants are REMOVED:
+
+```
+Interaction, SocialExclusion, SocialInclusion, BurdenFeedback, Betrayal,
+Support, Conflict, Violence, Humiliation, Empowerment, Achievement, Failure,
+Loss, PolicyChange, ContextTransition, HistoricalEvent, Realization,
+TraumaticExposure, Rejection, SocialIsolation, Bereavement, RelationshipEnd,
+GroupExclusion, ShamingEvent, FinancialBurden, JobLoss, ChronicIllnessOnset,
+FamilyDiscord, NonSuicidalSelfInjury, ChildhoodAbuse, CombatExposure,
+PhysicalInjury, ViolenceExposure, PriorSuicideAttempt, SuicidalLoss
+```
+
+These are replaced with new variants that match spec file names (see Part 3).
+
+### Removed: EventCategory Enum
+
+The `EventCategory` enum is ELIMINATED entirely:
+
+```rust
+// REMOVED - no longer exists
+pub enum EventCategory {
+    SocialBelonging,
+    BurdenPerception,
+    Trauma,
+    Control,
+    Achievement,
+    Social,
+    Contextual,
+}
+```
+
+Category-based routing is replaced by spec-based routing.
+
+### Removed: Category Methods on EventType
+
+These methods are REMOVED from EventType:
+
+- `category()` - no longer needed
+- `its_pathways()` - no longer needed
+- `affects_tb()` - no longer needed
+- `affects_pb()` - no longer needed
+- `affects_ac()` - no longer needed
+- `is_multi_pathway()` - no longer needed
+
+### Breaking Changes
+
+This is a **breaking change**. Code that references:
+- Old EventType variants
+- EventCategory enum
+- category() or its_pathways() methods
+
+...will fail to compile and must be updated.
+
+---
+
 ## Part 2: The Solution
 
 ### Core Insight
@@ -304,34 +365,29 @@ All research agents use this permanence scale:
 
 ## Part 5: Rust Implementation
 
-### Event Type Enum
+### Event Type Enum (COMPLETE REPLACEMENT)
+
+The old EventType enum is **completely replaced**. New variants are derived from spec file names:
+
+- `achieve_goal_major.rs` -> `AchieveGoalMajor`
+- `end_relationship_romantic.rs` -> `EndRelationshipRomantic`
+- `lose_job_layoff.rs` -> `LoseJobLayoff`
+- etc.
 
 ```rust
 // src/enums/event_type.rs
+// NOTE: This REPLACES the old enum entirely - no old variants remain
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EventType {
-    // TB Pathway
-    ExperienceExclusionPeer,
-    ExperienceInclusionPeer,
-    ExperienceRejectionRomantic,
+    // Derived from spec files (snake_case file -> PascalCase variant)
+    AchieveGoalMajor,
+    DevelopIllnessChronic,
     EndRelationshipRomantic,
-    // ...
-
-    // PB Pathway
-    ReceiveFeedbackBurden,
-    ExperienceShamingPublic,
-    // ...
-
-    // AC Pathway
-    SufferViolencePhysical,
-    SurviveAttemptSuicide,
-    // ...
-
-    // Multi-Pathway
-    LoseJobLayoff,
-    LoseJobFired,
-    LosePersonDeath,
-    // ...
+    EngageSelfharmNonsuicidal,
+    ExperienceAwarenessMortality,
+    ExperienceBetrayalTrust,
+    ExperienceCombatMilitary,
+    // ... more as spec files are created
 
     /// Custom event with developer-provided EventSpec.
     Custom,
@@ -513,16 +569,20 @@ fn five_breakups_produce_realistic_permanent_shift() {
 ### Phase 3: Integration
 
 - [ ] Add `src/event/types/mod.rs` exporting all event modules
-- [ ] Update `EventType` enum to use new spec() method
-- [ ] Wire EventSpec into event processor
-- [ ] Remove old category-based routing
+- [ ] **REPLACE** `EventType` enum variants with new ones matching spec files
+- [ ] **REMOVE** `EventCategory` enum entirely
+- [ ] **REMOVE** `category()`, `its_pathways()`, `affects_tb/pb/ac()`, `is_multi_pathway()` methods
+- [ ] Add `spec()` method that returns EventSpec for each variant
+- [ ] Wire EventSpec into event processor (replace category-based routing)
+- [ ] Add `Custom` variant for developer-provided specs
 
-### Phase 4: Cleanup
+### Phase 4: Fix Broken Code
 
-- [ ] Remove `EventType::category()` method
-- [ ] Remove `EventType::its_pathways()` method
-- [ ] Remove `EventCategory` enum (or keep for documentation only)
-- [ ] Update all tests to use new architecture
+- [ ] Update Event struct to use new EventType variants
+- [ ] Update EventBuilder to use new EventType variants
+- [ ] Update processor to use spec-based routing only
+- [ ] Update all tests to use new EventType variants
+- [ ] Remove any remaining references to old variants or EventCategory
 
 ### Phase 5: Validation
 
@@ -563,9 +623,11 @@ src/event/
 ### Files to Modify
 
 ```
-src/enums/event_type.rs        <- Add spec() method
-src/event/event.rs             <- Use EventSpec
-src/processor/event.rs         <- Replace category routing
+src/enums/event_type.rs        <- REPLACE enum variants, REMOVE EventCategory, ADD spec()
+src/event/event.rs             <- Update to use new EventType variants
+src/event/event_builder.rs     <- Update to use new EventType variants
+src/processor/event.rs         <- REMOVE category routing, USE spec-based routing
+tests/**                       <- Update all tests using old EventType variants
 ```
 
 ---

@@ -116,7 +116,7 @@ sim.add_entity(person, anchor_time);
 use eventsim_rs::event::EventBuilder;
 use eventsim_rs::enums::EventType;
 
-let event = EventBuilder::new(EventType::SocialExclusion)
+let event = EventBuilder::new(EventType::ExperienceExclusionPeer)
     .severity(0.7)
     .target(person_id.clone())
     .build()?;
@@ -145,7 +145,7 @@ use eventsim_rs::event::EventBuilder;
 use eventsim_rs::enums::{EventType, HexacoPath};
 
 // Severe betrayal permanently decreases Agreeableness and increases Neuroticism
-let betrayal = EventBuilder::new(EventType::Betrayal)
+let betrayal = EventBuilder::new(EventType::ExperienceBetrayalTrust)
     .target(person_id.clone())
     .severity(0.9)
     .with_base_shift(HexacoPath::Agreeableness, -0.25)
@@ -296,7 +296,7 @@ This pattern allows you to:
 The library doesn't know about your game's context (wealth, status, inventory). **You** compute severity based on your domain:
 
 ```rust
-// Poor person wins lottery
+// Poor person wins lottery (achieves major goal)
 let severity = if person.wealth < 10_000 {
     0.95  // Life-changing
 } else if person.wealth > 1_000_000 {
@@ -305,7 +305,7 @@ let severity = if person.wealth < 10_000 {
     0.7   // Significant
 };
 
-let lottery = EventBuilder::new(EventType::Achievement)
+let lottery = EventBuilder::new(EventType::AchieveGoalMajor)
     .severity(severity)
     .build()?;
 ```
@@ -319,38 +319,165 @@ But domain context (rich vs poor) is yours to handle.
 
 ---
 
-## Event Types: Map Your Domain to Psychology
+## Event System
 
-The library has 35 event types across 8 categories, including specific ITS (suicide risk) pathway events:
+The event system gives you two ways to model psychological change:
 
-| Your Game Event | Library EventType | ITS Pathway |
-|-----------------|-------------------|-------------|
-| Won lottery | `Achievement` | - |
-| Got promoted | `Achievement` + `Empowerment` | - |
-| Got fired | `JobLoss` | TB + PB (multi-pathway) |
-| Friend betrayed you | `Betrayal` | - |
-| Hit by car | `PhysicalInjury` | AC |
-| Excluded from party | `GroupExclusion` | TB |
-| Spouse died | `Bereavement` | TB + PB (multi-pathway) |
-| Witnessed violence | `ViolenceExposure` | AC |
-| Self-harming behavior | `NonSuicidalSelfInjury` | AC |
-| Combat veteran | `CombatExposure` | AC |
-| Being shamed by family | `ShamingEvent` | PB |
-| Living alone long-term | `SocialIsolation` | TB |
+- **Option A:** Use pre-built EventTypes with researched impact values
+- **Option B:** Create custom events with your own specifications
 
-### Multi-Pathway Events
+Both approaches are first-class citizens. The built-in types are conveniences based on psychological research, not requirements. You have full control to define any psychological impact your application needs.
 
-Some events affect multiple ITS pathways simultaneously:
+---
+
+### Option A: Pre-built EventTypes
+
+The library includes researched event types with impact values across 22 psychological dimensions. These are based on psychological literature and provide sensible defaults for common life events.
 
 ```rust
-// Check if an event affects multiple pathways
-if event_type.is_multi_pathway() {
-    let (affects_tb, affects_pb, affects_ac) = event_type.its_pathways();
-    // JobLoss -> (true, true, false) - affects both TB and PB
-}
+use eventsim_rs::event::EventBuilder;
+use eventsim_rs::enums::EventType;
+
+let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+    .severity(0.8)
+    .target(person_id.clone())
+    .build()?;
+
+sim.add_event(event, event_time);
 ```
 
-See `src/enums/event_type.rs` for all 35 types and their psychological categories.
+**Available EventTypes:**
+
+| EventType | Description |
+|-----------|-------------|
+| `AchieveGoalMajor` | Achievement of a major life goal (graduating, career milestone) |
+| `DevelopIllnessChronic` | Development of a chronic illness (diabetes, heart disease) |
+| `EndRelationshipRomantic` | End of a romantic relationship (breakup, divorce) |
+| `EngageSelfharmNonsuicidal` | Non-suicidal self-injury (NSSI) |
+| `ExperienceAwarenessMortality` | Acute awareness of one's own mortality |
+| `ExperienceBetrayalTrust` | Significant betrayal of trust by someone close |
+| `ExperienceCombatMilitary` | Direct participation in military combat |
+| `ExperienceConflictFamily` | Conflict within the family unit |
+| `ExperienceConflictInterpersonal` | Interpersonal conflict outside of family |
+| `ExperienceExclusionGroup` | Exclusion from a group or organization |
+| `ExperienceExclusionPeer` | Exclusion by peers (social rejection) |
+| `ExperienceHumiliationPublic` | Public humiliation or embarrassment |
+| `ExperienceInclusionPeer` | Inclusion and acceptance by peers |
+| `ExperienceIsolationChronic` | Chronic social isolation over extended period |
+
+Use `EventType::all()` to list all available types programmatically.
+
+---
+
+### Option B: Custom Events
+
+For events specific to your domain, or when you need precise control over psychological impacts, create custom events with your own EventSpec:
+
+```rust
+use eventsim_rs::event::{EventBuilder, Event};
+use eventsim_rs::event::event_spec::{EventSpec, EventImpact, ChronicFlags, PermanenceValues};
+
+let spec = EventSpec {
+    impact: EventImpact {
+        valence: -0.5,
+        arousal: 0.3,
+        dominance: -0.2,
+        stress: 0.4,
+        loneliness: 0.2,
+        ..Default::default()  // All other dimensions = 0.0
+    },
+    chronic: ChronicFlags {
+        stress: true,  // Stress decays slowly (weeks/months)
+        ..Default::default()  // All others decay fast (hours/days)
+    },
+    permanence: PermanenceValues {
+        loneliness: 0.1,  // 10% of loneliness impact is permanent
+        ..Default::default()  // All others are fully temporary
+    },
+};
+
+let event = Event::custom(spec);
+
+// Or via builder with severity and target:
+let event = EventBuilder::custom(spec)
+    .severity(0.7)
+    .target(person_id.clone())
+    .build()?;
+```
+
+Custom events work exactly like built-in types. They go through the same processing pipeline and can model any psychological scenario your application requires.
+
+---
+
+### Understanding EventSpec
+
+Every event (built-in or custom) is defined by an EventSpec with three components:
+
+| Component | Description |
+|-----------|-------------|
+| `impact` | Base impact values for all 22 dimensions (-1.0 to 1.0) |
+| `chronic` | Per-dimension flags: `true` = slow decay (weeks/months), `false` = fast decay (hours/days) |
+| `permanence` | Per-dimension values (0.0 to 1.0): fraction of impact that becomes a permanent base shift |
+
+**Inspecting a built-in spec:**
+
+```rust
+let spec = EventType::EndRelationshipRomantic.spec();
+println!("Valence impact: {}", spec.impact.valence);      // -0.55
+println!("Loneliness impact: {}", spec.impact.loneliness); // 0.35
+```
+
+**How `spec.apply(severity)` works:**
+
+When an event is applied, it splits into three delta types based on chronic flags and permanence values:
+
+```rust
+let deltas = spec.apply(0.8);  // Apply at 80% severity
+
+deltas.permanent  // Permanent base shifts (impact * severity * permanence)
+deltas.acute      // Fast-decaying temporary effects (non-chronic, non-permanent portion)
+deltas.chronic    // Slow-decaying temporary effects (chronic, non-permanent portion)
+```
+
+This allows a single event to have both immediate effects that fade quickly and lasting effects that persist.
+
+---
+
+### The 22 Psychological Dimensions
+
+Events can impact any of these dimensions:
+
+**Mood (PAD)**
+- `valence` - Positive/negative feeling (-1 to 1)
+- `arousal` - Activation level (-1 to 1)
+- `dominance` - Sense of control (-1 to 1)
+
+**Needs**
+- `fatigue` - Energy depletion (0 to 1)
+- `stress` - Accumulated pressure (0 to 1)
+- `purpose` - Sense of meaning (-1 to 1)
+
+**Social Cognition**
+- `loneliness` - Social disconnection (0 to 1)
+- `prc` - Perceived reciprocal caring (-1 to 1)
+- `perceived_liability` - Feeling like a burden (0 to 1)
+- `self_hate` - Self-directed negativity (0 to 1)
+- `perceived_competence` - Self-efficacy (-1 to 1)
+
+**Mental Health**
+- `depression` - Persistent low mood (0 to 1)
+- `self_worth` - Global self-valuation (-1 to 1)
+- `hopelessness` - Future pessimism (0 to 1)
+- `interpersonal_hopelessness` - Relationship pessimism (0 to 1)
+- `acquired_capability` - Habituation to pain/fear (0 to 1, always permanent)
+
+**Disposition**
+- `impulse_control` - Self-regulation (-1 to 1)
+- `empathy` - Responsiveness to others (-1 to 1)
+- `aggression` - Hostile tendency (0 to 1)
+- `grievance` - Accumulated injustice (0 to 1)
+- `reactance` - Resistance to control (0 to 1)
+- `trust_propensity` - Baseline trust (-1 to 1)
 
 ---
 
@@ -414,32 +541,40 @@ if let Some(alert) = ItsAlert::from_convergence(&factors.convergence_status) {
 }
 ```
 
-### Using Specific ITS Event Types
+### Using Events for ITS Pathway Tracking
 
-When modeling life events, use the specific ITS event types for accurate pathway tracking:
+When modeling life events, choose event types that map to the relevant ITS pathways:
 
 ```rust
 use eventsim_rs::enums::EventType;
 
-// TB pathway events
-EventType::Rejection          // Explicit rejection
-EventType::SocialIsolation    // Long-term isolation
-EventType::RelationshipEnd    // Breakup, divorce
+// TB pathway events (Thwarted Belongingness)
+EventType::ExperienceExclusionPeer      // Social rejection
+EventType::ExperienceExclusionGroup     // Group exclusion
+EventType::ExperienceIsolationChronic   // Long-term isolation
+EventType::EndRelationshipRomantic      // Breakup, divorce
 
-// PB pathway events
-EventType::ShamingEvent       // Being shamed
-EventType::FinancialBurden    // Financial strain on family
-EventType::ChronicIllnessOnset // Illness affecting self-perception
+// PB pathway events (Perceived Burdensomeness)
+EventType::ExperienceHumiliationPublic  // Public shame
+EventType::DevelopIllnessChronic        // Illness affecting self-perception
+EventType::ExperienceConflictFamily     // Family conflict
 
-// AC pathway events
-EventType::NonSuicidalSelfInjury // NSSI (highest specificity)
-EventType::CombatExposure        // Military combat
-EventType::PriorSuicideAttempt   // Previous attempt (strongest)
+// AC pathway events (Acquired Capability)
+EventType::EngageSelfharmNonsuicidal    // NSSI (highest specificity)
+EventType::ExperienceCombatMilitary     // Military combat exposure
+EventType::ExperienceAwarenessMortality // Death awareness
 
-// Multi-pathway events (affect multiple factors)
-EventType::JobLoss     // TB + PB
-EventType::Bereavement // TB + PB
-EventType::SuicidalLoss // TB + AC
+// Multi-pathway events
+EventType::ExperienceBetrayalTrust      // Affects trust, belongingness
+```
+
+Check the EventSpec for each type to see its full impact across all ITS-related dimensions:
+
+```rust
+let spec = EventType::ExperienceIsolationChronic.spec();
+println!("Loneliness: {}", spec.impact.loneliness);              // TB indicator
+println!("Perceived liability: {}", spec.impact.perceived_liability); // PB indicator
+println!("Acquired capability: {}", spec.impact.acquired_capability); // AC indicator
 ```
 
 ---
@@ -465,14 +600,29 @@ EventType::SuicidalLoss // TB + AC
 
 **Solution:** The library models psychology, not your domain. You compute severity based on game context.
 
-### 3. Wrong Event Type
+### 3. No Matching Event Type
 
-**Problem:** Can't find the right EventType for "bird attack."
+**Problem:** Can't find the right EventType for your specific scenario.
 
-**Solution:** Map to the closest psychological effect:
-- Minor/comedic → `Interaction`
-- Painful → `TraumaticExposure`
-- Injurious → `Violence`
+**Solution:** Either map to the closest psychological effect, or create a custom event:
+
+**Option A: Use closest match**
+- Minor social slight -> `ExperienceConflictInterpersonal`
+- Major physical trauma -> `ExperienceCombatMilitary` (for pain exposure)
+- Social acceptance -> `ExperienceInclusionPeer`
+
+**Option B: Create custom event**
+```rust
+let spec = EventSpec {
+    impact: EventImpact {
+        stress: 0.3,
+        fatigue: 0.2,
+        ..Default::default()
+    },
+    ..Default::default()
+};
+let event = EventBuilder::custom(spec).severity(0.5).build()?;
+```
 
 The type determines which psychological pathways are affected, not the literal event name.
 

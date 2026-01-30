@@ -4,17 +4,17 @@
 [x] engage-selfharm-nonsuicidal
 [x] experience-awareness-mortality
 [x] experience-betrayal-trust
-[ ] experience-combat-military
-[ ] experience-conflict-family
-[ ] experience-conflict-interpersonal
-[ ] experience-exclusion-group
-[ ] experience-exclusion-peer
-[ ] experience-humiliation-public
-[ ] experience-inclusion-peer
-[ ] experience-isolation-chronic
-[ ] experience-pandemic-global
-[ ] experience-recession-economic
-[ ] experience-rejection-family
+[x] experience-combat-military
+[x] experience-conflict-family
+[x] experience-conflict-interpersonal
+[x] experience-exclusion-group
+[x] experience-exclusion-peer
+[x] experience-humiliation-public
+[x] experience-inclusion-peer
+[x] experience-isolation-chronic
+[x] experience-pandemic-global
+[x] experience-recession-economic
+[x] experience-rejection-family
 [ ] experience-rejection-peer
 [ ] experience-rejection-romantic
 [ ] experience-shaming-public

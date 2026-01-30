@@ -98,7 +98,7 @@ impl std::fmt::Display for ItsProximalFactor {
 /// | X  |    | X  | Moderate - belongingness + capability |
 /// |    | X  | X  | Moderate - burdensomeness + capability |
 /// | X  | X  | X  | HIGH - three-factor convergence |
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 pub struct ConvergenceStatus {
     /// True if all three factors (TB, PB, AC) are elevated.
     pub is_three_factor_convergent: bool,
@@ -203,18 +203,6 @@ impl ConvergenceStatus {
     }
 }
 
-impl Default for ConvergenceStatus {
-    fn default() -> Self {
-        ConvergenceStatus {
-            is_three_factor_convergent: false,
-            highest_factor: None,
-            elevated_factor_count: 0,
-            tb_elevated: false,
-            pb_elevated: false,
-            ac_elevated: false,
-        }
-    }
-}
 
 /// Computed ITS factors from entity state.
 ///

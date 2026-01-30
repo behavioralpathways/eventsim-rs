@@ -382,6 +382,29 @@ impl MentalHealth {
         &mut self.acquired_capability
     }
 
+    // Base shifters (for permanent changes)
+
+    /// Shifts the base self-worth by adding an amount.
+    ///
+    /// This is used for permanent changes from events.
+    pub fn shift_self_worth_base(&mut self, amount: f32) {
+        self.self_worth.shift_base(amount);
+    }
+
+    /// Shifts the base interpersonal hopelessness by adding an amount.
+    ///
+    /// This is used for permanent changes from events.
+    pub fn shift_interpersonal_hopelessness_base(&mut self, amount: f32) {
+        self.interpersonal_hopelessness.shift_base(amount);
+    }
+
+    /// Shifts the base acquired capability by adding an amount.
+    ///
+    /// AC is always 100% permanent, so all AC changes go to base.
+    pub fn shift_acquired_capability_base(&mut self, amount: f32) {
+        self.acquired_capability.shift_base(amount);
+    }
+
     // Delta modifiers
 
     /// Adds to the depression delta.
@@ -409,6 +432,18 @@ impl MentalHealth {
     /// Note: AC never decays, so delta additions are permanent.
     pub fn add_acquired_capability_delta(&mut self, amount: f32) {
         self.acquired_capability.add_delta(amount);
+    }
+
+    // Chronic delta modifiers
+
+    /// Adds to the self-worth chronic delta.
+    pub fn add_self_worth_chronic_delta(&mut self, amount: f32) {
+        self.self_worth.add_chronic_delta(amount);
+    }
+
+    /// Adds to the interpersonal hopelessness chronic delta.
+    pub fn add_interpersonal_hopelessness_chronic_delta(&mut self, amount: f32) {
+        self.interpersonal_hopelessness.add_chronic_delta(amount);
     }
 
     // Decay

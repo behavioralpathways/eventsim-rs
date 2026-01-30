@@ -6,7 +6,7 @@ use eventsim_rs::event::EventBuilder;
 use eventsim_rs::simulation::{ComputedState, Simulation};
 use eventsim_rs::types::{Duration, EntityId, Timestamp};
 
-const ANCHOR_AGE: u64 = 30;
+const ANCHOR_AGE: u64 = 20;
 const END_AGE: u64 = 65;
 
 fn setup_sim(id: &str, birth_date: Timestamp, reference: Timestamp) -> (Simulation, EntityId) {
@@ -58,7 +58,7 @@ fn state_at_age(
 #[ignore]
 fn repeated_financial_strain_and_eviction_reduce_purpose() {
     let birth_date = Timestamp::from_ymd_hms(1972, 1, 1, 0, 0, 0);
-    let reference = Timestamp::from_ymd_hms(2002, 1, 1, 0, 0, 0);
+    let reference = birth_date + Duration::years(ANCHOR_AGE);
 
     let (mut sim, entity_id) = setup_sim("financial_strain", birth_date, reference);
     let (control_sim, control_id) = setup_sim("financial_strain_control", birth_date, reference);

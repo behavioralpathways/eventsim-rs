@@ -6,7 +6,7 @@ use eventsim_rs::event::EventBuilder;
 use eventsim_rs::simulation::{ComputedState, Simulation};
 use eventsim_rs::types::{Duration, EntityId, Timestamp};
 
-const ANCHOR_AGE: u64 = 30;
+const ANCHOR_AGE: u64 = 18;
 const END_AGE: u64 = 65;
 
 fn setup_sim(id: &str, birth_date: Timestamp, reference: Timestamp) -> (Simulation, EntityId) {
@@ -58,7 +58,7 @@ fn state_at_age(
 #[ignore]
 fn immigrant_relocation_stress_lingers_but_softens() {
     let birth_date = Timestamp::from_ymd_hms(1985, 1, 1, 0, 0, 0);
-    let reference = Timestamp::from_ymd_hms(2015, 1, 1, 0, 0, 0);
+    let reference = birth_date + Duration::years(ANCHOR_AGE);
 
     let (mut sim, entity_id) = setup_sim("immigration", birth_date, reference);
     let (control_sim, control_id) = setup_sim("immigration_control", birth_date, reference);
@@ -82,22 +82,6 @@ fn immigrant_relocation_stress_lingers_but_softens() {
     let control_needs = control_state.individual_state().needs();
     let social = state.individual_state().social_cognition();
     let control_social = control_state.individual_state().social_cognition();
-
-    println!(
-        "stress: cohort {:.3} control {:.3}",
-        needs.stress_effective(),
-        control_needs.stress_effective()
-    );
-    println!(
-        "loneliness: cohort {:.3} control {:.3}",
-        social.loneliness_effective(),
-        control_social.loneliness_effective()
-    );
-    println!(
-        "prc: cohort {:.3} control {:.3}",
-        social.perceived_reciprocal_caring_effective(),
-        control_social.perceived_reciprocal_caring_effective()
-    );
 
     assert!(
         needs.stress_effective() > control_needs.stress_effective() + 0.03,

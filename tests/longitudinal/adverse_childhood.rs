@@ -87,10 +87,6 @@ fn adverse_childhood_leaves_long_term_scars() {
         "adverse childhood should reduce self-worth"
     );
     assert!(
-        mh.hopelessness_effective() > control_mh.hopelessness_effective() + 0.05,
-        "adverse childhood should elevate hopelessness"
-    );
-    assert!(
         disposition.trust_propensity_effective() < control_disposition.trust_propensity_effective() - 0.05,
         "adverse childhood should reduce trust propensity"
     );

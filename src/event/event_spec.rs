@@ -257,7 +257,7 @@ impl PermanenceValues {
 }
 
 /// Complete event specification.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct EventSpec {
     pub impact: EventImpact,
     pub chronic: ChronicFlags,
@@ -284,5 +284,346 @@ impl EventSpec {
             acute: self.chronic.mask_inverse(&temp_scaled),
             chronic: self.chronic.mask(&temp_scaled),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn event_impact_default_is_zero() {
+        let impact = EventImpact::default();
+        assert!((impact.valence - 0.0).abs() < f32::EPSILON);
+        assert!((impact.arousal - 0.0).abs() < f32::EPSILON);
+        assert!((impact.dominance - 0.0).abs() < f32::EPSILON);
+        assert!((impact.fatigue - 0.0).abs() < f32::EPSILON);
+        assert!((impact.stress - 0.0).abs() < f32::EPSILON);
+        assert!((impact.purpose - 0.0).abs() < f32::EPSILON);
+        assert!((impact.loneliness - 0.0).abs() < f32::EPSILON);
+        assert!((impact.prc - 0.0).abs() < f32::EPSILON);
+        assert!((impact.perceived_liability - 0.0).abs() < f32::EPSILON);
+        assert!((impact.self_hate - 0.0).abs() < f32::EPSILON);
+        assert!((impact.perceived_competence - 0.0).abs() < f32::EPSILON);
+        assert!((impact.depression - 0.0).abs() < f32::EPSILON);
+        assert!((impact.self_worth - 0.0).abs() < f32::EPSILON);
+        assert!((impact.hopelessness - 0.0).abs() < f32::EPSILON);
+        assert!((impact.interpersonal_hopelessness - 0.0).abs() < f32::EPSILON);
+        assert!((impact.acquired_capability - 0.0).abs() < f32::EPSILON);
+        assert!((impact.impulse_control - 0.0).abs() < f32::EPSILON);
+        assert!((impact.empathy - 0.0).abs() < f32::EPSILON);
+        assert!((impact.aggression - 0.0).abs() < f32::EPSILON);
+        assert!((impact.grievance - 0.0).abs() < f32::EPSILON);
+        assert!((impact.reactance - 0.0).abs() < f32::EPSILON);
+        assert!((impact.trust_propensity - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_impact_scale_multiplies_all_fields() {
+        let impact = EventImpact {
+            valence: 1.0,
+            arousal: 0.5,
+            dominance: -0.5,
+            fatigue: 0.3,
+            stress: 0.4,
+            purpose: -0.2,
+            loneliness: 0.6,
+            prc: -0.3,
+            perceived_liability: 0.2,
+            self_hate: 0.4,
+            perceived_competence: -0.4,
+            depression: 0.3,
+            self_worth: -0.3,
+            hopelessness: 0.2,
+            interpersonal_hopelessness: 0.3,
+            acquired_capability: 0.5,
+            impulse_control: -0.2,
+            empathy: 0.1,
+            aggression: 0.3,
+            grievance: 0.2,
+            reactance: 0.1,
+            trust_propensity: -0.2,
+        };
+
+        let scaled = impact.scale(0.5);
+
+        assert!((scaled.valence - 0.5).abs() < f32::EPSILON);
+        assert!((scaled.arousal - 0.25).abs() < f32::EPSILON);
+        assert!((scaled.dominance - (-0.25)).abs() < f32::EPSILON);
+        assert!((scaled.acquired_capability - 0.25).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_impact_add_sums_all_fields() {
+        let a = EventImpact {
+            valence: 0.5,
+            arousal: 0.3,
+            ..Default::default()
+        };
+        let b = EventImpact {
+            valence: 0.2,
+            arousal: -0.1,
+            ..Default::default()
+        };
+
+        let sum = a.add(&b);
+
+        assert!((sum.valence - 0.7).abs() < f32::EPSILON);
+        assert!((sum.arousal - 0.2).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_impact_mul_permanence_applies_per_field() {
+        let impact = EventImpact {
+            valence: 1.0,
+            arousal: 1.0,
+            acquired_capability: 1.0,
+            ..Default::default()
+        };
+        let perm = PermanenceValues {
+            valence: 0.1,
+            arousal: 0.2,
+            ..Default::default()
+        };
+
+        let result = impact.mul_permanence(&perm);
+
+        assert!((result.valence - 0.1).abs() < f32::EPSILON);
+        assert!((result.arousal - 0.2).abs() < f32::EPSILON);
+        // AC ignores permanence - keeps original value
+        assert!((result.acquired_capability - 1.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn chronic_flags_default_all_false() {
+        let flags = ChronicFlags::default();
+        assert!(!flags.valence);
+        assert!(!flags.arousal);
+        assert!(!flags.dominance);
+        assert!(!flags.stress);
+        assert!(!flags.self_worth);
+    }
+
+    #[test]
+    fn chronic_flags_mask_keeps_chronic_values() {
+        let flags = ChronicFlags {
+            valence: true,
+            arousal: false,
+            stress: true,
+            ..Default::default()
+        };
+        let impact = EventImpact {
+            valence: 0.5,
+            arousal: 0.3,
+            stress: 0.4,
+            acquired_capability: 0.2,
+            ..Default::default()
+        };
+
+        let masked = flags.mask(&impact);
+
+        // chronic=true keeps the value
+        assert!((masked.valence - 0.5).abs() < f32::EPSILON);
+        assert!((masked.stress - 0.4).abs() < f32::EPSILON);
+        // chronic=false zeroes the value
+        assert!((masked.arousal - 0.0).abs() < f32::EPSILON);
+        // AC always 0 in chronic mask
+        assert!((masked.acquired_capability - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn chronic_flags_mask_inverse_keeps_acute_values() {
+        let flags = ChronicFlags {
+            valence: true,
+            arousal: false,
+            stress: true,
+            ..Default::default()
+        };
+        let impact = EventImpact {
+            valence: 0.5,
+            arousal: 0.3,
+            stress: 0.4,
+            acquired_capability: 0.2,
+            ..Default::default()
+        };
+
+        let masked = flags.mask_inverse(&impact);
+
+        // chronic=true zeroes the value (inverse)
+        assert!((masked.valence - 0.0).abs() < f32::EPSILON);
+        assert!((masked.stress - 0.0).abs() < f32::EPSILON);
+        // chronic=false keeps the value (inverse)
+        assert!((masked.arousal - 0.3).abs() < f32::EPSILON);
+        // AC always 0 in acute mask too
+        assert!((masked.acquired_capability - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn permanence_values_default_all_zero() {
+        let perm = PermanenceValues::default();
+        assert!((perm.valence - 0.0).abs() < f32::EPSILON);
+        assert!((perm.arousal - 0.0).abs() < f32::EPSILON);
+        assert!((perm.stress - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn permanence_values_inverse_computes_temporary_portion() {
+        let perm = PermanenceValues {
+            valence: 0.1,
+            arousal: 0.25,
+            stress: 0.0,
+            ..Default::default()
+        };
+
+        let inv = perm.inverse();
+
+        assert!((inv.valence - 0.9).abs() < f32::EPSILON);
+        assert!((inv.arousal - 0.75).abs() < f32::EPSILON);
+        assert!((inv.stress - 1.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_default_has_zero_impact() {
+        let spec = EventSpec::default();
+        assert!((spec.impact.valence - 0.0).abs() < f32::EPSILON);
+        assert!(!spec.chronic.valence);
+        assert!((spec.permanence.valence - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_apply_splits_by_permanence() {
+        let spec = EventSpec {
+            impact: EventImpact {
+                valence: -1.0,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues {
+                valence: 0.10,
+                ..Default::default()
+            },
+        };
+
+        let deltas = spec.apply(1.0);
+
+        // 10% permanent
+        assert!((deltas.permanent.valence - (-0.10)).abs() < f32::EPSILON);
+        // 90% temporary, chronic=false so goes to acute
+        assert!((deltas.acute.valence - (-0.90)).abs() < f32::EPSILON);
+        // Nothing chronic
+        assert!((deltas.chronic.valence - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_apply_routes_chronic_to_chronic_delta() {
+        let spec = EventSpec {
+            impact: EventImpact {
+                stress: 0.50,
+                ..Default::default()
+            },
+            chronic: ChronicFlags {
+                stress: true,
+                ..Default::default()
+            },
+            permanence: PermanenceValues::default(), // 0% permanent
+        };
+
+        let deltas = spec.apply(1.0);
+
+        // No permanent
+        assert!((deltas.permanent.stress - 0.0).abs() < f32::EPSILON);
+        // Not acute (chronic=true)
+        assert!((deltas.acute.stress - 0.0).abs() < f32::EPSILON);
+        // All goes to chronic
+        assert!((deltas.chronic.stress - 0.50).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_apply_ac_is_always_fully_permanent() {
+        let spec = EventSpec {
+            impact: EventImpact {
+                acquired_capability: 0.80,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(), // Ignored for AC
+        };
+
+        let deltas = spec.apply(1.0);
+
+        // AC is always 100% permanent
+        assert!((deltas.permanent.acquired_capability - 0.80).abs() < f32::EPSILON);
+        // None to delta
+        assert!((deltas.acute.acquired_capability - 0.0).abs() < f32::EPSILON);
+        // None to chronic
+        assert!((deltas.chronic.acquired_capability - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_apply_scales_by_severity() {
+        let spec = EventSpec {
+            impact: EventImpact {
+                valence: -1.0,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues {
+                valence: 0.10,
+                ..Default::default()
+            },
+        };
+
+        let deltas = spec.apply(0.5);
+
+        // Scaled to 0.5, then 10% permanent
+        assert!((deltas.permanent.valence - (-0.05)).abs() < f32::EPSILON);
+        // 90% of 0.5 = 0.45 temporary
+        assert!((deltas.acute.valence - (-0.45)).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn event_spec_apply_clamps_severity() {
+        let spec = EventSpec {
+            impact: EventImpact {
+                valence: -1.0,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        // Severity > 1.0 clamped to 1.0
+        let deltas_high = spec.apply(1.5);
+        assert!((deltas_high.acute.valence - (-1.0)).abs() < f32::EPSILON);
+
+        // Severity < 0.0 clamped to 0.0
+        let deltas_low = spec.apply(-0.5);
+        assert!((deltas_low.acute.valence - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn applied_deltas_default_is_zero() {
+        let deltas = AppliedDeltas::default();
+        assert!((deltas.permanent.valence - 0.0).abs() < f32::EPSILON);
+        assert!((deltas.acute.valence - 0.0).abs() < f32::EPSILON);
+        assert!((deltas.chronic.valence - 0.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn five_breakups_produce_realistic_permanent_shift() {
+        use crate::event::types::end_relationship_romantic;
+
+        let spec = end_relationship_romantic::SPEC;
+        let mut total_permanent_valence = 0.0;
+
+        for _ in 0..5 {
+            let deltas = spec.apply(1.0);
+            total_permanent_valence += deltas.permanent.valence;
+        }
+
+        // 5 breakups at permanence=0.05 -> 5 * (-0.55 * 0.05) = -0.1375
+        // This is a small but realistic lifetime accumulation
+        assert!(total_permanent_valence > -0.20);
+        assert!(total_permanent_valence < -0.10);
     }
 }

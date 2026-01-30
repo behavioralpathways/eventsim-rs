@@ -10,6 +10,7 @@
 //! - [`EventBuilder`] - Fluent construction
 //! - [`EventBus`] - Dispatch and subscription
 //! - [`EventFilter`] - Subscription filtering
+//! - [`EventSpec`] - Event impact specification across 22 dimensions
 //!
 //! # Usage
 //!
@@ -35,11 +36,14 @@
 mod event;
 mod event_builder;
 mod event_bus;
+pub mod event_spec;
 mod salience;
+pub mod types;
 
 pub use event::Event;
 pub use event_builder::{EventBuildError, EventBuilder};
 pub use event_bus::{EventBus, EventBusError, EventFilter, ProcessedEvent, MAX_CASCADE_DEPTH};
+pub use event_spec::{AppliedDeltas, ChronicFlags, EventImpact, EventSpec, PermanenceValues};
 pub use salience::{
     arousal_weight_for_species, compute_arousal_modulated_salience, AROUSAL_CEILING,
     AROUSAL_THRESHOLD, AROUSAL_WEIGHT_ANIMAL, AROUSAL_WEIGHT_HUMAN, AROUSAL_WEIGHT_ROBOTIC,

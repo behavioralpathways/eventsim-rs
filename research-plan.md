@@ -1,9 +1,9 @@
 [x] achieve-goal-major
 [x] develop-illness-chronic
 [x] end-relationship-romantic
-[ ] engage-selfharm-nonsuicidal
-[ ] experience-awareness-mortality
-[ ] experience-betrayal-trust
+[x] engage-selfharm-nonsuicidal
+[x] experience-awareness-mortality
+[x] experience-betrayal-trust
 [ ] experience-combat-military
 [ ] experience-conflict-family
 [ ] experience-conflict-interpersonal

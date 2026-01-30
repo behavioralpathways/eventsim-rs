@@ -4,6 +4,8 @@
 //! `EventType` is the primary classification, `EventCategory` maps to theoretical
 //! domains, and `EventTag` provides additional categorization.
 
+use crate::event::event_spec::EventSpec;
+use crate::event::types;
 use serde::{Deserialize, Serialize};
 
 /// Primary event classification for compile-time validation.
@@ -286,6 +288,40 @@ impl EventType {
             EventType::PriorSuicideAttempt => "Prior Suicide Attempt",
             EventType::SuicidalLoss => "Suicidal Loss",
         }
+    }
+
+    /// Returns the EventSpec for this event type.
+    ///
+    /// Each event type has an associated specification that defines its impact
+    /// across all 22 psychological dimensions, chronic flags, and permanence values.
+    ///
+    /// For event types that don't yet have a dedicated spec file, returns a
+    /// default (zero-impact) spec.
+    #[must_use]
+    pub fn spec(&self) -> EventSpec {
+        match self {
+            // Events with dedicated spec files
+            EventType::Achievement => types::achieve_goal_major::SPEC,
+            EventType::ChronicIllnessOnset => types::develop_illness_chronic::SPEC,
+            EventType::RelationshipEnd => types::end_relationship_romantic::SPEC,
+            EventType::NonSuicidalSelfInjury => types::engage_selfharm_nonsuicidal::SPEC,
+
+            // All other events return default (no impact) until spec files are created
+            _ => EventSpec::default(),
+        }
+    }
+
+    /// Returns true if this event type has a dedicated spec file with
+    /// researched impact values across all 22 dimensions.
+    #[must_use]
+    pub const fn has_spec(&self) -> bool {
+        matches!(
+            self,
+            EventType::Achievement
+                | EventType::ChronicIllnessOnset
+                | EventType::RelationshipEnd
+                | EventType::NonSuicidalSelfInjury
+        )
     }
 
     /// Returns all event type variants.
@@ -812,5 +848,51 @@ mod tests {
         let _ = EventType::ViolenceExposure.category();
         let _ = EventType::PriorSuicideAttempt.category();
         let _ = EventType::SuicidalLoss.category();
+    }
+
+    // --- EventSpec tests ---
+
+    #[test]
+    fn events_with_spec_return_non_default() {
+        // Events with dedicated spec files should have non-zero impacts
+        let achievement_spec = EventType::Achievement.spec();
+        assert!(achievement_spec.impact.valence > 0.0);
+        assert!(EventType::Achievement.has_spec());
+
+        let chronic_illness_spec = EventType::ChronicIllnessOnset.spec();
+        assert!(chronic_illness_spec.impact.valence < 0.0);
+        assert!(EventType::ChronicIllnessOnset.has_spec());
+
+        let relationship_end_spec = EventType::RelationshipEnd.spec();
+        assert!(relationship_end_spec.impact.valence < 0.0);
+        assert!(EventType::RelationshipEnd.has_spec());
+
+        let nssi_spec = EventType::NonSuicidalSelfInjury.spec();
+        assert!(nssi_spec.impact.acquired_capability > 0.0);
+        assert!(EventType::NonSuicidalSelfInjury.has_spec());
+    }
+
+    #[test]
+    fn events_without_spec_return_default() {
+        // Events without dedicated spec files return default (zero impact)
+        let interaction_spec = EventType::Interaction.spec();
+        assert!((interaction_spec.impact.valence - 0.0).abs() < f32::EPSILON);
+        assert!(!EventType::Interaction.has_spec());
+
+        let violence_spec = EventType::Violence.spec();
+        assert!((violence_spec.impact.valence - 0.0).abs() < f32::EPSILON);
+        assert!(!EventType::Violence.has_spec());
+
+        let job_loss_spec = EventType::JobLoss.spec();
+        assert!((job_loss_spec.impact.valence - 0.0).abs() < f32::EPSILON);
+        assert!(!EventType::JobLoss.has_spec());
+    }
+
+    #[test]
+    fn all_event_types_have_spec_method() {
+        // All event types should be able to call spec() without panicking
+        for event_type in EventType::all() {
+            let _ = event_type.spec();
+        }
     }
 }

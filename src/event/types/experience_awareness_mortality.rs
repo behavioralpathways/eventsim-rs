@@ -36,7 +36,7 @@ pub const SPEC: EventSpec = EventSpec {
         // Needs - Purpose
         // Mortality awareness activates motivated search for meaning and triggers sustained reorientation toward intrinsic values and life purpose
         // https://www.tandfonline.com/doi/full/10.1080/07481187.2020.1808737
-        purpose: 0.35,
+        purpose: 0.20,
 
         // Social Cognition - Loneliness
         // Mortality awareness typically motivates people to seek connection and deepen relationships as an existential coping mechanism, reducing loneliness
@@ -149,7 +149,7 @@ pub const SPEC: EventSpec = EventSpec {
         dominance: 0.12,
         fatigue: 0.12,
         stress: 0.12,
-        purpose: 0.25,
+        purpose: 0.12,
         loneliness: 0.04,
         prc: 0.12,
         perceived_liability: 0.06,

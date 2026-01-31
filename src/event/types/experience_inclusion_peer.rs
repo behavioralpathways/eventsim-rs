@@ -151,8 +151,8 @@ pub const SPEC: EventSpec = EventSpec {
         fatigue: 0.05,
         stress: 0.08,
         purpose: 0.08,
-        loneliness: 0.08,
-        prc: 0.06,
+        loneliness: 0.18,
+        prc: 0.18,
         perceived_liability: 0.08,
         self_hate: 0.05,
         perceived_competence: 0.05,
@@ -165,6 +165,6 @@ pub const SPEC: EventSpec = EventSpec {
         aggression: 0.08,
         grievance: 0.12,
         reactance: 0.04,
-        trust_propensity: 0.06,
+        trust_propensity: 0.12,
     },
 };

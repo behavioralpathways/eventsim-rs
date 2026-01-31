@@ -75,11 +75,11 @@ fn lifespan_trajectory_with_many_events_looks_plausible() {
         let event = EventBuilder::new(event_type)
             .target(entity_id.clone())
             .severity(severity)
-            .timestamp(Duration::years(age_years))
+            .timestamp(Duration::years(u64::from(age_years)))
             .build()
             .unwrap();
 
-        let event_time = birth_date + Duration::years(age_years);
+        let event_time = birth_date + Duration::years(u64::from(age_years));
         sim.add_event(event, event_time);
     }
 

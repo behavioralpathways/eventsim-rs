@@ -116,7 +116,9 @@ fn duration_scale(duration: Duration) -> f32 {
     if days <= 0.0 {
         return 0.0;
     }
-    (days / 30.0) as f32
+    // Cap long-range effects to avoid runaway accumulation when applying
+    // context effects over multi-year spans in a single step.
+    ((days / 30.0) as f32).min(12.0)
 }
 
 fn compute_aggregate_interaction_metrics(context: &EcologicalContext) -> (f64, f64) {

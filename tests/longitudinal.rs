@@ -20,6 +20,8 @@ mod great_depression_cohort;
 mod immigrant_relocation;
 #[path = "longitudinal/legal_charges.rs"]
 mod legal_charges;
+#[path = "longitudinal/lifespan_trajectory.rs"]
+mod lifespan_trajectory;
 #[path = "longitudinal/long_term_incarceration.rs"]
 mod long_term_incarceration;
 #[path = "longitudinal/mentorship_achievement.rs"]

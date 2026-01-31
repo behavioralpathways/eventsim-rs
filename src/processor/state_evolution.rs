@@ -238,6 +238,12 @@ fn apply_permanent_deltas_to_state(
             .perceived_reciprocal_caring_mut()
             .shift_base(p.prc);
     }
+    if p.perceived_competence.abs() > f32::EPSILON {
+        state
+            .social_cognition_mut()
+            .perceived_competence_mut()
+            .shift_base(p.perceived_competence);
+    }
     if p.perceived_liability.abs() > f32::EPSILON {
         state
             .social_cognition_mut()
@@ -264,6 +270,18 @@ fn apply_permanent_deltas_to_state(
             .mental_health_mut()
             .shift_interpersonal_hopelessness_base(p.interpersonal_hopelessness);
     }
+    if p.depression.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .depression_mut()
+            .shift_base(p.depression);
+    }
+    if p.hopelessness.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .hopelessness_mut()
+            .shift_base(p.hopelessness);
+    }
     if p.self_worth.abs() > f32::EPSILON {
         state.mental_health_mut().shift_self_worth_base(p.self_worth);
     }
@@ -278,6 +296,36 @@ fn apply_permanent_deltas_to_state(
             .disposition_mut()
             .grievance_mut()
             .shift_base(p.grievance);
+    }
+    if p.impulse_control.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .impulse_control_mut()
+            .shift_base(p.impulse_control);
+    }
+    if p.empathy.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .empathy_mut()
+            .shift_base(p.empathy);
+    }
+    if p.aggression.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .aggression_mut()
+            .shift_base(p.aggression);
+    }
+    if p.reactance.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .reactance_mut()
+            .shift_base(p.reactance);
+    }
+    if p.trust_propensity.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .trust_propensity_mut()
+            .shift_base(p.trust_propensity);
     }
 }
 
@@ -304,6 +352,11 @@ fn apply_acute_deltas_to_state(state: &mut IndividualState, deltas: &crate::even
             .social_cognition_mut()
             .add_perceived_reciprocal_caring_delta(a.prc);
     }
+    if a.perceived_competence.abs() > f32::EPSILON {
+        state
+            .social_cognition_mut()
+            .add_perceived_competence_delta(a.perceived_competence);
+    }
     if a.perceived_liability.abs() > f32::EPSILON {
         state
             .social_cognition_mut()
@@ -321,6 +374,16 @@ fn apply_acute_deltas_to_state(state: &mut IndividualState, deltas: &crate::even
             .mental_health_mut()
             .add_interpersonal_hopelessness_delta(a.interpersonal_hopelessness);
     }
+    if a.depression.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .add_depression_delta(a.depression);
+    }
+    if a.hopelessness.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .add_hopelessness_delta(a.hopelessness);
+    }
     if a.self_worth.abs() > f32::EPSILON {
         state.mental_health_mut().add_self_worth_delta(a.self_worth);
     }
@@ -332,6 +395,27 @@ fn apply_acute_deltas_to_state(state: &mut IndividualState, deltas: &crate::even
     }
     if a.grievance.abs() > f32::EPSILON {
         state.disposition_mut().add_grievance_delta(a.grievance);
+    }
+    if a.impulse_control.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_impulse_control_delta(a.impulse_control);
+    }
+    if a.empathy.abs() > f32::EPSILON {
+        state.disposition_mut().add_empathy_delta(a.empathy);
+    }
+    if a.aggression.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_aggression_delta(a.aggression);
+    }
+    if a.reactance.abs() > f32::EPSILON {
+        state.disposition_mut().add_reactance_delta(a.reactance);
+    }
+    if a.trust_propensity.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_trust_propensity_delta(a.trust_propensity);
     }
 }
 
@@ -360,6 +444,12 @@ fn apply_chronic_deltas_to_state(state: &mut IndividualState, deltas: &crate::ev
             .perceived_reciprocal_caring_mut()
             .add_chronic_delta(c.prc);
     }
+    if c.perceived_competence.abs() > f32::EPSILON {
+        state
+            .social_cognition_mut()
+            .perceived_competence_mut()
+            .add_chronic_delta(c.perceived_competence);
+    }
     if c.perceived_liability.abs() > f32::EPSILON {
         state
             .social_cognition_mut()
@@ -381,6 +471,18 @@ fn apply_chronic_deltas_to_state(state: &mut IndividualState, deltas: &crate::ev
             .mental_health_mut()
             .add_interpersonal_hopelessness_chronic_delta(c.interpersonal_hopelessness);
     }
+    if c.depression.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .depression_mut()
+            .add_chronic_delta(c.depression);
+    }
+    if c.hopelessness.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .hopelessness_mut()
+            .add_chronic_delta(c.hopelessness);
+    }
     if c.self_worth.abs() > f32::EPSILON {
         state
             .mental_health_mut()
@@ -397,6 +499,36 @@ fn apply_chronic_deltas_to_state(state: &mut IndividualState, deltas: &crate::ev
             .disposition_mut()
             .grievance_mut()
             .add_chronic_delta(c.grievance);
+    }
+    if c.impulse_control.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .impulse_control_mut()
+            .add_chronic_delta(c.impulse_control);
+    }
+    if c.empathy.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .empathy_mut()
+            .add_chronic_delta(c.empathy);
+    }
+    if c.aggression.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .aggression_mut()
+            .add_chronic_delta(c.aggression);
+    }
+    if c.reactance.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .reactance_mut()
+            .add_chronic_delta(c.reactance);
+    }
+    if c.trust_propensity.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .trust_propensity_mut()
+            .add_chronic_delta(c.trust_propensity);
     }
 }
 
@@ -460,6 +592,11 @@ fn reverse_acute_deltas_from_state(
             .social_cognition_mut()
             .add_perceived_reciprocal_caring_delta(-a.prc);
     }
+    if a.perceived_competence.abs() > f32::EPSILON {
+        state
+            .social_cognition_mut()
+            .add_perceived_competence_delta(-a.perceived_competence);
+    }
     if a.perceived_liability.abs() > f32::EPSILON {
         state
             .social_cognition_mut()
@@ -479,6 +616,16 @@ fn reverse_acute_deltas_from_state(
             .mental_health_mut()
             .add_interpersonal_hopelessness_delta(-a.interpersonal_hopelessness);
     }
+    if a.depression.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .add_depression_delta(-a.depression);
+    }
+    if a.hopelessness.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .add_hopelessness_delta(-a.hopelessness);
+    }
     if a.self_worth.abs() > f32::EPSILON {
         state.mental_health_mut().add_self_worth_delta(-a.self_worth);
     }
@@ -490,6 +637,27 @@ fn reverse_acute_deltas_from_state(
     }
     if a.grievance.abs() > f32::EPSILON {
         state.disposition_mut().add_grievance_delta(-a.grievance);
+    }
+    if a.impulse_control.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_impulse_control_delta(-a.impulse_control);
+    }
+    if a.empathy.abs() > f32::EPSILON {
+        state.disposition_mut().add_empathy_delta(-a.empathy);
+    }
+    if a.aggression.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_aggression_delta(-a.aggression);
+    }
+    if a.reactance.abs() > f32::EPSILON {
+        state.disposition_mut().add_reactance_delta(-a.reactance);
+    }
+    if a.trust_propensity.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .add_trust_propensity_delta(-a.trust_propensity);
     }
 }
 
@@ -521,6 +689,12 @@ fn reverse_chronic_deltas_from_state(
             .perceived_reciprocal_caring_mut()
             .add_chronic_delta(-c.prc);
     }
+    if c.perceived_competence.abs() > f32::EPSILON {
+        state
+            .social_cognition_mut()
+            .perceived_competence_mut()
+            .add_chronic_delta(-c.perceived_competence);
+    }
     if c.perceived_liability.abs() > f32::EPSILON {
         state
             .social_cognition_mut()
@@ -542,6 +716,18 @@ fn reverse_chronic_deltas_from_state(
             .mental_health_mut()
             .add_interpersonal_hopelessness_chronic_delta(-c.interpersonal_hopelessness);
     }
+    if c.depression.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .depression_mut()
+            .add_chronic_delta(-c.depression);
+    }
+    if c.hopelessness.abs() > f32::EPSILON {
+        state
+            .mental_health_mut()
+            .hopelessness_mut()
+            .add_chronic_delta(-c.hopelessness);
+    }
     if c.self_worth.abs() > f32::EPSILON {
         state
             .mental_health_mut()
@@ -558,6 +744,36 @@ fn reverse_chronic_deltas_from_state(
             .disposition_mut()
             .grievance_mut()
             .add_chronic_delta(-c.grievance);
+    }
+    if c.impulse_control.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .impulse_control_mut()
+            .add_chronic_delta(-c.impulse_control);
+    }
+    if c.empathy.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .empathy_mut()
+            .add_chronic_delta(-c.empathy);
+    }
+    if c.aggression.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .aggression_mut()
+            .add_chronic_delta(-c.aggression);
+    }
+    if c.reactance.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .reactance_mut()
+            .add_chronic_delta(-c.reactance);
+    }
+    if c.trust_propensity.abs() > f32::EPSILON {
+        state
+            .disposition_mut()
+            .trust_propensity_mut()
+            .add_chronic_delta(-c.trust_propensity);
     }
 }
 

@@ -16,9 +16,10 @@ help:
 	@echo "  make build              - Build release"
 	@echo "  make clean              - Clean build artifacts"
 
-# Run tests
+# Run all tests (including ignored longitudinal tests)
 test:
 	cargo nextest run
+	cargo test --test longitudinal -- --ignored --nocapture
 
 # Run tests with coverageno i
 tests:

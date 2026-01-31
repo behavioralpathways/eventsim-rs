@@ -134,6 +134,9 @@ pub enum EventType {
     /// Regional war exposure (armed conflict affecting a geographic region)
     ExperienceWarRegional,
 
+    /// Physical, emotional, or sexual abuse experienced during childhood
+    SufferAbuseChildhood,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -189,6 +192,7 @@ impl EventType {
             EventType::ExperienceShamingPublic => types::experience_shaming_public::SPEC,
             EventType::ExperienceStrainFinancial => types::experience_strain_financial::SPEC,
             EventType::ExperienceWarRegional => types::experience_war_regional::SPEC,
+            EventType::SufferAbuseChildhood => types::suffer_abuse_childhood::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -234,13 +238,14 @@ impl EventType {
             EventType::ExperienceShamingPublic => "Experience Shaming (Public)",
             EventType::ExperienceStrainFinancial => "Experience Strain (Financial)",
             EventType::ExperienceWarRegional => "Experience War (Regional)",
+            EventType::SufferAbuseChildhood => "Suffer Abuse (Childhood)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 37] {
+    pub const fn all() -> [EventType; 38] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -279,6 +284,7 @@ impl EventType {
             EventType::ExperienceShamingPublic,
             EventType::ExperienceStrainFinancial,
             EventType::ExperienceWarRegional,
+            EventType::SufferAbuseChildhood,
         ]
     }
 }
@@ -297,7 +303,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 37);
+        assert_eq!(all.len(), 38);
     }
 
     #[test]

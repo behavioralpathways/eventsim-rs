@@ -42,4 +42,5 @@ pub mod receive_feedback_burden;
 pub mod receive_support_emotional;
 pub mod receive_support_financial;
 pub mod receive_support_practical;
+pub mod suffer_abuse_childhood;
 // ... (60 total modules)

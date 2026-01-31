@@ -274,18 +274,18 @@ pub fn promote_memory(layers: &mut MemoryLayers, id: &MemoryId) -> Result<(), Ma
 /// # Examples
 ///
 /// ```
-/// use eventsim_rs::memory::{MemoryEntry, maintenance::check_decay};
+/// use eventsim_rs::memory::{MemoryEntry, maintenance::validate_memory_above_decay_threshold};
 /// use eventsim_rs::types::Duration;
 ///
 /// let low_salience = MemoryEntry::new(Duration::days(1), "Fading memory")
 ///     .with_salience(0.1);
-/// assert!(check_decay(&low_salience, 0.2).is_err());
+/// assert!(validate_memory_above_decay_threshold(&low_salience, 0.2).is_err());
 ///
 /// let high_salience = MemoryEntry::new(Duration::days(1), "Strong memory")
 ///     .with_salience(0.5);
-/// assert!(check_decay(&high_salience, 0.2).is_ok());
+/// assert!(validate_memory_above_decay_threshold(&high_salience, 0.2).is_ok());
 /// ```
-pub fn check_decay(memory: &MemoryEntry, threshold: f32) -> Result<(), MaintenanceError> {
+pub fn validate_memory_above_decay_threshold(memory: &MemoryEntry, threshold: f32) -> Result<(), MaintenanceError> {
     let salience = memory.salience();
     if salience < threshold {
         Err(MaintenanceError::BelowDecayThreshold {
@@ -789,9 +789,9 @@ mod tests {
     }
 
     #[test]
-    fn check_decay_returns_error_below_threshold() {
+    fn validate_memory_above_decay_threshold_returns_error_below_threshold() {
         let entry = create_memory(0.15);
-        let result = check_decay(&entry, 0.2);
+        let result = validate_memory_above_decay_threshold(&entry, 0.2);
         assert!(result.is_err());
         let err_msg = result.unwrap_err().to_string();
         assert!(err_msg.contains("decay threshold"));
@@ -1042,9 +1042,9 @@ mod tests {
     }
 
     #[test]
-    fn check_decay_at_threshold_survives() {
+    fn validate_memory_above_decay_threshold_at_threshold_survives() {
         let entry = create_memory(0.2); // Exactly at threshold
-        let result = check_decay(&entry, 0.2);
+        let result = validate_memory_above_decay_threshold(&entry, 0.2);
         assert!(result.is_ok());
     }
 

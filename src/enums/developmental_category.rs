@@ -149,6 +149,15 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::LoseBenefitsGovernment => DevelopmentalCategory::Neutral,
             EventType::LoseResourceSignificant => DevelopmentalCategory::Neutral,
 
+            // Feedback events affect industry (self-perceived competence/burden)
+            EventType::ReceiveFeedbackBurden => DevelopmentalCategory::Industry,
+
+            // Emotional support affects attachment (trust-building through care)
+            EventType::ReceiveSupportEmotional => DevelopmentalCategory::Attachment,
+
+            // Financial support is neutral (cross-stage resource event)
+            EventType::ReceiveSupportFinancial => DevelopmentalCategory::Neutral,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

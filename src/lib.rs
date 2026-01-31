@@ -81,7 +81,7 @@ pub use enums::{
 
 // Re-export context types at crate root
 pub use context::{
-    check_proximal_process_gate, ChronosystemContext, CohortEffects, CriticalPeriod,
+    passes_proximal_process_gate, ChronosystemContext, CohortEffects, CriticalPeriod,
     CulturalOrientation, EcologicalContext, EducationContext, ExosystemContext, FamilyContext,
     FamilyRole, HealthcareContext, HistoricalPeriod, InstitutionalStructure, InteractionProfile,
     MacrosystemConstraintSet, MacrosystemContext, MesosystemCache, MesosystemLinkage, Microsystem,

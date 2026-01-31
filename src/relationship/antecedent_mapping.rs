@@ -42,13 +42,13 @@ impl AntecedentMapping {
 }
 
 /// Trust antecedent lookup table (for reference - deprecated in favor of spec-based).
-/// Kept for backwards compatibility but prefer get_antecedent_for_event().
+/// Kept for backwards compatibility but prefer derive_trust_antecedents().
 #[allow(dead_code)]
 pub const TRUST_ANTECEDENT_TABLE: &[(crate::enums::EventType, &[AntecedentMapping])] = &[];
 
-/// Returns the antecedent mappings for an event based on its spec.
+/// Derives trust antecedents from an event's spec.
 ///
-/// This function derives trust antecedents from the event's spec by examining:
+/// Analyzes the event's spec to determine trust-related effects:
 /// - `trust_propensity`: Direct trust impact (positive = trust building, negative = breach)
 /// - `prc`: Perceived reciprocal caring (affects benevolence perception)
 /// - `perceived_competence`: Competence demonstration (affects ability perception)
@@ -61,7 +61,7 @@ pub const TRUST_ANTECEDENT_TABLE: &[(crate::enums::EventType, &[AntecedentMappin
 ///
 /// A vector of antecedent mappings derived from the event's spec.
 #[must_use]
-pub fn get_antecedent_for_event(event: &Event) -> Vec<AntecedentMapping> {
+pub fn derive_trust_antecedents(event: &Event) -> Vec<AntecedentMapping> {
     let spec = event.spec();
     let severity = event.severity() as f32;
     let context = event.event_type().name();
@@ -154,7 +154,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         // Betrayal should have negative trust antecedents
         // Either integrity or benevolence should be affected
@@ -174,7 +174,7 @@ mod tests {
             .build()
             .unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         // If spec has positive perceived_competence, should have Ability antecedent
         let has_ability = mappings
@@ -208,7 +208,7 @@ mod tests {
 
         let event = EventBuilder::custom(custom_spec).severity(0.8).build().unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         assert!(mappings.is_empty());
     }
@@ -228,7 +228,7 @@ mod tests {
 
         let event = EventBuilder::custom(custom_spec).severity(0.8).build().unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         assert!(!mappings.is_empty());
         let integrity = mappings
@@ -253,7 +253,7 @@ mod tests {
 
         let event = EventBuilder::custom(custom_spec).severity(0.8).build().unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         assert!(!mappings.is_empty());
         let benevolence = mappings
@@ -278,7 +278,7 @@ mod tests {
 
         let event = EventBuilder::custom(custom_spec).severity(0.8).build().unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         assert!(!mappings.is_empty());
         let ability = mappings
@@ -290,11 +290,11 @@ mod tests {
 
     #[test]
     fn all_event_types_can_get_antecedents() {
-        // All event types should be able to call get_antecedent_for_event without panic
+        // All event types should be able to call derive_trust_antecedents without panic
         for event_type in EventType::all() {
             let event = EventBuilder::new(event_type).severity(0.5).build().unwrap();
 
-            let _ = get_antecedent_for_event(&event);
+            let _ = derive_trust_antecedents(&event);
         }
     }
 
@@ -320,8 +320,8 @@ mod tests {
             .build()
             .unwrap();
 
-        let low_mappings = get_antecedent_for_event(&low_severity);
-        let high_mappings = get_antecedent_for_event(&high_severity);
+        let low_mappings = derive_trust_antecedents(&low_severity);
+        let high_mappings = derive_trust_antecedents(&high_severity);
 
         assert!(
             low_mappings[0].base_magnitude < high_mappings[0].base_magnitude
@@ -343,7 +343,7 @@ mod tests {
 
         let event = EventBuilder::custom(custom_spec).severity(0.8).build().unwrap();
 
-        let mappings = get_antecedent_for_event(&event);
+        let mappings = derive_trust_antecedents(&event);
 
         assert!(!mappings.is_empty());
         let ability = mappings

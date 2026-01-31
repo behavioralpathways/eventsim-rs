@@ -69,7 +69,7 @@ mod trust_decision;
 mod trustworthiness;
 
 pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
-pub use antecedent_mapping::{get_antecedent_for_event, AntecedentMapping, TRUST_ANTECEDENT_TABLE};
+pub use antecedent_mapping::{derive_trust_antecedents, AntecedentMapping, TRUST_ANTECEDENT_TABLE};
 pub use directional_dimensions::DirectionalDimensions;
 pub use interaction_pattern::InteractionPattern;
 pub use perceived_risk::{PerceivedRisk, StakesLevel, Vulnerability, VulnerabilityType};

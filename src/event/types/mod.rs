@@ -38,4 +38,8 @@ pub mod lose_person_death;
 pub mod lose_person_suicide;
 pub mod lose_resource_significant;
 pub mod receive_diagnosis_terminal;
+pub mod receive_feedback_burden;
+pub mod receive_support_emotional;
+pub mod receive_support_financial;
+pub mod receive_support_practical;
 // ... (60 total modules)

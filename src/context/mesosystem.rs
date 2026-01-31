@@ -108,7 +108,7 @@ impl std::error::Error for ProximalProcessGateError {}
 /// # Returns
 ///
 /// `Ok(())` if both thresholds are met, `Err(ProximalProcessGateError)` otherwise.
-pub fn check_proximal_process_gate(
+pub fn passes_proximal_process_gate(
     frequency: f64,
     complexity: f64,
     frequency_threshold: f64,
@@ -630,13 +630,13 @@ mod tests {
 
     #[test]
     fn proximal_process_gate_allows_sufficient_thresholds() {
-        let result = check_proximal_process_gate(0.5, 0.5, 0.3, 0.3);
+        let result = passes_proximal_process_gate(0.5, 0.5, 0.3, 0.3);
         assert!(result.is_ok());
     }
 
     #[test]
     fn proximal_process_frequency_gate_blocks_low_frequency() {
-        let result = check_proximal_process_gate(0.2, 0.5, 0.3, 0.3);
+        let result = passes_proximal_process_gate(0.2, 0.5, 0.3, 0.3);
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert!(matches!(
@@ -649,7 +649,7 @@ mod tests {
 
     #[test]
     fn proximal_process_complexity_gate_blocks_low_complexity() {
-        let result = check_proximal_process_gate(0.5, 0.2, 0.3, 0.3);
+        let result = passes_proximal_process_gate(0.5, 0.2, 0.3, 0.3);
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert!(matches!(
@@ -662,7 +662,7 @@ mod tests {
 
     #[test]
     fn proximal_process_gate_returns_error_with_reason() {
-        let result = check_proximal_process_gate(0.1, 0.1, 0.3, 0.3);
+        let result = passes_proximal_process_gate(0.1, 0.1, 0.3, 0.3);
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert!(matches!(

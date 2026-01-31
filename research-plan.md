@@ -33,10 +33,10 @@
 [x] lose-person-suicide
 [x] lose-resource-significant
 [x] receive-diagnosis-terminal
-[ ] receive-feedback-burden
-[ ] receive-support-emotional
-[ ] receive-support-financial
-[ ] receive-support-practical
+[x] receive-feedback-burden
+[x] receive-support-emotional
+[x] receive-support-financial
+[x] receive-support-practical
 [ ] suffer-abuse-childhood
 [ ] suffer-injury-accidental
 [ ] suffer-violence-physical

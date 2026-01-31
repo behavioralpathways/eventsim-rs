@@ -32,7 +32,7 @@ pub use macrosystem::{
     CulturalOrientation, InstitutionalStructure, MacrosystemConstraintSet, MacrosystemContext,
 };
 pub use mesosystem::{
-    check_proximal_process_gate, MesosystemCache, MesosystemLinkage, MesosystemState,
+    passes_proximal_process_gate, MesosystemCache, MesosystemLinkage, MesosystemState,
     ProximalProcessGateError, INTERACTION_COMPLEXITY_THRESHOLD, INTERACTION_FREQUENCY_THRESHOLD,
 };
 pub use microsystem::{

@@ -16,7 +16,7 @@
 //! - Chronosystem effects (historical period impacts)
 
 use crate::context::mesosystem::{
-    check_proximal_process_gate, MesosystemState, INTERACTION_COMPLEXITY_THRESHOLD,
+    passes_proximal_process_gate, MesosystemState, INTERACTION_COMPLEXITY_THRESHOLD,
     INTERACTION_FREQUENCY_THRESHOLD,
 };
 use crate::context::EcologicalContext;
@@ -83,7 +83,7 @@ pub(crate) fn apply_context_effects(
     }
 
     let (avg_frequency, avg_complexity) = compute_aggregate_interaction_metrics(context);
-    let microsystem_multiplier = match check_proximal_process_gate(
+    let microsystem_multiplier = match passes_proximal_process_gate(
         avg_frequency,
         avg_complexity,
         INTERACTION_FREQUENCY_THRESHOLD,

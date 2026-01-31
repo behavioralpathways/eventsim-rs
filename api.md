@@ -507,7 +507,7 @@ Internal functions for memory layer transitions and decay. Not part of the consu
 | Item | Notes |
 |------|-------|
 | `promote_memory(layers, id)` | Promote by salience threshold |
-| `check_decay(memory, threshold)` | Check if memory should decay |
+| `validate_memory_above_decay_threshold(memory, threshold)` | Check if memory should decay |
 | `compute_consolidation_window(base, arousal)` | Inverted-U arousal model |
 | `apply_memory_maintenance(memories, elapsed)` | Run full maintenance cycle |
 | `MaintenanceError` | Error type for maintenance operations |
@@ -528,7 +528,7 @@ Internal functions for memory layer transitions and decay. Not part of the consu
 | `ContextPath` enum | Typed paths for context access |
 | `entity.get_context(ContextPath)` | Read context value |
 | `entity.set_context(ContextPath, f64)` | Write context value |
-| `check_proximal_process_gate(...)` | PPCT validation |
+| `passes_proximal_process_gate(...)` | PPCT validation |
 
 ### Context Effects (Internal)
 

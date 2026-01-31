@@ -26,6 +26,8 @@ mod intergenerational_trauma;
 mod legal_charges;
 #[path = "longitudinal/lifespan_trajectory.rs"]
 mod lifespan_trajectory;
+#[path = "longitudinal/lord_of_the_flies.rs"]
+mod lord_of_the_flies;
 #[path = "longitudinal/long_term_incarceration.rs"]
 mod long_term_incarceration;
 #[path = "longitudinal/mentorship_achievement.rs"]

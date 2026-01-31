@@ -10,6 +10,5 @@ mod simulation {
     mod entity;
     mod time;
 
-    // Longitudinal scenario tests
-    mod longitudinal;
+    // Longitudinal scenario tests live under tests/longitudinal
 }

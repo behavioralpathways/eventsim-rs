@@ -828,6 +828,24 @@ mod tests {
     }
 
     #[test]
+    fn attribution_with_source_unstable_for_lower_severity() {
+        let entity = create_human();
+        let source = crate::types::EntityId::new("perpetrator").unwrap();
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
+            .source(source.clone())
+            .severity(0.5)
+            .build()
+            .unwrap();
+
+        let interpreted = interpret_event(&event, &entity);
+
+        let expected =
+            std::mem::discriminant(&Attribution::Other(source, AttributionStability::Unstable));
+        let actual = std::mem::discriminant(&interpreted.attribution);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn attribution_without_source_self_caused_for_high_honesty() {
         let mut entity = create_human();
         entity
@@ -905,6 +923,78 @@ mod tests {
     }
 
     #[test]
+    fn process_event_to_relationships_skips_without_source_or_target() {
+        use crate::enums::Direction;
+        use crate::relationship::Relationship;
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let mut relationships = vec![Relationship::try_between(target.clone(), source.clone()).unwrap()];
+
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .target(target)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(
+            &event,
+            Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0),
+            &mut relationships,
+        );
+
+        assert!(relationships[0]
+            .antecedent_history(Direction::AToB)
+            .is_empty());
+        assert!(relationships[0]
+            .antecedent_history(Direction::BToA)
+            .is_empty());
+    }
+
+    #[test]
+    fn process_event_to_relationships_skips_unrelated_relationship() {
+        use crate::enums::Direction;
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+        use crate::relationship::Relationship;
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let other = EntityId::new("other").unwrap();
+        let mut relationships = vec![Relationship::try_between(other.clone(), source.clone()).unwrap()];
+
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                trust_propensity: 0.4,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec)
+            .source(source)
+            .target(target)
+            .severity(1.0)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(
+            &event,
+            Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0),
+            &mut relationships,
+        );
+
+        assert!(relationships[0]
+            .antecedent_history(Direction::AToB)
+            .is_empty());
+        assert!(relationships[0]
+            .antecedent_history(Direction::BToA)
+            .is_empty());
+    }
+
+    #[test]
     fn process_event_to_relationships_negative_integrity_branch() {
         use crate::enums::Direction;
         use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
@@ -938,6 +1028,46 @@ mod tests {
         let history = relationships[0].antecedent_history(Direction::AToB);
         assert_eq!(history.len(), 1);
         assert_eq!(history[0].antecedent_type(), AntecedentType::Integrity);
+        assert_eq!(history[0].direction(), AntecedentDirection::Negative);
+    }
+
+    #[test]
+    fn process_event_to_relationships_negative_benevolence_branch() {
+        use crate::enums::Direction;
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+        use crate::relationship::{AntecedentDirection, AntecedentType, Relationship};
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let mut relationships = vec![Relationship::try_between(target.clone(), source.clone()).unwrap()];
+
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                trust_propensity: -0.4,
+                prc: -0.2,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec)
+            .source(source)
+            .target(target)
+            .severity(1.0)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(
+            &event,
+            Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0),
+            &mut relationships,
+        );
+
+        let history = relationships[0].antecedent_history(Direction::AToB);
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].antecedent_type(), AntecedentType::Benevolence);
         assert_eq!(history[0].direction(), AntecedentDirection::Negative);
     }
 

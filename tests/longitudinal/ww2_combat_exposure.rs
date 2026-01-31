@@ -123,4 +123,8 @@ fn ww2_combat_exposure_shifts_aggression_and_stress() {
             < control_disposition.trust_propensity_effective() - 0.05,
         "combat exposure should reduce trust propensity long-term"
     );
+    assert!(
+        mh.acquired_capability_effective() > control_mh.acquired_capability_effective() + 0.05,
+        "combat exposure should elevate acquired capability long-term"
+    );
 }

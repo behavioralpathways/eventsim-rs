@@ -158,7 +158,7 @@ pub const SPEC: EventSpec = EventSpec {
         perceived_competence: 0.05,
         depression: 0.05,
         self_worth: 0.08,
-        hopelessness: 0.05,
+        hopelessness: 0.12,
         interpersonal_hopelessness: 0.05,
         impulse_control: 0.05,
         empathy: 0.02,

@@ -68,6 +68,7 @@ fn chronic_illness_increases_burden_and_hopelessness() {
         (45, EventType::ExperienceAwarenessMortality, 0.7),
         (52, EventType::DevelopIllnessChronic, 0.8),
         (58, EventType::ExperienceIsolationChronic, 0.6),
+        (62, EventType::ExperienceConflictFamily, 0.5),
     ];
 
     add_events(&mut sim, birth_date, &entity_id, &events);
@@ -79,6 +80,11 @@ fn chronic_illness_increases_burden_and_hopelessness() {
     let control_needs = control_state.individual_state().needs();
     let mh = state.individual_state().mental_health();
     let control_mh = control_state.individual_state().mental_health();
+    let social_cog = state.individual_state().social_cognition();
+    let control_social_cog = control_state.individual_state().social_cognition();
+
+    let pb = state.individual_state().compute_perceived_burdensomeness();
+    let control_pb = control_state.individual_state().compute_perceived_burdensomeness();
 
     assert!(
         needs.fatigue_effective() > control_needs.fatigue_effective() + 0.05,
@@ -95,5 +101,17 @@ fn chronic_illness_increases_burden_and_hopelessness() {
     assert!(
         mh.hopelessness_effective() > control_mh.hopelessness_effective() + 0.05,
         "chronic illness should elevate hopelessness"
+    );
+    assert!(
+        pb > control_pb + 0.05,
+        "chronic illness should elevate perceived burdensomeness (pb={}, control_pb={}, diff={})",
+        pb, control_pb, pb - control_pb
+    );
+    assert!(
+        social_cog.loneliness_effective() > control_social_cog.loneliness_effective() + 0.05,
+        "chronic illness should elevate loneliness (loneliness={}, control={}, diff={})",
+        social_cog.loneliness_effective(),
+        control_social_cog.loneliness_effective(),
+        social_cog.loneliness_effective() - control_social_cog.loneliness_effective()
     );
 }

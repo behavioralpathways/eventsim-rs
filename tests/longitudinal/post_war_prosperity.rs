@@ -84,6 +84,10 @@ fn post_war_prosperity_improves_purpose_and_connection() {
     let control_social = control_state.individual_state().social_cognition();
     let disposition = state.individual_state().disposition();
     let control_disposition = control_state.individual_state().disposition();
+    let mental_health = state.individual_state().mental_health();
+    let control_mental_health = control_state.individual_state().mental_health();
+    let mood = state.individual_state().mood();
+    let control_mood = control_state.individual_state().mood();
 
     assert!(
         needs.purpose_effective() > control_needs.purpose_effective() + 0.05,
@@ -101,5 +105,26 @@ fn post_war_prosperity_improves_purpose_and_connection() {
     assert!(
         disposition.trust_propensity_effective() > control_disposition.trust_propensity_effective() + 0.05,
         "prosperity should increase trust propensity"
+    );
+    assert!(
+        mental_health.self_worth_effective() > control_mental_health.self_worth_effective() + 0.05,
+        "prosperity should boost self-worth (got prosperity: {}, control: {}, diff: {})",
+        mental_health.self_worth_effective(),
+        control_mental_health.self_worth_effective(),
+        mental_health.self_worth_effective() - control_mental_health.self_worth_effective()
+    );
+    assert!(
+        mood.valence_effective() > control_mood.valence_effective() + 0.05,
+        "positive experiences should lead to higher valence (got prosperity: {}, control: {}, diff: {})",
+        mood.valence_effective(),
+        control_mood.valence_effective(),
+        mood.valence_effective() - control_mood.valence_effective()
+    );
+    assert!(
+        mental_health.hopelessness_effective() < control_mental_health.hopelessness_effective() - 0.05,
+        "prosperity should reduce hopelessness given positive trajectory (got prosperity: {}, control: {}, diff: {})",
+        mental_health.hopelessness_effective(),
+        control_mental_health.hopelessness_effective(),
+        control_mental_health.hopelessness_effective() - mental_health.hopelessness_effective()
     );
 }

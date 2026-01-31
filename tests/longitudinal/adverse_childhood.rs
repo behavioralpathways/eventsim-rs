@@ -81,6 +81,13 @@ fn adverse_childhood_leaves_long_term_scars() {
     let control_mh = control_state.individual_state().mental_health();
     let disposition = state.individual_state().disposition();
     let control_disposition = control_state.individual_state().disposition();
+    let social_cognition = state.individual_state().social_cognition();
+    let control_social_cognition = control_state.individual_state().social_cognition();
+    let mood = state.individual_state().mood();
+    let control_mood = control_state.individual_state().mood();
+
+    let tb = state.individual_state().compute_thwarted_belongingness();
+    let control_tb = control_state.individual_state().compute_thwarted_belongingness();
 
     assert!(
         mh.self_worth_effective() < control_mh.self_worth_effective() - 0.05,
@@ -89,5 +96,17 @@ fn adverse_childhood_leaves_long_term_scars() {
     assert!(
         disposition.trust_propensity_effective() < control_disposition.trust_propensity_effective() - 0.05,
         "adverse childhood should reduce trust propensity"
+    );
+    assert!(
+        social_cognition.loneliness_effective() > control_social_cognition.loneliness_effective() + 0.05,
+        "adverse childhood should increase loneliness (attachment issues)"
+    );
+    assert!(
+        tb > control_tb + 0.05,
+        "adverse childhood should increase thwarted belongingness (early rejection impacts belonging)"
+    );
+    assert!(
+        mood.valence_effective() < control_mood.valence_effective() - 0.05,
+        "adverse childhood should reduce affect valence (lower mood after adverse experiences)"
     );
 }

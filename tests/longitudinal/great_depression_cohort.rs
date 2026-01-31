@@ -87,11 +87,49 @@ fn great_depression_cohort_has_lingering_strain() {
 
     let needs = state.individual_state().needs();
     let control_needs = control_state.individual_state().needs();
+    let disposition = state.individual_state().disposition();
+    let control_disposition = control_state.individual_state().disposition();
+    let mental_health = state.individual_state().mental_health();
+    let control_mental_health = control_state.individual_state().mental_health();
+    let social_cognition = state.individual_state().social_cognition();
+    let control_social_cognition = control_state.individual_state().social_cognition();
 
     // Stress is largely acute and decays over decades; long-term differences should
     // show up more in purpose than in persistent stress elevation.
     assert!(
         needs.purpose_effective() < control_needs.purpose_effective() - 0.03,
         "depression cohort should have reduced purpose"
+    );
+
+    // Repeated financial strain should elevate needs stress
+    assert!(
+        needs.stress_effective() > control_needs.stress_effective() + 0.02,
+        "depression cohort should have elevated stress from repeated financial trauma, got {} vs control {}",
+        needs.stress_effective(),
+        control_needs.stress_effective()
+    );
+
+    // Financial trauma should reduce trust propensity (repeated betrayals by economy/society)
+    assert!(
+        disposition.trust_propensity_effective() < control_disposition.trust_propensity_effective() - 0.03,
+        "depression cohort should have reduced trust_propensity from financial failures, got {} vs control {}",
+        disposition.trust_propensity_effective(),
+        control_disposition.trust_propensity_effective()
+    );
+
+    // Repeated setbacks should increase hopelessness
+    assert!(
+        mental_health.hopelessness_effective() > control_mental_health.hopelessness_effective() + 0.03,
+        "depression cohort should have elevated hopelessness from repeated setbacks, got {} vs control {}",
+        mental_health.hopelessness_effective(),
+        control_mental_health.hopelessness_effective()
+    );
+
+    // Financial failures may reduce perceived competence
+    assert!(
+        social_cognition.perceived_competence_effective() < control_social_cognition.perceived_competence_effective() - 0.02,
+        "depression cohort should have reduced perceived_competence from financial failures, got {} vs control {}",
+        social_cognition.perceived_competence_effective(),
+        control_social_cognition.perceived_competence_effective()
     );
 }

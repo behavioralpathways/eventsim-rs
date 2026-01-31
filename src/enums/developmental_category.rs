@@ -182,6 +182,9 @@ impl From<&EventType> for DevelopmentalCategory {
             // Medical hospitalization is neutral (cross-stage health event)
             EventType::UndergoHospitalizationMedical => DevelopmentalCategory::Neutral,
 
+            // Chosen immigration affects identity (life transition with identity implications)
+            EventType::UndergoImmigrationChosen => DevelopmentalCategory::Identity,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

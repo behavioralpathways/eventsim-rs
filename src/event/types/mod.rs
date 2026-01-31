@@ -52,3 +52,4 @@ pub mod undergo_hospitalization_medical;
 pub mod undergo_immigration_chosen;
 pub mod undergo_immigration_forced;
 pub mod undergo_incarceration_prison;
+pub mod undergo_relocation_chosen;

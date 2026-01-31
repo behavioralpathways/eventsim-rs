@@ -164,6 +164,9 @@ pub enum EventType {
     /// Prison incarceration (confinement in correctional facility following criminal conviction)
     UndergoIncarcerationPrison,
 
+    /// Voluntary relocation (moving to a new city/region by personal choice for opportunities, lifestyle, or family)
+    UndergoRelocationChosen,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -231,6 +234,7 @@ impl EventType {
             EventType::UndergoImmigrationChosen => types::undergo_immigration_chosen::SPEC,
             EventType::UndergoImmigrationForced => types::undergo_immigration_forced::SPEC,
             EventType::UndergoIncarcerationPrison => types::undergo_incarceration_prison::SPEC,
+            EventType::UndergoRelocationChosen => types::undergo_relocation_chosen::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -286,13 +290,14 @@ impl EventType {
             EventType::UndergoImmigrationChosen => "Undergo Immigration (Chosen)",
             EventType::UndergoImmigrationForced => "Undergo Immigration (Forced)",
             EventType::UndergoIncarcerationPrison => "Undergo Incarceration (Prison)",
+            EventType::UndergoRelocationChosen => "Undergo Relocation (Chosen)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 47] {
+    pub const fn all() -> [EventType; 48] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -341,6 +346,7 @@ impl EventType {
             EventType::UndergoImmigrationChosen,
             EventType::UndergoImmigrationForced,
             EventType::UndergoIncarcerationPrison,
+            EventType::UndergoRelocationChosen,
         ]
     }
 }
@@ -359,7 +365,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 47);
+        assert_eq!(all.len(), 48);
     }
 
     #[test]

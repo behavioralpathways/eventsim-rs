@@ -16,20 +16,10 @@
 //! - **Trustworthiness**: Perceived competence, benevolence, and integrity of trustee
 //! - **Perceived Risk**: Subjective assessment of potential negative consequences
 //!
-//! Trust decision formula:
-//! ```text
-//! willingness = propensity_weight * propensity
-//!             + trustworthiness_weight * perceived_trustworthiness
-//!             - risk_weight * perceived_risk
-//! ```
-//!
-//! Weights depend on relationship stage - propensity matters more for strangers,
-//! trustworthiness matters more for established relationships.
-//!
 //! # Example
 //!
 //! ```
-//! use eventsim_rs::relationship::{Relationship, RelationshipStage, StakesLevel};
+//! use eventsim_rs::relationship::{Relationship, RelationshipStage};
 //! use eventsim_rs::types::EntityId;
 //! use eventsim_rs::enums::Direction;
 //!
@@ -37,21 +27,11 @@
 //! let alice = EntityId::new("alice").unwrap();
 //! let bob = EntityId::new("bob").unwrap();
 //!
-//! let mut rel = Relationship::try_between(alice, bob).unwrap()
+//! let rel = Relationship::try_between(alice, bob).unwrap()
 //!     .with_stage(RelationshipStage::Acquaintance);
 //!
-//! // Compute trust decision
-//! let trust_propensity = 0.6; // Alice's general trust propensity
-//! let decision = rel.compute_trust_decision(
-//!     Direction::AToB,
-//!     trust_propensity,
-//!     StakesLevel::Medium
-//! );
-//!
-//! // Check if Alice would delegate a task to Bob
-//! if decision.would_delegate_task(0.5) {
-//!     println!("Alice would delegate medium-difficulty tasks to Bob");
-//! }
+//! // Access trustworthiness factors
+//! let trustworthiness = rel.trustworthiness(Direction::AToB);
 //! ```
 
 mod antecedent;
@@ -63,8 +43,6 @@ mod perceived_risk;
 mod relationship;
 mod shared_dimensions;
 mod stage;
-mod trust_context;
-mod trust_decision;
 mod trustworthiness;
 
 pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
@@ -75,6 +53,4 @@ pub use perceived_risk::{PerceivedRisk, StakesLevel};
 pub use relationship::{Relationship, RelationshipError, StageTransitionError};
 pub use shared_dimensions::SharedDimensions;
 pub use stage::RelationshipStage;
-pub use trust_context::TrustContext;
-pub use trust_decision::TrustDecision;
 pub use trustworthiness::TrustworthinessFactors;

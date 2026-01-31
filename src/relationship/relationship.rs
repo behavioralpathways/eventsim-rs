@@ -7,8 +7,7 @@
 use crate::enums::{Direction, DirectionalPath, RelPath, RelationshipSchema};
 use crate::relationship::{
     AntecedentDirection, DirectionalDimensions, InteractionPattern, PerceivedRisk,
-    RelationshipStage, SharedDimensions, StakesLevel, TrustAntecedent, TrustDecision,
-    TrustworthinessFactors,
+    RelationshipStage, SharedDimensions, TrustAntecedent, TrustworthinessFactors,
 };
 use crate::state::StateValue;
 use crate::types::{Duration, EntityId, RelationshipId, Timestamp};
@@ -532,129 +531,6 @@ impl Relationship {
         }
     }
 
-    // Trust computation
-
-    /// Computes a trust decision for the specified direction.
-    ///
-    /// # Arguments
-    ///
-    /// * `direction` - Which direction (AToB or BToA)
-    /// * `trustor_propensity` - The trustor's dispositional trust propensity (0-1)
-    /// * `stakes` - The stakes level for the action
-    ///
-    /// # Trust Computation Formula
-    ///
-    /// ```text
-    /// willingness = context_multiplier * (
-    ///                 propensity_weight * propensity
-    ///               + trustworthiness_weight * perceived_trustworthiness
-    ///             )
-    ///             - risk_weight * perceived_risk
-    /// ```
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use eventsim_rs::relationship::{Relationship, StakesLevel};
-    /// use eventsim_rs::types::EntityId;
-    /// use eventsim_rs::enums::Direction;
-    ///
-    /// let alice = EntityId::new("alice").unwrap();
-    /// let bob = EntityId::new("bob").unwrap();
-    /// let rel = Relationship::try_between(alice, bob).unwrap();
-    ///
-    /// let decision = rel.compute_trust_decision(
-    ///     Direction::AToB,
-    ///     0.5, // Alice's trust propensity
-    ///     StakesLevel::Medium
-    /// );
-    /// ```
-    #[must_use]
-    pub fn compute_trust_decision(
-        &self,
-        direction: Direction,
-        trustor_propensity: f32,
-        stakes: StakesLevel,
-    ) -> TrustDecision {
-        self.compute_trust_decision_with_context(direction, trustor_propensity, stakes, 1.0)
-    }
-
-    /// Computes a TrustDecision for the given stakes level with a context multiplier.
-    #[must_use]
-    pub fn compute_trust_decision_with_context(
-        &self,
-        direction: Direction,
-        trustor_propensity: f32,
-        stakes: StakesLevel,
-        context_multiplier: f32,
-    ) -> TrustDecision {
-        let trustworthiness = self.trustworthiness(direction);
-        let risk = self.perceived_risk(direction);
-        let context_multiplier = context_multiplier.clamp(0.0, 2.0);
-
-        // Get weights based on relationship stage
-        let prop_weight = self.stage.propensity_weight();
-        let trust_weight = self.stage.trustworthiness_weight();
-        let stage_risk_mod = self.stage.risk_modifier();
-
-        // Compute risk with stage modifier
-        let perceived_risk = risk.compute_with_stage_modifier(stakes, stage_risk_mod);
-
-        // Risk weight is a constant factor
-        let risk_weight = 0.5;
-
-        // Compute each willingness domain
-        // Task willingness uses competence
-        let task_base = prop_weight * trustor_propensity
-            + trust_weight * trustworthiness.competence_effective();
-        let task_willingness = (task_base * context_multiplier) - risk_weight * perceived_risk;
-
-        // Support willingness uses benevolence
-        let support_base = prop_weight * trustor_propensity
-            + trust_weight * trustworthiness.benevolence_effective();
-        let support_willingness =
-            (support_base * context_multiplier) - risk_weight * perceived_risk;
-
-        // Disclosure willingness uses integrity
-        let disclosure_base =
-            prop_weight * trustor_propensity + trust_weight * trustworthiness.integrity_effective();
-        let disclosure_willingness =
-            (disclosure_base * context_multiplier) - risk_weight * perceived_risk;
-
-        // Decision certainty: how confident we are in our willingness assessment
-        // Lower for estranged because our willingness is conflicted
-        let history = self.shared.history_effective();
-        let stage_decision_certainty = match self.stage {
-            RelationshipStage::Stranger => 0.1,
-            RelationshipStage::Acquaintance => 0.3,
-            RelationshipStage::Established => 0.6,
-            RelationshipStage::Intimate => 0.9,
-            // Know them, but trust is broken - uncertain about willingness
-            RelationshipStage::Estranged => 0.5,
-        };
-        let decision_certainty = (history * 0.3 + stage_decision_certainty * 0.7).clamp(0.0, 1.0);
-
-        // Trustee confidence: certainty about the trustee's attributes
-        // Higher for estranged because we know them well (even if negatively)
-        let stage_trustee_confidence = match self.stage {
-            RelationshipStage::Stranger => 0.1,
-            RelationshipStage::Acquaintance => 0.4,
-            RelationshipStage::Established => 0.7,
-            RelationshipStage::Intimate => 0.9,
-            // Know them well, even if relationship is broken
-            RelationshipStage::Estranged => 0.8,
-        };
-        let trustee_confidence = (history * 0.4 + stage_trustee_confidence * 0.6).clamp(0.0, 1.0);
-
-        TrustDecision::new(
-            task_willingness.clamp(0.0, 1.0),
-            support_willingness.clamp(0.0, 1.0),
-            disclosure_willingness.clamp(0.0, 1.0),
-            decision_certainty,
-            trustee_confidence,
-        )
-    }
-
     // Decay
 
     /// Applies decay to all relationship dimensions over the specified duration.
@@ -996,67 +872,6 @@ mod tests {
     }
 
     #[test]
-    fn compute_trust_decision_basic() {
-        let rel = Relationship::try_between(alice(), bob()).unwrap();
-        let decision = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Low);
-
-        assert!(decision.task_willingness() > 0.0);
-        assert!(decision.task_willingness() <= 1.0);
-    }
-
-    #[test]
-    fn context_multiplier_scales_trust_decision() {
-        let rel = Relationship::try_between(alice(), bob()).unwrap();
-        let baseline =
-            rel.compute_trust_decision_with_context(Direction::AToB, 0.5, StakesLevel::Low, 1.0);
-        let constrained =
-            rel.compute_trust_decision_with_context(Direction::AToB, 0.5, StakesLevel::Low, 0.5);
-
-        assert!(constrained.task_willingness() < baseline.task_willingness());
-    }
-
-    #[test]
-    fn propensity_weight_diminishes_with_stage() {
-        let stranger = Relationship::try_between(alice(), bob()).unwrap();
-        let mut intimate = Relationship::try_between(alice(), bob()).unwrap();
-        intimate.set_stage(RelationshipStage::Intimate).unwrap();
-
-        // Same propensity and trustworthiness
-        let propensity = 0.8;
-
-        let stranger_decision =
-            stranger.compute_trust_decision(Direction::AToB, propensity, StakesLevel::Low);
-        let intimate_decision =
-            intimate.compute_trust_decision(Direction::AToB, propensity, StakesLevel::Low);
-
-        // In intimate relationships, propensity matters less (lower weight)
-        // but trustworthiness matters more. With same values, the difference
-        // comes from the weighting.
-
-        // Stranger: 0.6 * 0.8 + 0.4 * 0.3 = 0.48 + 0.12 = 0.60 (minus risk)
-        // Intimate: 0.1 * 0.8 + 0.9 * 0.3 = 0.08 + 0.27 = 0.35 (minus risk)
-
-        // Due to stage risk modifier, intimate has lower risk
-        // Overall, the trust decision should differ
-        assert!(stranger_decision.task_willingness() != intimate_decision.task_willingness());
-    }
-
-    #[test]
-    fn perceived_risk_affects_willingness() {
-        let low_risk = Relationship::try_between(alice(), bob()).unwrap();
-        let mut high_risk = Relationship::try_between(alice(), bob()).unwrap();
-
-        high_risk.perceived_risk_mut(Direction::AToB).add_delta(0.5);
-
-        let low_decision =
-            low_risk.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Medium);
-        let high_decision =
-            high_risk.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Medium);
-
-        assert!(low_decision.task_willingness() > high_decision.task_willingness());
-    }
-
-    #[test]
     fn trust_competence_update() {
         let mut rel = Relationship::try_between(alice(), bob()).unwrap();
         rel.trustworthiness_mut(Direction::AToB)
@@ -1084,16 +899,6 @@ mod tests {
 
         let integrity = rel.trustworthiness(Direction::AToB).integrity_effective();
         assert!((integrity - 0.7).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn trust_decision_integrates_risk() {
-        let rel = Relationship::try_between(alice(), bob()).unwrap();
-
-        let low_stakes = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Low);
-        let high_stakes = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::High);
-
-        assert!(low_stakes.task_willingness() > high_stakes.task_willingness());
     }
 
     #[test]
@@ -1389,8 +1194,7 @@ mod tests {
 
     #[test]
     fn get_support_willingness_returns_none() {
-        // SupportWillingness is a computed value from TrustDecision,
-        // not a stored StateValue
+        // SupportWillingness is not a stored StateValue
         let rel = Relationship::try_between(alice(), bob()).unwrap();
         assert!(rel
             .get(RelPath::Directional(
@@ -1453,49 +1257,6 @@ mod tests {
             StageTransitionError::new(RelationshipStage::Stranger, RelationshipStage::Intimate);
         let error: &dyn std::error::Error = &err;
         assert!(error.to_string().contains("Invalid"));
-    }
-
-    #[test]
-    fn compute_trust_decision_estranged_stage() {
-        let mut rel = Relationship::try_between(alice(), bob()).unwrap();
-        rel.set_stage(RelationshipStage::Estranged).unwrap();
-
-        let decision = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Medium);
-
-        // Estranged relationships have 0.5 stage confidence
-        // history = 0, so confidence = 0.0 * 0.3 + 0.5 * 0.7 = 0.35
-        assert!(decision.confidence() > 0.0);
-        assert!(decision.confidence() < 1.0);
-        assert!(decision.task_willingness() >= 0.0);
-        assert!(decision.task_willingness() <= 1.0);
-    }
-
-    #[test]
-    fn compute_trust_decision_acquaintance_stage() {
-        let mut rel = Relationship::try_between(alice(), bob()).unwrap();
-        rel.set_stage(RelationshipStage::Acquaintance).unwrap();
-
-        let decision = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Medium);
-
-        // Acquaintance stage has 0.3 stage confidence
-        assert!(decision.confidence() > 0.0);
-        assert!(decision.confidence() < 1.0);
-        assert!(decision.task_willingness() >= 0.0);
-        assert!(decision.task_willingness() <= 1.0);
-    }
-
-    #[test]
-    fn compute_trust_decision_established_stage() {
-        let mut rel = Relationship::try_between(alice(), bob()).unwrap();
-        rel.set_stage(RelationshipStage::Established).unwrap();
-
-        let decision = rel.compute_trust_decision(Direction::AToB, 0.5, StakesLevel::Medium);
-
-        // Established stage has 0.6 stage confidence
-        assert!(decision.confidence() > 0.0);
-        assert!(decision.confidence() < 1.0);
-        assert!(decision.task_willingness() >= 0.0);
-        assert!(decision.task_willingness() <= 1.0);
     }
 
     #[test]

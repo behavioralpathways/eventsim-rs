@@ -155,6 +155,9 @@ pub enum EventType {
     /// Medical hospitalization (acute illness, surgery, injury recovery, medical procedures requiring inpatient care)
     UndergoHospitalizationMedical,
 
+    /// Voluntary immigration (moving to a new country by personal choice for opportunities, family, or lifestyle)
+    UndergoImmigrationChosen,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -219,6 +222,7 @@ impl EventType {
             EventType::UndergoHospitalizationMedical => {
                 types::undergo_hospitalization_medical::SPEC
             }
+            EventType::UndergoImmigrationChosen => types::undergo_immigration_chosen::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -271,6 +275,7 @@ impl EventType {
             EventType::SurviveDisasterNatural => "Survive Disaster (Natural)",
             EventType::UndergoDeploymentMilitary => "Undergo Deployment (Military)",
             EventType::UndergoHospitalizationMedical => "Undergo Hospitalization (Medical)",
+            EventType::UndergoImmigrationChosen => "Undergo Immigration (Chosen)",
             EventType::Custom => "Custom Event",
         }
     }

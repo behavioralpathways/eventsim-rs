@@ -44,9 +44,9 @@
 [x] survive-disaster-natural
 [x] undergo-deployment-military
 [x] undergo-hospitalization-medical
-[ ] undergo-immigration-chosen
-[ ] undergo-immigration-forced
-[ ] undergo-incarceration-prison
+[x] undergo-immigration-chosen
+[x] undergo-immigration-forced
+[x] undergo-incarceration-prison
 [ ] undergo-relocation-chosen
 [ ] undergo-relocation-forced
 [ ] undergo-retirement-forced

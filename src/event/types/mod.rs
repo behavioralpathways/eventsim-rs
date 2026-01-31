@@ -50,3 +50,5 @@ pub mod survive_disaster_natural;
 pub mod undergo_deployment_military;
 pub mod undergo_hospitalization_medical;
 pub mod undergo_immigration_chosen;
+pub mod undergo_immigration_forced;
+pub mod undergo_incarceration_prison;

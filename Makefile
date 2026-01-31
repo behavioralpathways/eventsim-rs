@@ -16,14 +16,13 @@ help:
 	@echo "  make build              - Build release"
 	@echo "  make clean              - Clean build artifacts"
 
-# Run all tests (including ignored longitudinal tests)
+# Run all tests (including ignored tests)
 test:
-	cargo nextest run
-	cargo test --test longitudinal -- --ignored --nocapture
+	cargo nextest run --run-ignored all
 
-# Run tests with coverageno i
+# Run tests with coverage (including ignored tests)
 tests:
-	cargo llvm-cov nextest
+	cargo llvm-cov nextest --run-ignored all
 
 # Run ignored longitudinal tests
 longitudinal-tests:

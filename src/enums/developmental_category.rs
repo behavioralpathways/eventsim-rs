@@ -179,6 +179,9 @@ impl From<&EventType> for DevelopmentalCategory {
             // Military deployment is neutral (cross-stage life transition)
             EventType::UndergoDeploymentMilitary => DevelopmentalCategory::Neutral,
 
+            // Medical hospitalization is neutral (cross-stage health event)
+            EventType::UndergoHospitalizationMedical => DevelopmentalCategory::Neutral,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

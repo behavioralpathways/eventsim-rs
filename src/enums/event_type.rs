@@ -152,6 +152,9 @@ pub enum EventType {
     /// Military deployment (being deployed for military service, separation from civilian life)
     UndergoDeploymentMilitary,
 
+    /// Medical hospitalization (acute illness, surgery, injury recovery, medical procedures requiring inpatient care)
+    UndergoHospitalizationMedical,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -213,6 +216,9 @@ impl EventType {
             EventType::SurviveAttemptSuicide => types::survive_attempt_suicide::SPEC,
             EventType::SurviveDisasterNatural => types::survive_disaster_natural::SPEC,
             EventType::UndergoDeploymentMilitary => types::undergo_deployment_military::SPEC,
+            EventType::UndergoHospitalizationMedical => {
+                types::undergo_hospitalization_medical::SPEC
+            }
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -264,13 +270,14 @@ impl EventType {
             EventType::SurviveAttemptSuicide => "Survive Attempt (Suicide)",
             EventType::SurviveDisasterNatural => "Survive Disaster (Natural)",
             EventType::UndergoDeploymentMilitary => "Undergo Deployment (Military)",
+            EventType::UndergoHospitalizationMedical => "Undergo Hospitalization (Medical)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 43] {
+    pub const fn all() -> [EventType; 44] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -315,6 +322,7 @@ impl EventType {
             EventType::SurviveAttemptSuicide,
             EventType::SurviveDisasterNatural,
             EventType::UndergoDeploymentMilitary,
+            EventType::UndergoHospitalizationMedical,
         ]
     }
 }
@@ -333,7 +341,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 43);
+        assert_eq!(all.len(), 44);
     }
 
     #[test]

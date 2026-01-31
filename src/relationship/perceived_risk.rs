@@ -13,70 +13,6 @@ const PERCEIVED_RISK_DECAY_HALF_LIFE: Duration = Duration::days(7);
 /// Default base value for perceived risk.
 const DEFAULT_BASE: f32 = 0.3;
 
-/// What type of vulnerability is being accepted in a trust decision.
-///
-/// Per Mayer's model, trust is meaningful only when something is at stake.
-/// This enum identifies what the trustor is risking.
-///
-/// # Examples
-///
-/// ```
-/// use eventsim_rs::relationship::VulnerabilityType;
-///
-/// let at_risk = VulnerabilityType::Resources;
-/// assert_eq!(at_risk.name(), "Resources");
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum VulnerabilityType {
-    /// Identity/self-concept at risk (e.g., sharing personal secrets).
-    Identity,
-    /// Financial or material resources at risk.
-    #[default]
-    Resources,
-    /// Physical safety at risk.
-    Safety,
-    /// The relationship itself at risk (e.g., confronting a friend).
-    Relationship,
-    /// Professional reputation at risk.
-    Reputation,
-    /// Emotional wellbeing at risk.
-    Emotional,
-}
-
-impl VulnerabilityType {
-    /// Returns a human-readable name for this vulnerability type.
-    #[must_use]
-    pub const fn name(&self) -> &'static str {
-        match self {
-            VulnerabilityType::Identity => "Identity",
-            VulnerabilityType::Resources => "Resources",
-            VulnerabilityType::Safety => "Safety",
-            VulnerabilityType::Relationship => "Relationship",
-            VulnerabilityType::Reputation => "Reputation",
-            VulnerabilityType::Emotional => "Emotional",
-        }
-    }
-
-    /// Returns all vulnerability types.
-    #[must_use]
-    pub const fn all() -> [VulnerabilityType; 6] {
-        [
-            VulnerabilityType::Identity,
-            VulnerabilityType::Resources,
-            VulnerabilityType::Safety,
-            VulnerabilityType::Relationship,
-            VulnerabilityType::Reputation,
-            VulnerabilityType::Emotional,
-        ]
-    }
-}
-
-impl std::fmt::Display for VulnerabilityType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name())
-    }
-}
-
 /// The stakes level for a trust action.
 ///
 /// Higher stakes increase perceived risk.
@@ -151,79 +87,6 @@ impl StakesLevel {
 impl std::fmt::Display for StakesLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.name())
-    }
-}
-
-/// Explicit representation of what is at stake in a trust decision.
-///
-/// Per Mayer's model, trust is the willingness to be vulnerable. This struct
-/// makes the vulnerability explicit: what is being risked and how much.
-///
-/// # Examples
-///
-/// ```
-/// use eventsim_rs::relationship::{Vulnerability, VulnerabilityType, StakesLevel};
-///
-/// let vuln = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::High);
-/// assert_eq!(vuln.vulnerability_type(), VulnerabilityType::Resources);
-/// assert_eq!(vuln.stakes(), StakesLevel::High);
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub struct Vulnerability {
-    /// What type of thing is at risk.
-    vulnerability_type: VulnerabilityType,
-    /// How much is at stake (magnitude of potential loss).
-    stakes: StakesLevel,
-}
-
-impl Vulnerability {
-    /// Creates a new Vulnerability.
-    ///
-    /// # Arguments
-    ///
-    /// * `vulnerability_type` - What is at risk
-    /// * `stakes` - How much is at stake
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use eventsim_rs::relationship::{Vulnerability, VulnerabilityType, StakesLevel};
-    ///
-    /// let vuln = Vulnerability::new(VulnerabilityType::Safety, StakesLevel::Critical);
-    /// ```
-    #[must_use]
-    pub const fn new(vulnerability_type: VulnerabilityType, stakes: StakesLevel) -> Self {
-        Vulnerability {
-            vulnerability_type,
-            stakes,
-        }
-    }
-
-    /// Returns the type of vulnerability.
-    #[must_use]
-    pub const fn vulnerability_type(&self) -> VulnerabilityType {
-        self.vulnerability_type
-    }
-
-    /// Returns the stakes level.
-    #[must_use]
-    pub const fn stakes(&self) -> StakesLevel {
-        self.stakes
-    }
-
-    /// Returns the risk contribution from this vulnerability.
-    ///
-    /// Combines the stakes magnitude with vulnerability type sensitivity.
-    #[must_use]
-    pub fn risk_contribution(&self) -> f32 {
-        self.stakes.risk_contribution()
-    }
-}
-
-
-impl std::fmt::Display for Vulnerability {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} ({})", self.vulnerability_type, self.stakes)
     }
 }
 
@@ -391,33 +254,6 @@ impl PerceivedRisk {
         }
 
         total.clamp(0.0, 1.0)
-    }
-
-    /// Computes risk for a specific vulnerability.
-    ///
-    /// This is the preferred method per Mayer's model, as it makes explicit
-    /// what is at stake. The vulnerability contains both what type of thing
-    /// is being risked and the magnitude of potential loss.
-    ///
-    /// # Arguments
-    ///
-    /// * `vulnerability` - What is at stake and how much
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use eventsim_rs::relationship::{
-    ///     PerceivedRisk, Vulnerability, VulnerabilityType, StakesLevel
-    /// };
-    ///
-    /// let risk = PerceivedRisk::new();
-    /// let vuln = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::High);
-    /// let computed = risk.compute_for_vulnerability(&vuln);
-    /// assert!(computed > 0.0);
-    /// ```
-    #[must_use]
-    pub fn compute_for_vulnerability(&self, vulnerability: &Vulnerability) -> f32 {
-        self.compute_for_stakes(vulnerability.stakes())
     }
 
     /// Computes risk with a stage modifier.
@@ -631,130 +467,6 @@ mod tests {
         assert!(debug.contains("Critical"));
     }
 
-    // VulnerabilityType tests
-
-    #[test]
-    fn vulnerability_type_name() {
-        assert_eq!(VulnerabilityType::Identity.name(), "Identity");
-        assert_eq!(VulnerabilityType::Resources.name(), "Resources");
-        assert_eq!(VulnerabilityType::Safety.name(), "Safety");
-        assert_eq!(VulnerabilityType::Relationship.name(), "Relationship");
-        assert_eq!(VulnerabilityType::Reputation.name(), "Reputation");
-        assert_eq!(VulnerabilityType::Emotional.name(), "Emotional");
-    }
-
-    #[test]
-    fn vulnerability_type_all() {
-        let all = VulnerabilityType::all();
-        assert_eq!(all.len(), 6);
-    }
-
-    #[test]
-    fn vulnerability_type_default() {
-        assert_eq!(VulnerabilityType::default(), VulnerabilityType::Resources);
-    }
-
-    #[test]
-    fn vulnerability_type_display() {
-        assert_eq!(format!("{}", VulnerabilityType::Safety), "Safety");
-    }
-
-    #[test]
-    fn vulnerability_type_equality() {
-        assert_eq!(VulnerabilityType::Identity, VulnerabilityType::Identity);
-        assert_ne!(VulnerabilityType::Identity, VulnerabilityType::Safety);
-    }
-
-    #[test]
-    fn vulnerability_type_clone_copy() {
-        let v1 = VulnerabilityType::Reputation;
-        let v2 = v1;
-        let v3 = v1.clone();
-        assert_eq!(v1, v2);
-        assert_eq!(v1, v3);
-    }
-
-    #[test]
-    fn vulnerability_type_hash() {
-        use std::collections::HashSet;
-        let mut set = HashSet::new();
-        set.insert(VulnerabilityType::Identity);
-        set.insert(VulnerabilityType::Identity);
-        assert_eq!(set.len(), 1);
-        set.insert(VulnerabilityType::Safety);
-        assert_eq!(set.len(), 2);
-    }
-
-    #[test]
-    fn vulnerability_type_debug() {
-        let debug = format!("{:?}", VulnerabilityType::Emotional);
-        assert!(debug.contains("Emotional"));
-    }
-
-    // Vulnerability tests
-
-    #[test]
-    fn vulnerability_new() {
-        let vuln = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::High);
-        assert_eq!(vuln.vulnerability_type(), VulnerabilityType::Resources);
-        assert_eq!(vuln.stakes(), StakesLevel::High);
-    }
-
-    #[test]
-    fn vulnerability_default() {
-        let vuln = Vulnerability::default();
-        assert_eq!(vuln.vulnerability_type(), VulnerabilityType::Resources);
-        assert_eq!(vuln.stakes(), StakesLevel::Low);
-    }
-
-    #[test]
-    fn vulnerability_risk_contribution() {
-        let low = Vulnerability::new(VulnerabilityType::Identity, StakesLevel::Low);
-        let high = Vulnerability::new(VulnerabilityType::Identity, StakesLevel::High);
-        assert!(low.risk_contribution() < high.risk_contribution());
-    }
-
-    #[test]
-    fn vulnerability_display() {
-        let vuln = Vulnerability::new(VulnerabilityType::Safety, StakesLevel::Critical);
-        assert_eq!(format!("{}", vuln), "Safety (Critical)");
-    }
-
-    #[test]
-    fn vulnerability_equality() {
-        let v1 = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::Medium);
-        let v2 = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::Medium);
-        let v3 = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::High);
-        assert_eq!(v1, v2);
-        assert_ne!(v1, v3);
-    }
-
-    #[test]
-    fn vulnerability_clone_copy() {
-        let v1 = Vulnerability::new(VulnerabilityType::Emotional, StakesLevel::Low);
-        let v2 = v1;
-        let v3 = v1.clone();
-        assert_eq!(v1, v2);
-        assert_eq!(v1, v3);
-    }
-
-    #[test]
-    fn vulnerability_hash() {
-        use std::collections::HashSet;
-        let mut set = HashSet::new();
-        let v1 = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::Medium);
-        set.insert(v1);
-        set.insert(v1);
-        assert_eq!(set.len(), 1);
-    }
-
-    #[test]
-    fn vulnerability_debug() {
-        let vuln = Vulnerability::new(VulnerabilityType::Relationship, StakesLevel::High);
-        let debug = format!("{:?}", vuln);
-        assert!(debug.contains("Vulnerability"));
-    }
-
     // PerceivedRisk tests
 
     #[test]
@@ -849,24 +561,6 @@ mod tests {
         let computed = risk.compute_for_stakes(StakesLevel::High);
         // 0.8 + 0.4 + 0.3 = 1.5, clamped to 1.0
         assert!((computed - 1.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn compute_for_vulnerability() {
-        let risk = PerceivedRisk::new();
-        let vuln = Vulnerability::new(VulnerabilityType::Resources, StakesLevel::High);
-        let computed = risk.compute_for_vulnerability(&vuln);
-        // Same as compute_for_stakes with High stakes
-        assert!((computed - 0.7).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn compute_for_vulnerability_matches_stakes() {
-        let risk = PerceivedRisk::new();
-        let vuln = Vulnerability::new(VulnerabilityType::Safety, StakesLevel::Medium);
-        let from_vuln = risk.compute_for_vulnerability(&vuln);
-        let from_stakes = risk.compute_for_stakes(StakesLevel::Medium);
-        assert!((from_vuln - from_stakes).abs() < f32::EPSILON);
     }
 
     #[test]

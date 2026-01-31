@@ -43,4 +43,8 @@ pub mod receive_support_emotional;
 pub mod receive_support_financial;
 pub mod receive_support_practical;
 pub mod suffer_abuse_childhood;
-// ... (60 total modules)
+pub mod suffer_injury_accidental;
+pub mod suffer_violence_physical;
+pub mod survive_attempt_suicide;
+pub mod survive_disaster_natural;
+pub mod undergo_deployment_military;

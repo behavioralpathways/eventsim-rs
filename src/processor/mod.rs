@@ -32,7 +32,6 @@ mod emotions;
 mod event;
 mod feedback;
 mod its;
-mod its_contributors;
 mod reversibility;
 mod state_evolution;
 
@@ -47,11 +46,6 @@ pub use event::InterpretedEvent;
 #[allow(unused_imports)]
 pub use its::{
     compute_its_factors, ConvergenceStatus, ItsFactors, ItsProximalFactor, AC_ELEVATED_THRESHOLD,
-};
-#[allow(unused_imports)]
-pub use its_contributors::{
-    AcContributor, ContributorActivation, ItsContributor, ItsContributors, PbContributor,
-    TbContributor, ACUTE_CONTRIBUTOR_DECAY_HALF_LIFE, CONTRIBUTOR_ACTIVATION_THRESHOLD,
 };
 pub(crate) use state_evolution::{
     advance_state, apply_interpreted_event_to_state, regress_state,

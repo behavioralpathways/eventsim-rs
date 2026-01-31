@@ -70,7 +70,7 @@ pub use entity::{AffectiveState, Entity, EntityBuildError, EntityBuilder, Physio
 pub use enums::{
     AlertSeverity, AlertTrigger, Attribution, AttributionStability, BirthEra, ChronosystemPath,
     ContextPath, Direction, DirectionalPath, DispositionPath, EducationPath, Emotion, EventPayload,
-    EventScope, EventType, ExosystemPath, FamilyPath, HealthcarePath, HexacoPath,
+    EventType, ExosystemPath, FamilyPath, HealthcarePath, HexacoPath,
     HistoricalEventType, HistoricalScope, InteractionTopic, LifeDomain, LifeStage, LossType,
     MacrosystemPath, MentalHealthPath, MicrosystemPath, MoodPath, NeedsPath, NeighborhoodPath,
     PersonCharacteristicsPath, PersonalityProfile, PolicyArea, RealizationType, RelPath,
@@ -117,15 +117,14 @@ pub use relationship::{
     AntecedentDirection, AntecedentMapping, AntecedentType, DirectionalDimensions,
     InteractionPattern, PerceivedRisk, Relationship, RelationshipError, RelationshipStage,
     SharedDimensions, StakesLevel, TrustAntecedent, TrustContext, TrustDecision,
-    TrustworthinessFactors, Vulnerability, VulnerabilityType, TRUST_ANTECEDENT_TABLE,
+    TrustworthinessFactors, TRUST_ANTECEDENT_TABLE,
 };
 
 // Re-export event types at crate root
 pub use event::{
     arousal_weight_for_species, compute_arousal_modulated_salience, Event, EventBuildError,
-    EventBuilder, EventBus, EventBusError, EventFilter, AROUSAL_CEILING, AROUSAL_THRESHOLD,
-    AROUSAL_WEIGHT_ANIMAL, AROUSAL_WEIGHT_HUMAN, AROUSAL_WEIGHT_ROBOTIC,
-    EXTREME_AROUSAL_IMPAIRMENT, MAX_CASCADE_DEPTH, NEGATIVITY_BIAS_MULTIPLIER,
+    EventBuilder, AROUSAL_CEILING, AROUSAL_THRESHOLD, AROUSAL_WEIGHT_ANIMAL, AROUSAL_WEIGHT_HUMAN,
+    AROUSAL_WEIGHT_ROBOTIC, EXTREME_AROUSAL_IMPAIRMENT, NEGATIVITY_BIAS_MULTIPLIER,
 };
 
 // Re-export commonly used types at crate root

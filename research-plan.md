@@ -37,12 +37,12 @@
 [x] receive-support-emotional
 [x] receive-support-financial
 [x] receive-support-practical
-[ ] suffer-abuse-childhood
-[ ] suffer-injury-accidental
-[ ] suffer-violence-physical
-[ ] survive-attempt-suicide
-[ ] survive-disaster-natural
-[ ] undergo-deployment-military
+[x] suffer-abuse-childhood
+[x] suffer-injury-accidental
+[x] suffer-violence-physical
+[x] survive-attempt-suicide
+[x] survive-disaster-natural
+[x] undergo-deployment-military
 [ ] undergo-hospitalization-medical
 [ ] undergo-immigration-chosen
 [ ] undergo-immigration-forced

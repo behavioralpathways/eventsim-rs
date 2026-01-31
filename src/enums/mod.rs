@@ -12,7 +12,6 @@ mod context_path;
 mod developmental_category;
 mod emotion;
 mod event_payload;
-mod event_scope;
 mod event_type;
 mod life_stage;
 mod personality_profile;
@@ -37,7 +36,6 @@ pub use event_payload::{
     EventPayload, HistoricalEventType, HistoricalScope, InteractionTopic, LifeDomain, LossType,
     PolicyArea, RealizationType, SupportType, TraumaType, WeaponType,
 };
-pub use event_scope::EventScope;
 pub use event_type::EventType;
 pub use life_stage::LifeStage;
 pub use personality_profile::PersonalityProfile;

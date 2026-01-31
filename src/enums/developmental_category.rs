@@ -158,6 +158,27 @@ impl From<&EventType> for DevelopmentalCategory {
             // Financial support is neutral (cross-stage resource event)
             EventType::ReceiveSupportFinancial => DevelopmentalCategory::Neutral,
 
+            // Practical support is neutral (cross-stage resource event)
+            EventType::ReceiveSupportPractical => DevelopmentalCategory::Neutral,
+
+            // Childhood abuse affects attachment (trust building/breaking)
+            EventType::SufferAbuseChildhood => DevelopmentalCategory::Attachment,
+
+            // Accidental injury is neutral (cross-stage trauma)
+            EventType::SufferInjuryAccidental => DevelopmentalCategory::Neutral,
+
+            // Physical violence is neutral (cross-stage trauma)
+            EventType::SufferViolencePhysical => DevelopmentalCategory::Neutral,
+
+            // Surviving suicide attempt is neutral (cross-stage)
+            EventType::SurviveAttemptSuicide => DevelopmentalCategory::Neutral,
+
+            // Natural disaster survival is neutral (cross-stage trauma)
+            EventType::SurviveDisasterNatural => DevelopmentalCategory::Neutral,
+
+            // Military deployment is neutral (cross-stage life transition)
+            EventType::UndergoDeploymentMilitary => DevelopmentalCategory::Neutral,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

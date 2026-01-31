@@ -72,7 +72,7 @@ pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
 pub use antecedent_mapping::{derive_trust_antecedents, AntecedentMapping, TRUST_ANTECEDENT_TABLE};
 pub use directional_dimensions::DirectionalDimensions;
 pub use interaction_pattern::InteractionPattern;
-pub use perceived_risk::{PerceivedRisk, StakesLevel, Vulnerability, VulnerabilityType};
+pub use perceived_risk::{PerceivedRisk, StakesLevel};
 pub use relationship::{Relationship, RelationshipError, StageTransitionError};
 pub use shared_dimensions::SharedDimensions;
 pub use stage::RelationshipStage;

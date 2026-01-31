@@ -5,13 +5,14 @@
 
 use crate::context::apply_context_effects;
 use crate::entity::Entity;
-use crate::enums::{HexacoPath, LifeStage, StatePath};
+use crate::enums::{Direction, HexacoPath, LifeStage, StatePath};
 use crate::memory::{
     apply_memory_consolidation, create_memory_from_event, MemoryEntry, MemoryLayer, MemoryLayers,
 };
 use crate::processor::{
-    advance_state, apply_developmental_effects, apply_interpreted_event_to_state, interpret_event,
-    regress_state, reverse_interpreted_event_from_state, InterpretedEvent,
+    advance_state, apply_developmental_effects, apply_interpreted_event_to_state,
+    compute_trust_modulation_factor, interpret_event, regress_state,
+    reverse_interpreted_event_from_state, InterpretedEvent,
 };
 use crate::simulation::{RegressionQuality, Simulation, TimestampedEvent};
 use crate::state::{
@@ -216,8 +217,16 @@ impl<'a> EntityQueryHandle<'a> {
                 let dev_factor =
                     apply_developmental_effects(entity, te.event(), 1.0, age_days, te.timestamp());
 
-                // Scale the interpreted event by the developmental factor
-                let scaled_interpreted = interpreted.scaled_by(dev_factor);
+                // Apply trust modulation for interpersonal events
+                // If the event has a source with whom we have a relationship, prior trust
+                // amplifies the impact (betrayal from trusted person hurts more)
+                let trust_factor = self.compute_trust_factor_for_event(te.event(), te.timestamp());
+
+                // Combine developmental and trust modulation factors
+                let combined_factor = dev_factor * trust_factor;
+
+                // Scale the interpreted event by the combined factor
+                let scaled_interpreted = interpreted.scaled_by(combined_factor);
 
                 // Apply the scaled interpreted event deltas
                 state = apply_interpreted_event_to_state(state, &scaled_interpreted);
@@ -261,8 +270,14 @@ impl<'a> EntityQueryHandle<'a> {
                 let dev_factor =
                     apply_developmental_effects(entity, te.event(), 1.0, age_days, te.timestamp());
 
-                // Scale the interpreted event by the developmental factor
-                let scaled_interpreted = interpreted.scaled_by(dev_factor);
+                // Apply trust modulation for interpersonal events (same as forward)
+                let trust_factor = self.compute_trust_factor_for_event(te.event(), te.timestamp());
+
+                // Combine developmental and trust modulation factors
+                let combined_factor = dev_factor * trust_factor;
+
+                // Scale the interpreted event by the combined factor
+                let scaled_interpreted = interpreted.scaled_by(combined_factor);
 
                 // Reverse the scaled interpreted event using its actual deltas
                 state = reverse_interpreted_event_from_state(state, &scaled_interpreted);
@@ -413,6 +428,55 @@ impl<'a> EntityQueryHandle<'a> {
         // Fallback: without birth_date, age remains constant at anchor age.
         // We cannot compute age progression without knowing when the entity was born.
         entity.age()
+    }
+
+    /// Computes the trust modulation factor for an interpersonal event.
+    ///
+    /// If the event has a source with whom the target entity has a relationship,
+    /// the prior trust level modulates the event's psychological impact.
+    ///
+    /// Per Mayer's trust model:
+    /// - High trust + betrayal = amplified harm (vulnerability was exploited)
+    /// - Low trust + betrayal = expected/buffered (wasn't vulnerable to them)
+    ///
+    /// # Arguments
+    ///
+    /// * `event` - The event to check for trust modulation
+    /// * `event_timestamp` - When the event occurred (for relationship lookup)
+    ///
+    /// # Returns
+    ///
+    /// A scaling factor for the event's impact (1.0 = no modulation)
+    fn compute_trust_factor_for_event(
+        &self,
+        event: &crate::event::Event,
+        event_timestamp: Timestamp,
+    ) -> f64 {
+        // No source = no interpersonal trust modulation
+        let Some(source_id) = event.source() else {
+            return 1.0;
+        };
+
+        // Find relationship between target (self.entity_id) and source
+        let relationships = self.simulation.relationships_for(&self.entity_id);
+        let relevant_rel = relationships.iter().find(|tr| {
+            // Relationship must exist before the event occurred
+            tr.formed_timestamp() <= event_timestamp && tr.involves(source_id)
+        });
+
+        let Some(timestamped_rel) = relevant_rel else {
+            // No relationship with source = stranger, no modulation
+            return 1.0;
+        };
+
+        // Determine direction: target is trustor, source is trustee
+        let direction = if timestamped_rel.entity_a() == &self.entity_id {
+            Direction::AToB
+        } else {
+            Direction::BToA
+        };
+
+        compute_trust_modulation_factor(event, Some(timestamped_rel.relationship()), direction)
     }
 
     /// Returns memories that exist at the given timestamp.

@@ -42,6 +42,8 @@ mod perceived_risk;
 mod relationship;
 mod shared_dimensions;
 mod stage;
+mod trust_context;
+mod trust_decision;
 mod trustworthiness;
 
 pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
@@ -51,4 +53,6 @@ pub use perceived_risk::PerceivedRisk;
 pub use relationship::{Relationship, RelationshipError, StageTransitionError};
 pub use shared_dimensions::SharedDimensions;
 pub use stage::RelationshipStage;
+pub use trust_context::TrustContext;
+pub use trust_decision::TrustDecision;
 pub use trustworthiness::TrustworthinessFactors;

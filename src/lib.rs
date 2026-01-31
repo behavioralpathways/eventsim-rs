@@ -116,7 +116,7 @@ pub use state::{
 pub use relationship::{
     AntecedentDirection, AntecedentType, DirectionalDimensions, InteractionPattern, PerceivedRisk,
     Relationship, RelationshipError, RelationshipStage, SharedDimensions, TrustAntecedent,
-    TrustworthinessFactors,
+    TrustContext, TrustDecision, TrustworthinessFactors,
 };
 
 // Re-export event types at crate root

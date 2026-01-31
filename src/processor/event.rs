@@ -587,6 +587,81 @@ pub(crate) fn process_event(event: &Event, entity: &mut Entity) -> InterpretedEv
     interpreted
 }
 
+/// Computes a trust modulation factor for events with interpersonal sources.
+///
+/// Per Mayer's trust model, the psychological impact of interpersonal events
+/// is amplified when they come from trusted individuals. A betrayal from a
+/// close friend hurts more than the same action from a stranger because trust
+/// creates vulnerability - and violated trust amplifies the harm.
+///
+/// # The Trust-Impact Relationship
+///
+/// - **High trust + negative event = amplified harm**: Betrayal from someone you
+///   trusted deeply causes greater psychological damage because you were vulnerable.
+/// - **Low trust + negative event = expected/buffered**: Actions from strangers or
+///   untrusted individuals hurt less because you weren't vulnerable to them.
+/// - **High trust + positive event = amplified benefit**: Support from a trusted
+///   friend provides more comfort than help from a stranger.
+///
+/// # Arguments
+///
+/// * `event` - The event to check for trust modulation
+/// * `relationship` - The relationship between target and source (if any)
+/// * `direction` - Which direction in the relationship (target -> source)
+///
+/// # Returns
+///
+/// A scaling factor for the event's impact:
+/// - 1.0 = no modulation (no relationship or neutral trust)
+/// - >1.0 = amplified impact (high trust, especially for negative events)
+/// - <1.0 = dampened impact (low trust, source was already distrusted)
+///
+/// # Theory Note
+///
+/// This implements the moderating role of trust in interpersonal events.
+/// The factor is based on prior trust level (support_willingness for supportive
+/// events, disclosure_willingness for betrayals). The maximum amplification
+/// is capped to prevent unrealistic extremes.
+pub(crate) fn compute_trust_modulation_factor(
+    event: &Event,
+    relationship: Option<&Relationship>,
+    direction: Direction,
+) -> f64 {
+    // No relationship = no trust modulation
+    let Some(rel) = relationship else {
+        return 1.0;
+    };
+
+    // Get the trustworthiness factors (how much target trusts source)
+    let trustworthiness = rel.trustworthiness(direction);
+
+    // Compute an aggregate trust level from the trustworthiness factors
+    // Use average of the three factors as a proxy for overall trust
+    let trust_level = (trustworthiness.competence_effective()
+        + trustworthiness.benevolence_effective()
+        + trustworthiness.integrity_effective())
+        / 3.0;
+
+    // Get event valence to determine if positive or negative
+    let spec = event.spec();
+    let is_negative = spec.impact.valence < 0.0
+        || spec.impact.trust_propensity < 0.0
+        || spec.impact.prc < -0.1;
+
+    // Modulation formula:
+    // - For negative events: higher trust = more amplification (vulnerability exploited)
+    // - For positive events: higher trust = more amplification (support is more meaningful)
+    //
+    // Base of 1.0 + trust_level * modulation_strength
+    // Negative events get stronger modulation (betrayal amplification)
+    let modulation_strength = if is_negative { 0.5 } else { 0.3 };
+
+    // Scale: at trust_level=0, factor=1.0; at trust_level=1, factor=1.5 (negative) or 1.3 (positive)
+    let factor = 1.0 + (trust_level as f64 * modulation_strength);
+
+    factor.clamp(0.5, 2.0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1373,5 +1448,125 @@ mod tests {
         // Check state_deltas were scaled
         assert_eq!(scaled.state_deltas.len(), 1);
         assert!((scaled.state_deltas[0].1 - (-0.25)).abs() < 0.01);
+    }
+
+    #[test]
+    fn trust_modulation_no_relationship_returns_one() {
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let factor = compute_trust_modulation_factor(&event, None, Direction::AToB);
+        assert!((factor - 1.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn trust_modulation_high_trust_amplifies_negative_events() {
+        use crate::types::EntityId;
+
+        let source = EntityId::new("betrayer").unwrap();
+        let target = EntityId::new("victim").unwrap();
+
+        // Create relationship with high trust
+        let mut rel = Relationship::try_between(target.clone(), source.clone()).unwrap();
+        // Build up high trust by setting trustworthiness high
+        let tw = rel.trustworthiness_mut(Direction::AToB);
+        tw.add_competence_delta(0.8);
+        tw.add_benevolence_delta(0.8);
+        tw.add_integrity_delta(0.8);
+
+        // Create a betrayal event from the source
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
+            .source(source)
+            .target(target)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let factor = compute_trust_modulation_factor(&event, Some(&rel), Direction::AToB);
+
+        // High trust should amplify negative events (factor > 1.0)
+        assert!(factor > 1.0, "High trust should amplify negative events, got {}", factor);
+    }
+
+    #[test]
+    fn trust_modulation_low_trust_gives_neutral_factor() {
+        use crate::types::EntityId;
+
+        let source = EntityId::new("stranger").unwrap();
+        let target = EntityId::new("person").unwrap();
+
+        // Create relationship with low trust (default/stranger level)
+        let rel = Relationship::try_between(target.clone(), source.clone()).unwrap();
+
+        // Create a betrayal event from the source
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
+            .source(source)
+            .target(target)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let factor = compute_trust_modulation_factor(&event, Some(&rel), Direction::AToB);
+
+        // Low trust should give factor closer to 1.0
+        assert!(factor < 1.3, "Low trust should not strongly amplify, got {}", factor);
+    }
+
+    #[test]
+    fn trust_modulation_positive_event_from_trusted_source() {
+        use crate::types::EntityId;
+
+        let source = EntityId::new("friend").unwrap();
+        let target = EntityId::new("person").unwrap();
+
+        // Create relationship with high trust
+        let mut rel = Relationship::try_between(target.clone(), source.clone()).unwrap();
+        let tw = rel.trustworthiness_mut(Direction::AToB);
+        tw.add_competence_delta(0.7);
+        tw.add_benevolence_delta(0.7);
+        tw.add_integrity_delta(0.7);
+
+        // Create a support event from the trusted friend
+        let event = EventBuilder::new(EventType::ReceiveSupportEmotional)
+            .source(source)
+            .target(target)
+            .severity(0.7)
+            .build()
+            .unwrap();
+
+        let factor = compute_trust_modulation_factor(&event, Some(&rel), Direction::AToB);
+
+        // High trust should also amplify positive events (support from friend matters more)
+        assert!(factor > 1.0, "High trust should amplify positive events, got {}", factor);
+    }
+
+    #[test]
+    fn trust_modulation_factor_clamped_to_range() {
+        use crate::types::EntityId;
+
+        let source = EntityId::new("betrayer").unwrap();
+        let target = EntityId::new("victim").unwrap();
+
+        // Create relationship with maximum trust
+        let mut rel = Relationship::try_between(target.clone(), source.clone()).unwrap();
+        let tw = rel.trustworthiness_mut(Direction::AToB);
+        tw.add_competence_delta(1.0);
+        tw.add_benevolence_delta(1.0);
+        tw.add_integrity_delta(1.0);
+
+        let event = EventBuilder::new(EventType::ExperienceBetrayalTrust)
+            .source(source)
+            .target(target)
+            .severity(1.0)
+            .build()
+            .unwrap();
+
+        let factor = compute_trust_modulation_factor(&event, Some(&rel), Direction::AToB);
+
+        // Factor should be clamped to [0.5, 2.0]
+        assert!(factor >= 0.5, "Factor should be at least 0.5, got {}", factor);
+        assert!(factor <= 2.0, "Factor should be at most 2.0, got {}", factor);
     }
 }

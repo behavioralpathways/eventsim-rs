@@ -46,3 +46,5 @@ mod stanford_prison;
 mod shooter_pathway;
 #[path = "longitudinal/vietnam_veteran_life_trajectory.rs"]
 mod vietnam_veteran_life_trajectory;
+#[path = "longitudinal/trust_amplifies_betrayal.rs"]
+mod trust_amplifies_betrayal;

@@ -25,6 +25,7 @@ mod event;
 mod state_evolution;
 
 pub(crate) use developmental::apply_developmental_effects;
+pub(crate) use event::compute_trust_modulation_factor;
 pub(crate) use event::interpret_event;
 pub(crate) use event::process_event_to_relationships;
 pub use event::InterpretedEvent;

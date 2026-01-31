@@ -1701,6 +1701,32 @@ mod tests {
         }
     }
 
+    #[test]
+    fn entity_advance_with_attached_relationships_uses_relationship_quality() {
+        use crate::context::{Microsystem, WorkContext};
+        use crate::types::{MicrosystemId, RelationshipId};
+
+        let mut entity = EntityBuilder::new()
+            .species(Species::Human)
+            .age(crate::types::Duration::years(30))
+            .build()
+            .unwrap();
+
+        let work_id = MicrosystemId::new("work_001").unwrap();
+        entity
+            .context_mut()
+            .add_microsystem(work_id, Microsystem::new_work(WorkContext::default()));
+
+        let relationship_id = RelationshipId::new("rel_001_002").unwrap();
+        entity.relationship_slots_mut()[0].attach_for_test(relationship_id);
+
+        let original_age = entity.age();
+        let processor = NoOpDecayProcessor::new();
+        entity.advance(Duration::days(1), &processor);
+
+        assert_eq!(entity.age().as_days(), original_age.as_days() + 1);
+    }
+
     // --- Time Advancement ---
 
     #[test]

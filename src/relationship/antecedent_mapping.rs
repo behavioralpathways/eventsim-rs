@@ -180,9 +180,14 @@ mod tests {
         let has_ability = mappings
             .iter()
             .any(|m| m.antecedent_type == AntecedentType::Ability);
+        let has_positive = mappings
+            .iter()
+            .any(|m| m.direction == AntecedentDirection::Positive);
 
         // This depends on the spec - may or may not have ability impact
-        assert!(mappings.is_empty() || has_ability || mappings.iter().any(|m| m.direction == AntecedentDirection::Positive));
+        let outcome_count =
+            (mappings.is_empty() as u8) + (has_ability as u8) + (has_positive as u8);
+        assert!(outcome_count > 0);
     }
 
     #[test]

@@ -100,6 +100,11 @@ impl RelationshipSlot {
         self.attached.clone()
     }
 
+    #[cfg(test)]
+    pub(crate) fn attach_for_test(&mut self, id: RelationshipId) {
+        self.attached = Some(id);
+    }
+
 }
 
 #[cfg(test)]

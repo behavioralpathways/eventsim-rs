@@ -217,116 +217,72 @@ fn apply_permanent_deltas_to_state(
 ) {
     let p = &deltas.permanent;
 
-    if p.valence.abs() > f32::EPSILON {
-        state.mood_mut().shift_valence_base(p.valence);
-    }
-    if p.arousal.abs() > f32::EPSILON {
-        state.mood_mut().shift_arousal_base(p.arousal);
-    }
-    if p.dominance.abs() > f32::EPSILON {
-        state.mood_mut().shift_dominance_base(p.dominance);
-    }
-    if p.loneliness.abs() > f32::EPSILON {
-        state
-            .social_cognition_mut()
-            .loneliness_mut()
-            .shift_base(p.loneliness);
-    }
-    if p.prc.abs() > f32::EPSILON {
-        state
-            .social_cognition_mut()
-            .perceived_reciprocal_caring_mut()
-            .shift_base(p.prc);
-    }
-    if p.perceived_competence.abs() > f32::EPSILON {
-        state
-            .social_cognition_mut()
-            .perceived_competence_mut()
-            .shift_base(p.perceived_competence);
-    }
-    if p.perceived_liability.abs() > f32::EPSILON {
-        state
-            .social_cognition_mut()
-            .perceived_liability_mut()
-            .shift_base(p.perceived_liability);
-    }
-    if p.self_hate.abs() > f32::EPSILON {
-        state
-            .social_cognition_mut()
-            .self_hate_mut()
-            .shift_base(p.self_hate);
-    }
-    if p.purpose.abs() > f32::EPSILON {
-        state.needs_mut().purpose_mut().shift_base(p.purpose);
-    }
+    state.mood_mut().shift_valence_base(p.valence);
+    state.mood_mut().shift_arousal_base(p.arousal);
+    state.mood_mut().shift_dominance_base(p.dominance);
+    state
+        .social_cognition_mut()
+        .loneliness_mut()
+        .shift_base(p.loneliness);
+    state
+        .social_cognition_mut()
+        .perceived_reciprocal_caring_mut()
+        .shift_base(p.prc);
+    state
+        .social_cognition_mut()
+        .perceived_competence_mut()
+        .shift_base(p.perceived_competence);
+    state
+        .social_cognition_mut()
+        .perceived_liability_mut()
+        .shift_base(p.perceived_liability);
+    state
+        .social_cognition_mut()
+        .self_hate_mut()
+        .shift_base(p.self_hate);
+    state.needs_mut().purpose_mut().shift_base(p.purpose);
     // AC is always 100% permanent - apply to base
-    if p.acquired_capability.abs() > f32::EPSILON {
-        state
-            .mental_health_mut()
-            .shift_acquired_capability_base(p.acquired_capability);
-    }
-    if p.interpersonal_hopelessness.abs() > f32::EPSILON {
-        state
-            .mental_health_mut()
-            .shift_interpersonal_hopelessness_base(p.interpersonal_hopelessness);
-    }
-    if p.depression.abs() > f32::EPSILON {
-        state
-            .mental_health_mut()
-            .depression_mut()
-            .shift_base(p.depression);
-    }
-    if p.hopelessness.abs() > f32::EPSILON {
-        state
-            .mental_health_mut()
-            .hopelessness_mut()
-            .shift_base(p.hopelessness);
-    }
-    if p.self_worth.abs() > f32::EPSILON {
-        state.mental_health_mut().shift_self_worth_base(p.self_worth);
-    }
-    if p.stress.abs() > f32::EPSILON {
-        state.needs_mut().stress_mut().shift_base(p.stress);
-    }
-    if p.fatigue.abs() > f32::EPSILON {
-        state.needs_mut().fatigue_mut().shift_base(p.fatigue);
-    }
-    if p.grievance.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .grievance_mut()
-            .shift_base(p.grievance);
-    }
-    if p.impulse_control.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .impulse_control_mut()
-            .shift_base(p.impulse_control);
-    }
-    if p.empathy.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .empathy_mut()
-            .shift_base(p.empathy);
-    }
-    if p.aggression.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .aggression_mut()
-            .shift_base(p.aggression);
-    }
-    if p.reactance.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .reactance_mut()
-            .shift_base(p.reactance);
-    }
-    if p.trust_propensity.abs() > f32::EPSILON {
-        state
-            .disposition_mut()
-            .trust_propensity_mut()
-            .shift_base(p.trust_propensity);
-    }
+    state
+        .mental_health_mut()
+        .shift_acquired_capability_base(p.acquired_capability);
+    state
+        .mental_health_mut()
+        .shift_interpersonal_hopelessness_base(p.interpersonal_hopelessness);
+    state
+        .mental_health_mut()
+        .depression_mut()
+        .shift_base(p.depression);
+    state
+        .mental_health_mut()
+        .hopelessness_mut()
+        .shift_base(p.hopelessness);
+    state.mental_health_mut().shift_self_worth_base(p.self_worth);
+    state.needs_mut().stress_mut().shift_base(p.stress);
+    state.needs_mut().fatigue_mut().shift_base(p.fatigue);
+    state
+        .disposition_mut()
+        .grievance_mut()
+        .shift_base(p.grievance);
+    state
+        .disposition_mut()
+        .impulse_control_mut()
+        .shift_base(p.impulse_control);
+    state
+        .disposition_mut()
+        .empathy_mut()
+        .shift_base(p.empathy);
+    state
+        .disposition_mut()
+        .aggression_mut()
+        .shift_base(p.aggression);
+    state
+        .disposition_mut()
+        .reactance_mut()
+        .shift_base(p.reactance);
+    state
+        .disposition_mut()
+        .trust_propensity_mut()
+        .shift_base(p.trust_propensity);
 }
 
 /// Applies acute (normal delta) changes from spec_deltas to state.
@@ -893,6 +849,170 @@ mod tests {
     }
 
     #[test]
+    fn apply_interpreted_event_to_state_permanent_fields_all_hit() {
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+
+        let entity = EntityBuilder::new()
+            .species(Species::Human)
+            .age(crate::types::Duration::years(30))
+            .build()
+            .unwrap();
+
+        let impact = EventImpact {
+            valence: 0.1,
+            arousal: 0.1,
+            dominance: 0.1,
+            fatigue: 0.1,
+            stress: 0.1,
+            purpose: 0.1,
+            loneliness: 0.1,
+            prc: 0.1,
+            perceived_liability: 0.1,
+            self_hate: 0.1,
+            perceived_competence: 0.1,
+            depression: 0.1,
+            self_worth: 0.1,
+            hopelessness: 0.1,
+            interpersonal_hopelessness: 0.1,
+            acquired_capability: 0.1,
+            impulse_control: 0.1,
+            empathy: 0.1,
+            aggression: 0.1,
+            grievance: 0.1,
+            reactance: 0.1,
+            trust_propensity: 0.1,
+        };
+
+        let permanence = PermanenceValues {
+            valence: 1.0,
+            arousal: 1.0,
+            dominance: 1.0,
+            fatigue: 1.0,
+            stress: 1.0,
+            purpose: 1.0,
+            loneliness: 1.0,
+            prc: 1.0,
+            perceived_liability: 1.0,
+            self_hate: 1.0,
+            perceived_competence: 1.0,
+            depression: 1.0,
+            self_worth: 1.0,
+            hopelessness: 1.0,
+            interpersonal_hopelessness: 1.0,
+            impulse_control: 1.0,
+            empathy: 1.0,
+            aggression: 1.0,
+            grievance: 1.0,
+            reactance: 1.0,
+            trust_propensity: 1.0,
+        };
+
+        let custom_spec = EventSpec {
+            impact,
+            chronic: ChronicFlags::default(),
+            permanence,
+        };
+        let event = EventBuilder::custom(custom_spec).severity(1.0).build().unwrap();
+
+        let interpreted = interpret_event(&event, &entity);
+        let state = IndividualState::new();
+        let new_state = apply_interpreted_event_to_state(state, &interpreted);
+
+        assert!(new_state.mood().valence_base().abs() > f32::EPSILON);
+        assert!(new_state.needs().stress().base().abs() > f32::EPSILON);
+        assert!(new_state.disposition().aggression().base().abs() > f32::EPSILON);
+    }
+
+    #[test]
+    fn apply_permanent_deltas_to_state_applies_all_fields() {
+        use crate::event::{AppliedDeltas, EventImpact};
+
+        let mut state = IndividualState::new();
+        let deltas = AppliedDeltas {
+            permanent: EventImpact {
+                valence: 0.1,
+                arousal: 0.1,
+                dominance: 0.1,
+                fatigue: 0.1,
+                stress: 0.1,
+                purpose: 0.1,
+                loneliness: 0.1,
+                prc: 0.1,
+                perceived_liability: 0.1,
+                self_hate: 0.1,
+                perceived_competence: 0.1,
+                depression: 0.1,
+                self_worth: 0.1,
+                hopelessness: 0.1,
+                interpersonal_hopelessness: 0.1,
+                acquired_capability: 0.1,
+                impulse_control: 0.1,
+                empathy: 0.1,
+                aggression: 0.1,
+                grievance: 0.1,
+                reactance: 0.1,
+                trust_propensity: 0.1,
+            },
+            acute: EventImpact::default(),
+            chronic: EventImpact::default(),
+        };
+
+        assert!(deltas.permanent.valence.abs() > f32::EPSILON);
+        assert!(deltas.permanent.trust_propensity.abs() > f32::EPSILON);
+
+        apply_permanent_deltas_to_state(&mut state, &deltas);
+
+        assert!(state.mood().valence_base().abs() > f32::EPSILON);
+        assert!(state.needs().stress().base().abs() > f32::EPSILON);
+        assert!(state.disposition().trust_propensity().base().abs() > f32::EPSILON);
+    }
+
+    #[test]
+    fn apply_interpreted_event_to_state_skips_when_no_spec_deltas() {
+        let entity = EntityBuilder::new()
+            .species(Species::Human)
+            .age(crate::types::Duration::years(30))
+            .build()
+            .unwrap();
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let mut interpreted = interpret_event(&event, &entity);
+        interpreted.spec_deltas = None;
+
+        let state = IndividualState::new();
+        let before_valence = state.mood().valence_base();
+        let new_state = apply_interpreted_event_to_state(state, &interpreted);
+
+        assert!((new_state.mood().valence_base() - before_valence).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn reverse_interpreted_event_from_state_skips_when_no_spec_deltas() {
+        let entity = EntityBuilder::new()
+            .species(Species::Human)
+            .age(crate::types::Duration::years(30))
+            .build()
+            .unwrap();
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let mut interpreted = interpret_event(&event, &entity);
+        interpreted.spec_deltas = None;
+
+        let mut state = IndividualState::new();
+        state.mood_mut().add_valence_delta(0.4);
+        let before_delta = state.mood().valence_delta();
+        let reversed = reverse_interpreted_event_from_state(state, &interpreted);
+
+        assert!((reversed.mood().valence_delta() - before_delta).abs() < f32::EPSILON);
+    }
+
+    #[test]
     fn reverse_interpreted_event_reverses_acute_deltas() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
@@ -968,6 +1088,21 @@ mod tests {
     }
 
     #[test]
+    fn reverse_dimension_decay_zero_half_life_no_change() {
+        let mut state = IndividualState::new();
+        state.mood_mut().add_valence_delta(0.5);
+        let original = state.mood().valence_delta();
+
+        reverse_dimension_decay(
+            state.mood_mut().valence_mut(),
+            Duration::hours(6),
+            Duration::seconds(0),
+        );
+
+        assert!((state.mood().valence_delta() - original).abs() < f32::EPSILON);
+    }
+
+    #[test]
     fn apply_chronic_deltas_routes_to_chronic_bucket() {
         let entity = EntityBuilder::new()
             .species(Species::Human)
@@ -985,11 +1120,20 @@ mod tests {
         let new_state = apply_interpreted_event_to_state(state, &interpreted);
 
         // Some dimensions should have chronic delta (checking stress or fatigue)
-        let has_chronic = new_state.needs().stress().chronic_delta().abs() > f32::EPSILON
-            || new_state.needs().fatigue().chronic_delta().abs() > f32::EPSILON
-            || new_state.mental_health().self_worth().chronic_delta().abs() > f32::EPSILON;
+        let chronic_stress = new_state.needs().stress().chronic_delta().abs() > f32::EPSILON;
+        let chronic_fatigue = new_state.needs().fatigue().chronic_delta().abs() > f32::EPSILON;
+        let chronic_self_worth = new_state
+            .mental_health()
+            .self_worth()
+            .chronic_delta()
+            .abs()
+            > f32::EPSILON;
+        let chronic_count =
+            (chronic_stress as u8) + (chronic_fatigue as u8) + (chronic_self_worth as u8);
 
         // At least some chronic impact expected from chronic illness
-        assert!(has_chronic || new_state.needs().stress().delta().abs() > f32::EPSILON);
+        let acute_stress = new_state.needs().stress().delta().abs() > f32::EPSILON;
+        let impact_total = chronic_count + (acute_stress as u8);
+        assert!(impact_total > 0);
     }
 }

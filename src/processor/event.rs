@@ -89,11 +89,13 @@ impl InterpretedEvent {
             salience: self.salience, // Salience is not scaled
             perceived_severity: self.perceived_severity * factor,
             memory_salience: self.memory_salience, // Memory salience is not scaled
-            state_deltas: self
-                .state_deltas
-                .iter()
-                .map(|(path, delta)| (*path, delta * factor))
-                .collect(),
+            state_deltas: {
+                let mut scaled = Vec::with_capacity(self.state_deltas.len());
+                for (path, delta) in &self.state_deltas {
+                    scaled.push((*path, delta * factor));
+                }
+                scaled
+            },
             spec_deltas: self.spec_deltas.map(|deltas| AppliedDeltas {
                 permanent: deltas.permanent.scale(factor_f32),
                 acute: deltas.acute.scale(factor_f32),
@@ -613,11 +615,12 @@ mod tests {
         assert!(interpreted.spec_deltas.is_some());
         let deltas = interpreted.spec_deltas.unwrap();
         // Breakup has negative valence
-        assert!(
-            deltas.permanent.valence < 0.0
-                || deltas.acute.valence < 0.0
-                || deltas.chronic.valence < 0.0
-        );
+        let perm_negative = deltas.permanent.valence < 0.0;
+        let acute_negative = deltas.acute.valence < 0.0;
+        let chronic_negative = deltas.chronic.valence < 0.0;
+        let negative_count =
+            (perm_negative as u8) + (acute_negative as u8) + (chronic_negative as u8);
+        assert!(negative_count > 0);
     }
 
     #[test]
@@ -700,10 +703,12 @@ mod tests {
         let deltas = interpreted.spec_deltas.unwrap();
 
         // Chronic illness should route some impacts to chronic bucket
-        let has_chronic = deltas.chronic.stress.abs() > f32::EPSILON
-            || deltas.chronic.fatigue.abs() > f32::EPSILON
-            || deltas.chronic.self_worth.abs() > f32::EPSILON;
-        assert!(has_chronic);
+        let chronic_stress = deltas.chronic.stress.abs() > f32::EPSILON;
+        let chronic_fatigue = deltas.chronic.fatigue.abs() > f32::EPSILON;
+        let chronic_self_worth = deltas.chronic.self_worth.abs() > f32::EPSILON;
+        let chronic_count =
+            (chronic_stress as u8) + (chronic_fatigue as u8) + (chronic_self_worth as u8);
+        assert!(chronic_count > 0);
     }
 
     #[test]
@@ -718,13 +723,22 @@ mod tests {
 
         // Mortality awareness should affect either hopelessness or interpersonal hopelessness
         let deltas = interpreted.spec_deltas.unwrap();
-        let has_hopelessness_impact = deltas.permanent.hopelessness.abs() > f32::EPSILON
-            || deltas.acute.hopelessness.abs() > f32::EPSILON
-            || deltas.chronic.hopelessness.abs() > f32::EPSILON
-            || deltas.permanent.interpersonal_hopelessness.abs() > f32::EPSILON
-            || deltas.acute.interpersonal_hopelessness.abs() > f32::EPSILON
-            || deltas.chronic.interpersonal_hopelessness.abs() > f32::EPSILON;
-        assert!(has_hopelessness_impact || interpreted.interpersonal_hopelessness_delta.abs() > 0.0);
+        let perm_hopelessness = deltas.permanent.hopelessness.abs() > f32::EPSILON;
+        let acute_hopelessness = deltas.acute.hopelessness.abs() > f32::EPSILON;
+        let chronic_hopelessness = deltas.chronic.hopelessness.abs() > f32::EPSILON;
+        let perm_interpersonal = deltas.permanent.interpersonal_hopelessness.abs() > f32::EPSILON;
+        let acute_interpersonal = deltas.acute.interpersonal_hopelessness.abs() > f32::EPSILON;
+        let chronic_interpersonal = deltas.chronic.interpersonal_hopelessness.abs() > f32::EPSILON;
+        let impact_count = (perm_hopelessness as u8)
+            + (acute_hopelessness as u8)
+            + (chronic_hopelessness as u8)
+            + (perm_interpersonal as u8)
+            + (acute_interpersonal as u8)
+            + (chronic_interpersonal as u8);
+        let has_hopelessness_impact = impact_count > 0;
+        let interpersonal_impact = interpreted.interpersonal_hopelessness_delta.abs() > 0.0;
+        let impact_total = (has_hopelessness_impact as u8) + (interpersonal_impact as u8);
+        assert!(impact_total > 0);
     }
 
     #[test]
@@ -744,11 +758,15 @@ mod tests {
         assert!((scaled_valence - original_valence * 0.5).abs() < 0.01);
 
         // Check spec_deltas were scaled
-        if let (Some(orig), Some(sc)) = (interpreted.spec_deltas, scaled.spec_deltas) {
-            let orig_perm_v = orig.permanent.valence.abs();
-            let sc_perm_v = sc.permanent.valence.abs();
-            assert!((sc_perm_v - orig_perm_v * 0.5).abs() < 0.01);
-        }
+        let orig = interpreted
+            .spec_deltas
+            .expect("expected breakup to have spec deltas");
+        let sc = scaled
+            .spec_deltas
+            .expect("expected scaled breakup to have spec deltas");
+        let orig_perm_v = orig.permanent.valence.abs();
+        let sc_perm_v = sc.permanent.valence.abs();
+        assert!((sc_perm_v - orig_perm_v * 0.5).abs() < 0.01);
     }
 
     #[test]
@@ -803,10 +821,178 @@ mod tests {
 
         let interpreted = interpret_event(&event, &entity);
 
-        match &interpreted.attribution {
-            Attribution::Other(id, _) => assert_eq!(id, &source),
-            _ => panic!("Expected Other attribution"),
-        }
+        assert!(matches!(
+            &interpreted.attribution,
+            Attribution::Other(id, _) if id == &source
+        ));
+    }
+
+    #[test]
+    fn attribution_without_source_self_caused_for_high_honesty() {
+        let mut entity = create_human();
+        entity
+            .individual_state_mut()
+            .hexaco_mut()
+            .set_honesty_humility(0.8);
+
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let interpreted = interpret_event(&event, &entity);
+
+        let expected = std::mem::discriminant(&Attribution::SelfCaused(AttributionStability::Stable));
+        let actual = std::mem::discriminant(&interpreted.attribution);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn attribution_without_source_situational_for_low_honesty() {
+        let mut entity = create_human();
+        entity
+            .individual_state_mut()
+            .hexaco_mut()
+            .set_honesty_humility(-0.8);
+
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .severity(0.8)
+            .build()
+            .unwrap();
+
+        let interpreted = interpret_event(&event, &entity);
+
+        let expected =
+            std::mem::discriminant(&Attribution::Situational(AttributionStability::Stable));
+        let actual = std::mem::discriminant(&interpreted.attribution);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn process_event_to_relationships_skips_zero_trust_impact() {
+        use crate::enums::Direction;
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+        use crate::relationship::Relationship;
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let mut relationships = vec![Relationship::try_between(target.clone(), source.clone()).unwrap()];
+
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                trust_propensity: 0.0,
+                prc: 0.0,
+                perceived_competence: 0.0,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec)
+            .source(source)
+            .target(target)
+            .severity(1.0)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(&event, Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0), &mut relationships);
+
+        assert!(relationships[0]
+            .antecedent_history(Direction::AToB)
+            .is_empty());
+    }
+
+    #[test]
+    fn process_event_to_relationships_negative_integrity_branch() {
+        use crate::enums::Direction;
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+        use crate::relationship::{AntecedentDirection, AntecedentType, Relationship};
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let mut relationships = vec![Relationship::try_between(target.clone(), source.clone()).unwrap()];
+
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                trust_propensity: -0.4,
+                prc: 0.0,
+                perceived_competence: 0.0,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec)
+            .source(source)
+            .target(target)
+            .severity(1.0)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(&event, Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0), &mut relationships);
+
+        let history = relationships[0].antecedent_history(Direction::AToB);
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].antecedent_type(), AntecedentType::Integrity);
+        assert_eq!(history[0].direction(), AntecedentDirection::Negative);
+    }
+
+    #[test]
+    fn process_event_to_relationships_skips_zero_magnitude() {
+        use crate::enums::Direction;
+        use crate::event::event_spec::{ChronicFlags, EventImpact, EventSpec, PermanenceValues};
+        use crate::relationship::Relationship;
+        use crate::types::{EntityId, Timestamp};
+
+        let source = EntityId::new("source").unwrap();
+        let target = EntityId::new("target").unwrap();
+        let mut relationships = vec![Relationship::try_between(target.clone(), source.clone()).unwrap()];
+
+        let custom_spec = EventSpec {
+            impact: EventImpact {
+                trust_propensity: 0.5,
+                ..Default::default()
+            },
+            chronic: ChronicFlags::default(),
+            permanence: PermanenceValues::default(),
+        };
+
+        let event = EventBuilder::custom(custom_spec)
+            .source(source)
+            .target(target)
+            .severity(0.0)
+            .build()
+            .unwrap();
+
+        process_event_to_relationships(&event, Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0), &mut relationships);
+
+        assert!(relationships[0]
+            .antecedent_history(Direction::AToB)
+            .is_empty());
+    }
+
+    #[test]
+    fn apply_interpreted_event_skips_when_no_spec_deltas() {
+        let mut entity = create_human();
+        let event = EventBuilder::new(EventType::EndRelationshipRomantic)
+            .severity(0.8)
+            .build()
+            .unwrap();
+        let mut interpreted = interpret_event(&event, &entity);
+        interpreted.spec_deltas = None;
+
+        let before = entity
+            .get_effective(StatePath::Mood(MoodPath::Valence))
+            .unwrap_or(0.0);
+        apply_interpreted_event(&interpreted, &mut entity);
+        let after = entity
+            .get_effective(StatePath::Mood(MoodPath::Valence))
+            .unwrap_or(0.0);
+        assert!((before - after).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -1034,10 +1220,10 @@ mod tests {
         // Chronic deltas should have been applied
         let state = entity.individual_state();
         // Chronic illness typically affects stress and fatigue chronically
-        assert!(
-            state.needs().stress().chronic_delta().abs() > f32::EPSILON
-                || state.mood().valence().chronic_delta().abs() > f32::EPSILON
-        );
+        let chronic_stress = state.needs().stress().chronic_delta().abs() > f32::EPSILON;
+        let chronic_valence = state.mood().valence().chronic_delta().abs() > f32::EPSILON;
+        let chronic_count = (chronic_stress as u8) + (chronic_valence as u8);
+        assert!(chronic_count > 0);
     }
 
     #[test]

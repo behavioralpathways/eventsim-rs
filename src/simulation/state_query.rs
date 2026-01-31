@@ -1006,6 +1006,18 @@ mod tests {
     }
 
     #[test]
+    fn estimate_relationship_quality_increases_with_attachments() {
+        use crate::types::RelationshipId;
+
+        let mut entity = create_human("person_001");
+        let relationship_id = RelationshipId::new("rel_001_002").unwrap();
+        entity.relationship_slots_mut()[0].attach_for_test(relationship_id);
+
+        let quality = estimate_relationship_quality(&entity);
+        assert!(quality > 0.3);
+    }
+
+    #[test]
     fn computed_state_alerts_lazy() {
         let mut sim = create_simulation();
         let entity = create_human("person_001");

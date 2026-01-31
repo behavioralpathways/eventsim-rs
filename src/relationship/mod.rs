@@ -35,7 +35,6 @@
 //! ```
 
 mod antecedent;
-mod antecedent_mapping;
 mod directional_dimensions;
 mod interaction_pattern;
 mod perceived_risk;
@@ -46,7 +45,6 @@ mod stage;
 mod trustworthiness;
 
 pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
-pub use antecedent_mapping::{derive_trust_antecedents, AntecedentMapping, TRUST_ANTECEDENT_TABLE};
 pub use directional_dimensions::DirectionalDimensions;
 pub use interaction_pattern::InteractionPattern;
 pub use perceived_risk::{PerceivedRisk, StakesLevel};

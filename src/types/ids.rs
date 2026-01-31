@@ -199,23 +199,6 @@ define_id!(
     "MicrosystemId"
 );
 
-define_id!(
-    /// Unique identifier for an event bus subscription.
-    ///
-    /// Subscriptions are used to filter and receive events from the EventBus.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use eventsim_rs::types::SubscriptionId;
-    ///
-    /// let id = SubscriptionId::new("sub_001").unwrap();
-    /// assert_eq!(id.as_str(), "sub_001");
-    /// ```
-    SubscriptionId,
-    "SubscriptionId"
-);
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -308,15 +291,6 @@ mod tests {
         assert_eq!(id.as_str(), "work_001");
 
         let empty = MicrosystemId::new("");
-        assert!(empty.is_err());
-    }
-
-    #[test]
-    fn subscription_id_works() {
-        let id = SubscriptionId::new("sub_001").unwrap();
-        assert_eq!(id.as_str(), "sub_001");
-
-        let empty = SubscriptionId::new("");
         assert!(empty.is_err());
     }
 

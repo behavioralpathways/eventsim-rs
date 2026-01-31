@@ -194,6 +194,12 @@ impl From<&EventType> for DevelopmentalCategory {
             // Chosen relocation affects identity (life transition with identity implications)
             EventType::UndergoRelocationChosen => DevelopmentalCategory::Identity,
 
+            // Forced relocation affects identity (major life disruption with identity implications)
+            EventType::UndergoRelocationForced => DevelopmentalCategory::Identity,
+
+            // Forced retirement affects generativity (major role transition)
+            EventType::UndergoRetirementForced => DevelopmentalCategory::Generativity,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

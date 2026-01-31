@@ -519,18 +519,14 @@ impl MemoryLayers {
     ///
     /// # Returns
     ///
-    /// Ok(()) on success, or an error if the memory is not found.
-    pub fn move_to_layer(
-        &mut self,
-        id: &MemoryId,
-        to: MemoryLayer,
-    ) -> Result<(), crate::memory::maintenance::MaintenanceError> {
-        let entry = self.remove_by_id(id).ok_or_else(|| {
-            crate::memory::maintenance::MaintenanceError::MemoryNotFound { id: id.clone() }
-        })?;
-
-        self.add(to, entry);
-        Ok(())
+    /// `true` if the memory was moved, `false` if the memory was not found.
+    pub fn move_to_layer(&mut self, id: &MemoryId, to: MemoryLayer) -> bool {
+        if let Some(entry) = self.remove_by_id(id) {
+            self.add(to, entry);
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -1409,7 +1405,7 @@ mod tests {
         assert_eq!(layers.short_term_count(), 0);
 
         let result = layers.move_to_layer(&id, MemoryLayer::ShortTerm);
-        assert!(result.is_ok());
+        assert!(result);
         assert_eq!(layers.immediate_count(), 0);
         assert_eq!(layers.short_term_count(), 1);
 
@@ -1419,12 +1415,12 @@ mod tests {
     }
 
     #[test]
-    fn move_to_layer_returns_error_for_unknown_id() {
+    fn move_to_layer_returns_false_for_unknown_id() {
         let mut layers = MemoryLayers::new();
         let unknown_id = MemoryId::new("unknown_def").unwrap();
 
         let result = layers.move_to_layer(&unknown_id, MemoryLayer::ShortTerm);
-        assert!(result.is_err());
+        assert!(!result);
     }
 
     #[test]

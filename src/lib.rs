@@ -114,10 +114,9 @@ pub use state::{
 
 // Re-export relationship types at crate root
 pub use relationship::{
-    AntecedentDirection, AntecedentMapping, AntecedentType, DirectionalDimensions,
-    InteractionPattern, PerceivedRisk, Relationship, RelationshipError, RelationshipStage,
-    SharedDimensions, StakesLevel, TrustAntecedent, TrustworthinessFactors,
-    TRUST_ANTECEDENT_TABLE,
+    AntecedentDirection, AntecedentType, DirectionalDimensions, InteractionPattern, PerceivedRisk,
+    Relationship, RelationshipError, RelationshipStage, SharedDimensions, StakesLevel,
+    TrustAntecedent, TrustworthinessFactors,
 };
 
 // Re-export event types at crate root
@@ -130,6 +129,5 @@ pub use event::{
 // Re-export commonly used types at crate root
 pub use types::{
     duration_to_timestamp, timestamp_to_duration, Alert, Duration, EntityId, EventId, GroupId,
-    MemoryId, MicrosystemId, RelationshipId, RelationshipSlot, SubscriptionId, Timestamp,
-    TimestampParseError,
+    MemoryId, MicrosystemId, RelationshipId, RelationshipSlot, Timestamp, TimestampParseError,
 };

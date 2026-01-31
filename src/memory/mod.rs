@@ -56,7 +56,6 @@ mod consolidation;
 mod deltas;
 mod emotional_snapshot;
 mod layers;
-pub mod maintenance;
 mod memory_entry;
 mod retrieval;
 mod source;

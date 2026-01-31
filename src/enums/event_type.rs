@@ -173,6 +173,9 @@ pub enum EventType {
     /// Forced/involuntary retirement (mandatory retirement age, being pushed out, health-related, or downsizing targeting older workers)
     UndergoRetirementForced,
 
+    /// Voluntary retirement (self-chosen retirement on one's own terms, typically after planning and preparation)
+    UndergoRetirementVoluntary,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -243,6 +246,7 @@ impl EventType {
             EventType::UndergoRelocationChosen => types::undergo_relocation_chosen::SPEC,
             EventType::UndergoRelocationForced => types::undergo_relocation_forced::SPEC,
             EventType::UndergoRetirementForced => types::undergo_retirement_forced::SPEC,
+            EventType::UndergoRetirementVoluntary => types::undergo_retirement_voluntary::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -301,13 +305,14 @@ impl EventType {
             EventType::UndergoRelocationChosen => "Undergo Relocation (Chosen)",
             EventType::UndergoRelocationForced => "Undergo Relocation (Forced)",
             EventType::UndergoRetirementForced => "Undergo Retirement (Forced)",
+            EventType::UndergoRetirementVoluntary => "Undergo Retirement (Voluntary)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 50] {
+    pub const fn all() -> [EventType; 51] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -359,6 +364,7 @@ impl EventType {
             EventType::UndergoRelocationChosen,
             EventType::UndergoRelocationForced,
             EventType::UndergoRetirementForced,
+            EventType::UndergoRetirementVoluntary,
         ]
     }
 }
@@ -377,7 +383,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 50);
+        assert_eq!(all.len(), 51);
     }
 
     #[test]

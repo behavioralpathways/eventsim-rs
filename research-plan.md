@@ -49,7 +49,7 @@
 [x] undergo-incarceration-prison
 [x] undergo-relocation-chosen
 [x] undergo-relocation-forced
-[ ] undergo-retirement-forced
-[ ] undergo-retirement-voluntary
+[x] undergo-retirement-forced
+[x] undergo-retirement-voluntary
 [ ] witness-trauma-severe
 [ ] witness-violence-physical

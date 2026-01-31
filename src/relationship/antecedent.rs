@@ -7,7 +7,7 @@
 //! competence in one life domain (e.g., medical) does not imply competence
 //! in another (e.g., financial).
 
-use crate::enums::{LifeDomain, TrustDomain};
+use crate::enums::LifeDomain;
 use crate::types::Timestamp;
 
 /// The trust dimension affected by an antecedent.
@@ -19,18 +19,6 @@ pub enum AntecedentType {
     Benevolence,
     /// Perceived adherence to principles.
     Integrity,
-}
-
-impl AntecedentType {
-    /// Returns the trust domain associated with this antecedent type.
-    #[must_use]
-    pub const fn trust_domain(self) -> TrustDomain {
-        match self {
-            AntecedentType::Ability => TrustDomain::Task,
-            AntecedentType::Benevolence => TrustDomain::Support,
-            AntecedentType::Integrity => TrustDomain::Disclosure,
-        }
-    }
 }
 
 /// Whether the antecedent is positive or negative.
@@ -50,7 +38,6 @@ pub struct TrustAntecedent {
     direction: AntecedentDirection,
     magnitude: f32,
     context: String,
-    domain: TrustDomain,
     /// For Ability antecedents, the life domain where competence was demonstrated.
     /// Per Mayer's model, competence is domain-specific.
     life_domain: Option<LifeDomain>,
@@ -75,7 +62,6 @@ impl TrustAntecedent {
             direction,
             magnitude: magnitude.clamp(0.0, 1.0),
             context: context.into(),
-            domain: antecedent_type.trust_domain(),
             life_domain: None,
         }
     }
@@ -120,12 +106,6 @@ impl TrustAntecedent {
         &self.context
     }
 
-    /// Returns the trust domain impacted by this antecedent.
-    #[must_use]
-    pub fn domain(&self) -> TrustDomain {
-        self.domain
-    }
-
     /// Returns the life domain for Ability antecedents.
     ///
     /// Returns None if not set or for non-Ability antecedents.
@@ -155,7 +135,6 @@ mod tests {
         assert_eq!(antecedent.direction(), AntecedentDirection::Negative);
         assert!((antecedent.magnitude() - 0.6).abs() < f32::EPSILON);
         assert_eq!(antecedent.context(), "betrayal");
-        assert_eq!(antecedent.domain(), TrustDomain::Disclosure);
         assert!(antecedent.life_domain().is_none());
     }
 
@@ -186,7 +165,6 @@ mod tests {
         .with_life_domain(LifeDomain::Health);
 
         assert_eq!(antecedent.life_domain(), Some(LifeDomain::Health));
-        assert_eq!(antecedent.domain(), TrustDomain::Task);
     }
 
     #[test]

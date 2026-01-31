@@ -200,6 +200,9 @@ impl From<&EventType> for DevelopmentalCategory {
             // Forced retirement affects generativity (major role transition)
             EventType::UndergoRetirementForced => DevelopmentalCategory::Generativity,
 
+            // Voluntary retirement affects generativity (major role transition)
+            EventType::UndergoRetirementVoluntary => DevelopmentalCategory::Generativity,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

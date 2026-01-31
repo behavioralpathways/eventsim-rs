@@ -20,10 +20,8 @@ mod relationship_schema;
 mod reversibility;
 mod species;
 mod state_path;
-mod trust_domain;
-
 pub use alert_severity::AlertSeverity;
-pub use alert_trigger::{AlertTrigger, ItsAlert, SpiralType};
+pub use alert_trigger::{AlertTrigger, SpiralType};
 pub use attribution::{Attribution, AttributionStability};
 pub use birth_era::BirthEra;
 pub use context_path::{
@@ -47,4 +45,3 @@ pub use state_path::{
     DispositionPath, HexacoPath, MentalHealthPath, MoodPath, NeedsPath, PersonCharacteristicsPath,
     SocialCognitionPath, StatePath,
 };
-pub use trust_domain::TrustDomain;

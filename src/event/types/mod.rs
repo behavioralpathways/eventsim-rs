@@ -35,4 +35,7 @@ pub mod lose_job_fired;
 pub mod lose_job_layoff;
 pub mod lose_job_resigned;
 pub mod lose_person_death;
-// ... (59 total modules)
+pub mod lose_person_suicide;
+pub mod lose_resource_significant;
+pub mod receive_diagnosis_terminal;
+// ... (60 total modules)

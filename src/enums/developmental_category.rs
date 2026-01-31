@@ -121,6 +121,7 @@ impl From<&EventType> for DevelopmentalCategory {
 
             // Integrity category - meaning-making
             EventType::ExperienceAwarenessMortality => DevelopmentalCategory::Integrity,
+            EventType::ReceiveDiagnosisTerminal => DevelopmentalCategory::Integrity,
 
             // Attachment category - trust building/breaking (additional)
             EventType::ExperienceExclusionGroup => DevelopmentalCategory::Attachment,
@@ -130,6 +131,7 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::ExperienceRejectionFamily => DevelopmentalCategory::Attachment,
             EventType::ExperienceRejectionPeer => DevelopmentalCategory::Attachment,
             EventType::LosePersonDeath => DevelopmentalCategory::Attachment,
+            EventType::LosePersonSuicide => DevelopmentalCategory::Attachment,
 
             // Intimacy category - romantic relationships
             EventType::ExperienceRejectionRomantic => DevelopmentalCategory::Intimacy,
@@ -145,6 +147,7 @@ impl From<&EventType> for DevelopmentalCategory {
             EventType::FaceEvictionHousing => DevelopmentalCategory::Neutral,
             EventType::LoseAccessHealthcare => DevelopmentalCategory::Neutral,
             EventType::LoseBenefitsGovernment => DevelopmentalCategory::Neutral,
+            EventType::LoseResourceSignificant => DevelopmentalCategory::Neutral,
 
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,

@@ -95,6 +95,15 @@ pub enum EventType {
     /// Death of a loved one (spouse, child, parent, or close friend)
     LosePersonDeath,
 
+    /// Loss of a loved one to suicide (traumatic bereavement with unique stressors)
+    LosePersonSuicide,
+
+    /// Significant loss of material resources (savings, property, investments, valuable possessions)
+    LoseResourceSignificant,
+
+    /// Receiving a terminal medical diagnosis (fatal illness with limited life expectancy)
+    ReceiveDiagnosisTerminal,
+
     /// Rejection by family members (disownment, estrangement, explicit exclusion)
     ExperienceRejectionFamily,
 
@@ -155,6 +164,9 @@ impl EventType {
             EventType::LoseJobLayoff => types::lose_job_layoff::SPEC,
             EventType::LoseJobResigned => types::lose_job_resigned::SPEC,
             EventType::LosePersonDeath => types::lose_person_death::SPEC,
+            EventType::LosePersonSuicide => types::lose_person_suicide::SPEC,
+            EventType::LoseResourceSignificant => types::lose_resource_significant::SPEC,
+            EventType::ReceiveDiagnosisTerminal => types::receive_diagnosis_terminal::SPEC,
             EventType::ExperienceRejectionFamily => types::experience_rejection_family::SPEC,
             EventType::ExperienceRejectionPeer => types::experience_rejection_peer::SPEC,
             EventType::ExperienceRejectionRomantic => types::experience_rejection_romantic::SPEC,
@@ -193,6 +205,9 @@ impl EventType {
             EventType::LoseJobLayoff => "Lose Job (Layoff)",
             EventType::LoseJobResigned => "Lose Job (Resigned)",
             EventType::LosePersonDeath => "Lose Person (Death)",
+            EventType::LosePersonSuicide => "Lose Person (Suicide)",
+            EventType::LoseResourceSignificant => "Lose Resource (Significant)",
+            EventType::ReceiveDiagnosisTerminal => "Receive Diagnosis (Terminal)",
             EventType::ExperienceRejectionFamily => "Experience Rejection (Family)",
             EventType::ExperienceRejectionPeer => "Experience Rejection (Peer)",
             EventType::ExperienceRejectionRomantic => "Experience Rejection (Romantic)",
@@ -205,7 +220,7 @@ impl EventType {
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 30] {
+    pub const fn all() -> [EventType; 33] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -231,6 +246,9 @@ impl EventType {
             EventType::LoseJobLayoff,
             EventType::LoseJobResigned,
             EventType::LosePersonDeath,
+            EventType::LosePersonSuicide,
+            EventType::LoseResourceSignificant,
+            EventType::ReceiveDiagnosisTerminal,
             EventType::ExperienceRejectionFamily,
             EventType::ExperienceRejectionPeer,
             EventType::ExperienceRejectionRomantic,
@@ -255,7 +273,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 30);
+        assert_eq!(all.len(), 33);
     }
 
     #[test]

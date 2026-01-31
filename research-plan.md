@@ -31,8 +31,8 @@
 [x] lose-job-resigned
 [x] lose-person-death
 [x] lose-person-suicide
-[x] lose-resource-significant
-[ ] receive-diagnosis-terminal
+[ ] lose-resource-significant
+[x] receive-diagnosis-terminal
 [ ] receive-feedback-burden
 [ ] receive-support-emotional
 [ ] receive-support-financial

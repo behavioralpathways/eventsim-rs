@@ -203,6 +203,12 @@ impl From<&EventType> for DevelopmentalCategory {
             // Voluntary retirement affects generativity (major role transition)
             EventType::UndergoRetirementVoluntary => DevelopmentalCategory::Generativity,
 
+            // Witnessing severe trauma is neutral (traumatic but not stage-specific)
+            EventType::WitnessTraumaSevere => DevelopmentalCategory::Neutral,
+
+            // Witnessing physical violence is neutral (traumatic but not stage-specific)
+            EventType::WitnessViolencePhysical => DevelopmentalCategory::Neutral,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

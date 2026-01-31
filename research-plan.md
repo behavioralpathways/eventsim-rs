@@ -51,5 +51,5 @@
 [x] undergo-relocation-forced
 [x] undergo-retirement-forced
 [x] undergo-retirement-voluntary
-[ ] witness-trauma-severe
-[ ] witness-violence-physical
+[x] witness-trauma-severe
+[x] witness-violence-physical

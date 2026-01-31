@@ -56,3 +56,5 @@ pub mod undergo_relocation_chosen;
 pub mod undergo_relocation_forced;
 pub mod undergo_retirement_forced;
 pub mod undergo_retirement_voluntary;
+pub mod witness_trauma_severe;
+pub mod witness_violence_physical;

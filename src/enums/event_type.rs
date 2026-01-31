@@ -176,6 +176,12 @@ pub enum EventType {
     /// Voluntary retirement (self-chosen retirement on one's own terms, typically after planning and preparation)
     UndergoRetirementVoluntary,
 
+    /// Witnessing severe trauma (seeing extreme violence, death, serious injury, or horrific accident happen to another person)
+    WitnessTraumaSevere,
+
+    /// Witnessing physical violence against another person (assault, battery, domestic violence, street fight)
+    WitnessViolencePhysical,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -247,6 +253,8 @@ impl EventType {
             EventType::UndergoRelocationForced => types::undergo_relocation_forced::SPEC,
             EventType::UndergoRetirementForced => types::undergo_retirement_forced::SPEC,
             EventType::UndergoRetirementVoluntary => types::undergo_retirement_voluntary::SPEC,
+            EventType::WitnessTraumaSevere => types::witness_trauma_severe::SPEC,
+            EventType::WitnessViolencePhysical => types::witness_violence_physical::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -306,13 +314,15 @@ impl EventType {
             EventType::UndergoRelocationForced => "Undergo Relocation (Forced)",
             EventType::UndergoRetirementForced => "Undergo Retirement (Forced)",
             EventType::UndergoRetirementVoluntary => "Undergo Retirement (Voluntary)",
+            EventType::WitnessTraumaSevere => "Witness Trauma (Severe)",
+            EventType::WitnessViolencePhysical => "Witness Violence (Physical)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 51] {
+    pub const fn all() -> [EventType; 53] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -365,6 +375,8 @@ impl EventType {
             EventType::UndergoRelocationForced,
             EventType::UndergoRetirementForced,
             EventType::UndergoRetirementVoluntary,
+            EventType::WitnessTraumaSevere,
+            EventType::WitnessViolencePhysical,
         ]
     }
 }
@@ -383,7 +395,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 51);
+        assert_eq!(all.len(), 53);
     }
 
     #[test]

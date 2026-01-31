@@ -47,7 +47,7 @@ mod trustworthiness;
 pub use antecedent::{AntecedentDirection, AntecedentType, TrustAntecedent};
 pub use directional_dimensions::DirectionalDimensions;
 pub use interaction_pattern::InteractionPattern;
-pub use perceived_risk::{PerceivedRisk, StakesLevel};
+pub use perceived_risk::PerceivedRisk;
 pub use relationship::{Relationship, RelationshipError, StageTransitionError};
 pub use shared_dimensions::SharedDimensions;
 pub use stage::RelationshipStage;

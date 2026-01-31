@@ -4,5 +4,7 @@
 
 mod entity_create_memory_captures_mood;
 mod entity_mood_snapshot_freezes_current_state;
+mod events_create_memories;
 mod memory_layers_respect_capacity;
+mod memory_priming_persists_after_decay;
 mod mood_congruent_recall_uses_entity_mood;

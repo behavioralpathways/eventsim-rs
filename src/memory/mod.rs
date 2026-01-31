@@ -55,6 +55,8 @@
 mod consolidation;
 mod deltas;
 mod emotional_snapshot;
+mod event_tags;
+mod from_event;
 mod layers;
 mod memory_entry;
 mod retrieval;
@@ -62,6 +64,8 @@ mod source;
 mod tags;
 
 pub use consolidation::{apply_memory_consolidation, compute_priming_deltas, PrimingDeltas};
+pub use event_tags::derive_tags_from_impacts;
+pub use from_event::create_memory_from_event;
 pub use deltas::{DeltasApplied, RelationshipDelta, ReputationDelta};
 pub use emotional_snapshot::EmotionalSnapshot;
 pub use layers::{

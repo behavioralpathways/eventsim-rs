@@ -44,3 +44,5 @@ mod ww2_combat_exposure;
 mod stanford_prison;
 #[path = "longitudinal/shooter_pathway.rs"]
 mod shooter_pathway;
+#[path = "longitudinal/vietnam_veteran_life_trajectory.rs"]
+mod vietnam_veteran_life_trajectory;

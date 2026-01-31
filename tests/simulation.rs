@@ -9,6 +9,4 @@ mod simulation {
     // System tests
     mod entity;
     mod time;
-
-    // Longitudinal scenario tests live under tests/longitudinal
 }

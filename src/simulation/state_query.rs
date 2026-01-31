@@ -6,7 +6,9 @@
 use crate::context::apply_context_effects;
 use crate::entity::Entity;
 use crate::enums::{HexacoPath, LifeStage, StatePath};
-use crate::memory::{apply_memory_consolidation, MemoryEntry};
+use crate::memory::{
+    apply_memory_consolidation, create_memory_from_event, MemoryEntry, MemoryLayer, MemoryLayers,
+};
 use crate::processor::{
     advance_state, apply_developmental_effects, apply_interpreted_event_to_state, interpret_event,
     regress_state, reverse_interpreted_event_from_state, InterpretedEvent,
@@ -194,6 +196,9 @@ impl<'a> EntityQueryHandle<'a> {
             }
         };
 
+        // Computed memories from events (only for forward projection)
+        let mut computed_memories = MemoryLayers::new();
+
         if is_forward {
             // Forward: use cursor pattern to track current time position
             // This avoids compounding decay by advancing in deltas between events
@@ -216,6 +221,17 @@ impl<'a> EntityQueryHandle<'a> {
 
                 // Apply the scaled interpreted event deltas
                 state = apply_interpreted_event_to_state(state, &scaled_interpreted);
+
+                // Create memory from this event (AFTER state is updated to capture
+                // the emotional context at encoding time)
+                let memory = create_memory_from_event(
+                    &scaled_interpreted,
+                    &state,
+                    age_at_event,
+                    Some(&self.entity_id),
+                );
+                computed_memories.add(MemoryLayer::Immediate, memory);
+
                 // Move cursor forward
                 cursor = te.timestamp();
             }
@@ -282,7 +298,18 @@ impl<'a> EntityQueryHandle<'a> {
             life_stage,
             timestamp,
         );
-        state = apply_memory_consolidation(state, entity.memories(), total_duration);
+
+        // Merge anchor memories with computed memories for consolidation
+        // For forward projection, we combine entity's anchor memories with
+        // memories computed from events processed in this query.
+        // For backward regression, we only use anchor memories (events being
+        // reversed haven't happened yet at the query timestamp).
+        let merged_memories = if is_forward {
+            merge_memory_layers(entity.memories(), &computed_memories)
+        } else {
+            entity.memories().clone()
+        };
+        state = apply_memory_consolidation(state, &merged_memories, total_duration);
 
         // Apply formative base shifts to HEXACO personality traits
         // This computes effective base values for each trait based on accumulated shifts
@@ -474,6 +501,46 @@ fn estimate_relationship_quality(entity: &Entity) -> f64 {
     } else {
         0.3
     }
+}
+
+/// Merges two memory layer structures into a new combined structure.
+///
+/// This is used to combine anchor memories (from entity creation) with
+/// computed memories (from events processed during state_at). All memories
+/// from both sources are copied into the new structure, preserving their
+/// layer assignments.
+fn merge_memory_layers(anchor: &MemoryLayers, computed: &MemoryLayers) -> MemoryLayers {
+    let mut merged = MemoryLayers::new();
+
+    // Copy all anchor memories
+    for memory in anchor.immediate() {
+        merged.add(MemoryLayer::Immediate, memory.clone());
+    }
+    for memory in anchor.short_term() {
+        merged.add(MemoryLayer::ShortTerm, memory.clone());
+    }
+    for memory in anchor.long_term() {
+        merged.add(MemoryLayer::LongTerm, memory.clone());
+    }
+    for memory in anchor.legacy() {
+        merged.add(MemoryLayer::Legacy, memory.clone());
+    }
+
+    // Copy all computed memories
+    for memory in computed.immediate() {
+        merged.add(MemoryLayer::Immediate, memory.clone());
+    }
+    for memory in computed.short_term() {
+        merged.add(MemoryLayer::ShortTerm, memory.clone());
+    }
+    for memory in computed.long_term() {
+        merged.add(MemoryLayer::LongTerm, memory.clone());
+    }
+    for memory in computed.legacy() {
+        merged.add(MemoryLayer::Legacy, memory.clone());
+    }
+
+    merged
 }
 
 /// The computed state of an entity at a specific timestamp.

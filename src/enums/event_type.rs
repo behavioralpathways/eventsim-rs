@@ -282,7 +282,7 @@ impl EventType {
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 44] {
+    pub const fn all() -> [EventType; 45] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -328,6 +328,7 @@ impl EventType {
             EventType::SurviveDisasterNatural,
             EventType::UndergoDeploymentMilitary,
             EventType::UndergoHospitalizationMedical,
+            EventType::UndergoImmigrationChosen,
         ]
     }
 }
@@ -346,7 +347,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 44);
+        assert_eq!(all.len(), 45);
     }
 
     #[test]

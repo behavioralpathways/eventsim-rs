@@ -1,7 +1,6 @@
 //! Processing subsystems for entity state changes.
 //!
 //! This module contains processors that operate on entity state, including:
-//! - Decay processing for state values
 //! - ITS (Interpersonal Theory of Suicide) convergence tracking
 //! - State evolution (internal: advance/regress/apply/reverse)
 //! - Event processing (internal: interpret/apply/process)
@@ -9,9 +8,6 @@
 //!
 //! # Key Types
 //!
-//! - [`DecayProcessor`] - Trait for applying decay to entity state
-//! - [`StateDecayProcessor`] - Real implementation with exponential decay
-//! - [`NoOpDecayProcessor`] - No-op implementation for testing/robotic entities
 //! - [`InterpretedEvent`] - Interpreted event with computed deltas
 //! - [`ConvergenceStatus`] - ITS factor convergence tracking
 //!
@@ -26,7 +22,6 @@
 //! - Event: `apply_interpreted_event`, `process_event`
 //! - State evolution: `apply_event_to_state`
 
-mod decay;
 mod developmental;
 mod emotions;
 mod event;
@@ -35,15 +30,12 @@ mod its;
 mod reversibility;
 mod state_evolution;
 
-pub use decay::DecayProcessor;
-#[allow(unused_imports)]
-pub use decay::{NoOpDecayProcessor, StateDecayProcessor};
 pub(crate) use developmental::apply_developmental_effects;
 pub(crate) use event::interpret_event;
 pub(crate) use event::process_event_to_relationships;
 pub use event::InterpretedEvent;
 // apply_interpreted_event and process_event are internal to the event module and its tests
-pub use its::{ConvergenceStatus, ItsProximalFactor, AC_ELEVATED_THRESHOLD};
+pub use its::{ConvergenceStatus, ItsProximalFactor};
 pub(crate) use state_evolution::{
     advance_state, apply_interpreted_event_to_state, regress_state,
     reverse_interpreted_event_from_state,

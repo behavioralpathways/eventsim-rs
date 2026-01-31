@@ -185,6 +185,9 @@ impl From<&EventType> for DevelopmentalCategory {
             // Chosen immigration affects identity (life transition with identity implications)
             EventType::UndergoImmigrationChosen => DevelopmentalCategory::Identity,
 
+            // Forced immigration affects identity (displacement with identity implications)
+            EventType::UndergoImmigrationForced => DevelopmentalCategory::Identity,
+
             // Custom events are neutral by default
             EventType::Custom => DevelopmentalCategory::Neutral,
         }

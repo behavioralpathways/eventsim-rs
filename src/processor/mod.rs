@@ -23,11 +23,8 @@
 //! - State evolution: `apply_event_to_state`
 
 mod developmental;
-mod emotions;
 mod event;
-mod feedback;
 mod its;
-mod reversibility;
 mod state_evolution;
 
 pub(crate) use developmental::apply_developmental_effects;

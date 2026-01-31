@@ -43,7 +43,7 @@
 [x] survive-attempt-suicide
 [x] survive-disaster-natural
 [x] undergo-deployment-military
-[ ] undergo-hospitalization-medical
+[x] undergo-hospitalization-medical
 [ ] undergo-immigration-chosen
 [ ] undergo-immigration-forced
 [ ] undergo-incarceration-prison

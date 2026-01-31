@@ -167,6 +167,12 @@ pub enum EventType {
     /// Voluntary relocation (moving to a new city/region by personal choice for opportunities, lifestyle, or family)
     UndergoRelocationChosen,
 
+    /// Forced relocation (involuntary displacement due to eviction, court orders, employer mandates, or fleeing abuse)
+    UndergoRelocationForced,
+
+    /// Forced/involuntary retirement (mandatory retirement age, being pushed out, health-related, or downsizing targeting older workers)
+    UndergoRetirementForced,
+
     /// Custom event with developer-provided EventSpec.
     /// Use `Event::custom(spec)` to create events with this type.
     Custom,
@@ -235,6 +241,8 @@ impl EventType {
             EventType::UndergoImmigrationForced => types::undergo_immigration_forced::SPEC,
             EventType::UndergoIncarcerationPrison => types::undergo_incarceration_prison::SPEC,
             EventType::UndergoRelocationChosen => types::undergo_relocation_chosen::SPEC,
+            EventType::UndergoRelocationForced => types::undergo_relocation_forced::SPEC,
+            EventType::UndergoRetirementForced => types::undergo_retirement_forced::SPEC,
             EventType::Custom => EventSpec::default(),
         }
     }
@@ -291,13 +299,15 @@ impl EventType {
             EventType::UndergoImmigrationForced => "Undergo Immigration (Forced)",
             EventType::UndergoIncarcerationPrison => "Undergo Incarceration (Prison)",
             EventType::UndergoRelocationChosen => "Undergo Relocation (Chosen)",
+            EventType::UndergoRelocationForced => "Undergo Relocation (Forced)",
+            EventType::UndergoRetirementForced => "Undergo Retirement (Forced)",
             EventType::Custom => "Custom Event",
         }
     }
 
     /// Returns all event type variants (excluding Custom).
     #[must_use]
-    pub const fn all() -> [EventType; 48] {
+    pub const fn all() -> [EventType; 50] {
         [
             EventType::AchieveGoalMajor,
             EventType::DevelopIllnessChronic,
@@ -347,6 +357,8 @@ impl EventType {
             EventType::UndergoImmigrationForced,
             EventType::UndergoIncarcerationPrison,
             EventType::UndergoRelocationChosen,
+            EventType::UndergoRelocationForced,
+            EventType::UndergoRetirementForced,
         ]
     }
 }
@@ -365,7 +377,7 @@ mod tests {
     #[test]
     fn event_type_all_returns_all_variants() {
         let all = EventType::all();
-        assert_eq!(all.len(), 48);
+        assert_eq!(all.len(), 50);
     }
 
     #[test]

@@ -53,3 +53,5 @@ pub mod undergo_immigration_chosen;
 pub mod undergo_immigration_forced;
 pub mod undergo_incarceration_prison;
 pub mod undergo_relocation_chosen;
+pub mod undergo_relocation_forced;
+pub mod undergo_retirement_forced;

@@ -48,7 +48,7 @@
 [x] undergo-immigration-forced
 [x] undergo-incarceration-prison
 [x] undergo-relocation-chosen
-[ ] undergo-relocation-forced
+[x] undergo-relocation-forced
 [ ] undergo-retirement-forced
 [ ] undergo-retirement-voluntary
 [ ] witness-trauma-severe
